@@ -20,7 +20,6 @@ import {
   Users,
   CreditCard,
   Calendar,
-  FileText,
   UserCog,
   Settings,
   LogOut,
@@ -61,11 +60,6 @@ const menuItems = [
     href: '/schedule',
     label: 'Schedule',
     icon: Calendar,
-  },
-  {
-    href: '/reports',
-    label: 'AI Reports',
-    icon: FileText,
   },
   {
     href: '/profile',
