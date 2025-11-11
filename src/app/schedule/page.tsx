@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Clock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function SchedulePage() {
   return (
@@ -63,27 +64,12 @@ export default function SchedulePage() {
                         </div>
                         <Badge
                           variant={
-                            slot.status === 'Booked' ? 'default' : 'outline'
+                            slot.status === 'Booked' ? 'secondary' : 'outline'
                           }
-                          className={
-                            slot.status === 'Booked'
-                              ? 'bg-soft-blue text-primary-foreground'
-                              : 'border-green-500 text-green-500'
-                          }
-                          style={{
-                            backgroundColor:
-                              slot.status === 'Booked'
-                                ? 'hsl(var(--soft-blue))'
-                                : 'transparent',
-                            color:
-                              slot.status === 'Booked'
-                                ? 'hsl(var(--foreground))'
-                                : 'hsl(var(--accent))',
-                             borderColor: 
-                               slot.status === 'Available'
-                                ? 'hsl(var(--accent))'
-                                : 'transparent',
-                          }}
+                          className={cn({
+                            'border-accent text-accent':
+                              slot.status === 'Available',
+                          })}
                         >
                           {slot.status}
                         </Badge>
