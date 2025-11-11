@@ -10,6 +10,8 @@ import { MetricCard } from '@/components/dashboard/metric-card';
 import { AnalyticsChart } from '@/components/dashboard/analytics-chart';
 import { AppointmentsList } from '@/components/dashboard/appointments-list';
 import { PageHeader } from '@/components/shared/page-header';
+import { PatientTable } from '@/components/patients/patient-table';
+import { patients } from '@/lib/data';
 
 export default function DashboardPage({ searchParams }: PageProps) {
   return (
@@ -47,6 +49,7 @@ export default function DashboardPage({ searchParams }: PageProps) {
         </div>
         <AppointmentsList />
       </div>
+      <PatientTable data={patients} />
     </div>
   );
 }

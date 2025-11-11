@@ -48,11 +48,6 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    href: '/patients',
-    label: 'Patients',
-    icon: Users,
-  },
-  {
     href: '/payments',
     label: 'Payments',
     icon: CreditCard,
