@@ -1,6 +1,7 @@
+'use client';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster.jsx';
-import { Search } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -14,11 +15,85 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { Sidebar } from '@/components/layout/sidebar';
+import { SidebarProvider, useSidebar } from '@/hooks/use-sidebar';
+import { cn } from '@/lib/utils';
 
-export const metadata = {
-  title: 'Bit Max',
-  description: 'A modern dashboard for hospital administration.',
-};
+function AppLayout({ children }) {
+  const { isSidebarOpen } = useSidebar();
+
+  return (
+    <div
+      className={cn(
+        'grid min-h-screen w-full',
+        isSidebarOpen
+          ? 'md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]'
+          : 'md:grid-cols-[68px_1fr]'
+      )}
+    >
+      <Sidebar />
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+          <SidebarToggleButton />
+          <div className="w-full flex-1">
+            <form>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
+                />
+              </div>
+            </form>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage
+                    src={getPlaceholderImage('user-avatar-1')?.imageUrl}
+                    alt="Admin"
+                    data-ai-hint={
+                      getPlaceholderImage('user-avatar-1')?.imageHint
+                    }
+                  />
+                  <AvatarFallback>A</AvatarFallback>
+                </Avatar>
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function SidebarToggleButton() {
+  const { toggleSidebar } = useSidebar();
+  return (
+    <Button
+      variant="outline"
+      size="icon"
+      className="shrink-0"
+      onClick={toggleSidebar}
+    >
+      <Menu className="h-5 w-5" />
+      <span className="sr-only">Toggle navigation menu</span>
+    </Button>
+  );
+}
 
 export default function RootLayout({ children }) {
   const userAvatar = getPlaceholderImage('user-avatar-1');
@@ -37,57 +112,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-          <Sidebar />
-          <div className="flex flex-col">
-            <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-              <div className="w-full flex-1">
-                <form>
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Search..."
-                      className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-                    />
-                  </div>
-                </form>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="rounded-full"
-                  >
-                    <Avatar className="h-9 w-9">
-                      {userAvatar && (
-                        <AvatarImage
-                          src={userAvatar.imageUrl}
-                          alt="Admin"
-                          data-ai-hint={userAvatar.imageHint}
-                        />
-                      )}
-                      <AvatarFallback>A</AvatarFallback>
-                    </Avatar>
-                    <span className="sr-only">Toggle user menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </header>
-            <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-              {children}
-            </main>
-          </div>
-        </div>
+        <SidebarProvider>
+          <AppLayout>{children}</AppLayout>
+        </SidebarProvider>
         <Toaster />
       </body>
     </html>
