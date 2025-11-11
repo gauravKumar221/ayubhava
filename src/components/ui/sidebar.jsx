@@ -429,7 +429,7 @@ const SidebarMenu = React.forwardRef(({ className, ...props }, ref) => (
   <ul
     ref={ref}
     data-sidebar="menu"
-    className={cn("flex w-full min-w-0 flex-col gap-1", className)}
+    className={cn("flex w-full min-w-0 flex-col gap-1 p-2", className)}
     {...props}
   />
 ))
@@ -498,7 +498,7 @@ const SidebarMenuButton = React.forwardRef(
         <span
           className={cn(
             'flex-1',
-            !open && 'w-0 opacity-0 transition-all duration-300 ease-in-out'
+            !open && !isMobile && 'sr-only'
           )}
         >
           <Slottable>{children}</Slottable>
