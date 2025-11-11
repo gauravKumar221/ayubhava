@@ -536,7 +536,6 @@ const sidebarMenuButtonVariants = cva(
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    as?: React.ElementType;
     asChild?: boolean;
     icon?: React.ReactNode;
     isActive?: boolean;
@@ -545,7 +544,6 @@ const SidebarMenuButton = React.forwardRef<
 >(
   (
     {
-      as: Comp = 'button',
       asChild = false,
       isActive = false,
       variant = "default",
@@ -558,11 +556,11 @@ const SidebarMenuButton = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, open } = useSidebar()
-    const Component = asChild ? Slot : Comp
+    const { isMobile, open } = useSidebar()
+    const Comp = asChild ? Slot : "button"
 
     const button = (
-       <Component
+       <Comp
         ref={ref}
         data-sidebar="menu-button"
         data-size={size}
@@ -579,7 +577,7 @@ const SidebarMenuButton = React.forwardRef<
         >
           <Slottable>{children}</Slottable>
         </span>
-      </Component>
+      </Comp>
     )
 
     if (!tooltip) {
@@ -598,7 +596,7 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          hidden={state !== "collapsed" || isMobile}
+          hidden={open || isMobile}
           {...tooltip}
         />
       </Tooltip>
