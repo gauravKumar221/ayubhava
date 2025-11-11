@@ -1,28 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-import { PageHeader } from '@/components/shared/page-header';
-import { doctors } from '@/lib/data';
-import { getPlaceholderImage } from '@/lib/placeholder-images';
+import { PageHeader } from '@/components/shared/page-header.jsx';
+import { doctors } from '@/lib/data.js';
+import { getPlaceholderImage } from '@/lib/placeholder-images.js';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+} from '@/components/ui/card.jsx';
+import { Badge } from '@/components/ui/badge.jsx';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.jsx';
 import { Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils.js';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { DoctorScheduleCalendar } from '@/components/schedule/doctor-schedule-calendar';
+} from '@/components/ui/dialog.jsx';
+import { DoctorScheduleCalendar } from '@/components/schedule/doctor-schedule-calendar.jsx';
 
 export default function SchedulePage() {
   const [selectedDoctor, setSelectedDoctor] = useState(null);

@@ -1,6 +1,6 @@
 import './globals.css';
-import { AppLayout } from '@/components/app-layout';
-import { Toaster } from '@/components/ui/toaster';
+import { AppLayout } from '@/components/app-layout.jsx';
+import { Toaster } from '@/components/ui/toaster.jsx';
 
 export const metadata = {
   title: 'Bit Max',

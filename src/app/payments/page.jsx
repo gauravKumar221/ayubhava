@@ -1,11 +1,11 @@
-import { PageHeader } from '@/components/shared/page-header';
+import { PageHeader } from '@/components/shared/page-header.jsx';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/components/ui/card.jsx';
 import {
   Table,
   TableBody,
@@ -13,9 +13,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { RevenueChart } from '@/components/payments/revenue-chart';
+} from '@/components/ui/table.jsx';
+import { Badge } from '@/components/ui/badge.jsx';
+import { RevenueChart } from '@/components/payments/revenue-chart.jsx';
 
 const transactions = [
   {

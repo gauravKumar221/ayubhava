@@ -2,23 +2,23 @@
 
 import { useState } from 'react';
 import { addDays, format } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
+import { Calendar } from '@/components/ui/calendar.jsx';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+} from '@/components/ui/card.jsx';
+import { Badge } from '@/components/ui/badge.jsx';
 import { Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils.js';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@/components/ui/tabs';
+} from '@/components/ui/tabs.jsx';
 import {
   Table,
   TableBody,
@@ -26,7 +26,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/components/ui/table.jsx';
 
 export function DoctorScheduleCalendar({
   schedule,

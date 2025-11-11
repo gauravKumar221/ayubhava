@@ -5,12 +5,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/components/ui/card.jsx';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart';
+} from '@/components/ui/chart.jsx';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const chartData = [

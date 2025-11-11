@@ -1,13 +1,13 @@
-import { getPlaceholderImage } from '@/lib/placeholder-images';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getPlaceholderImage } from '@/lib/placeholder-images.js';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.jsx';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { appointments } from '@/lib/data';
+} from '@/components/ui/card.jsx';
+import { appointments } from '@/lib/data.js';
 
 export function AppointmentsList() {
   return (
