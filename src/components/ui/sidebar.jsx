@@ -495,12 +495,7 @@ const SidebarMenuButton = React.forwardRef(
         {...props}
       >
         <Slottable>{icon}</Slottable>
-        <span
-          className={cn(
-            "flex-1",
-            !isMobile && !open && "hidden",
-          )}
-        >
+        <span className={cn('flex-1', isMobile || open ? '' : 'hidden')}>
           <Slottable>{children}</Slottable>
         </span>
       </Comp>
@@ -673,5 +668,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-
-    
