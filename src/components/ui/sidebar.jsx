@@ -498,7 +498,7 @@ const SidebarMenuButton = React.forwardRef(
         <span
           className={cn(
             'flex-1',
-            !open && !isMobile && 'sr-only'
+            isMobile ? '' : (open ? 'opacity-100' : 'sr-only')
           )}
         >
           <Slottable>{children}</Slottable>
