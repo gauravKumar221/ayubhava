@@ -25,6 +25,7 @@ import {
   LogOut,
   Hospital,
   Search,
+  ChevronLeft,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { cn } from '@/lib/utils';
@@ -70,7 +71,7 @@ const menuItems = [
 
 function MainSidebar() {
   const pathname = usePathname();
-  const { open } = useSidebar();
+  const { open, toggleSidebar } = useSidebar();
   const userAvatar = getPlaceholderImage('user-avatar-1');
 
   return (
@@ -88,8 +89,7 @@ function MainSidebar() {
           <span
             className={cn(
               'text-xl font-semibold',
-              !open &&
-                'w-0 opacity-0 transition-all duration-300 ease-in-out'
+              !open && 'w-0 opacity-0 transition-all duration-300 ease-in-out'
             )}
           >
             Bit max
@@ -100,16 +100,16 @@ function MainSidebar() {
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.href}
-                icon={<item.icon />}
-                tooltip={item.label}
-              >
-                <Link href={item.href}>
+              <Link href={item.href} passHref>
+                <SidebarMenuButton
+                  as="a"
+                  isActive={pathname === item.href}
+                  icon={<item.icon />}
+                  tooltip={item.label}
+                >
                   <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
@@ -141,8 +141,7 @@ function MainSidebar() {
               <div
                 className={cn(
                   'flex flex-col text-sm',
-                  !open &&
-                    'w-0 opacity-0 transition-all duration-300 ease-in-out'
+                  !open && 'w-0 opacity-0 transition-all duration-300 ease-in-out'
                 )}
               >
                 <span className="font-semibold">Admin</span>
@@ -153,13 +152,27 @@ function MainSidebar() {
                 size="icon"
                 className={cn(
                   'ml-auto h-8 w-8',
-                  !open &&
-                    'w-0 opacity-0 transition-all duration-300 ease-in-out'
+                  !open && 'w-0 opacity-0 transition-all duration-300 ease-in-out'
                 )}
               >
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Button
+              variant="ghost"
+              className="w-full justify-center"
+              size="icon"
+              onClick={toggleSidebar}
+            >
+              <ChevronLeft
+                className={cn(
+                  'h-6 w-6 transition-transform',
+                  !open && 'rotate-180'
+                )}
+              />
+            </Button>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
