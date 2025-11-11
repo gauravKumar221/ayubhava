@@ -111,9 +111,12 @@ export default function SchedulePage() {
         {selectedDoctor && (
           <DialogContent className="sm:max-w-4xl">
             <DialogHeader>
-              <DialogTitle>Full Day Schedule for {selectedDoctor.name}</DialogTitle>
+              <DialogTitle>Schedule for {selectedDoctor.name}</DialogTitle>
             </DialogHeader>
-            <DoctorScheduleCalendar schedule={selectedDoctor.schedule} />
+            <DoctorScheduleCalendar
+              schedule={selectedDoctor.schedule}
+              appointmentHistory={selectedDoctor.appointmentHistory}
+            />
           </DialogContent>
         )}
       </Dialog>

@@ -23,12 +23,21 @@ export type DoctorScheduleSlot = {
   status: 'Booked' | 'Available';
 };
 
+export type AppointmentHistory = {
+  id: string;
+  patientName: string;
+  date: string;
+  service: string;
+  amount: string;
+};
+
 export type Doctor = {
   id: string;
   name: string;
   specialty: string;
   avatarId: string;
   schedule: DoctorScheduleSlot[];
+  appointmentHistory: AppointmentHistory[];
 };
 
 export type PageProps = {

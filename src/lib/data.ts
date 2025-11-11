@@ -1,4 +1,4 @@
-import type { Patient, Appointment, Doctor } from './types';
+import type { Patient, Appointment, Doctor, AppointmentHistory } from './types';
 
 export const patients: Patient[] = [
   {
@@ -91,6 +91,44 @@ export const appointments: Appointment[] = [
   },
 ];
 
+const appointmentHistory: AppointmentHistory[] = [
+  {
+    id: 'hist-1',
+    patientName: 'Liam Johnson',
+    date: '2024-06-15',
+    service: 'Annual Check-up',
+    amount: '$150.00',
+  },
+  {
+    id: 'hist-2',
+    patientName: 'Noah Williams',
+    date: '2024-06-10',
+    service: 'Consultation',
+    amount: '$75.00',
+  },
+  {
+    id: 'hist-3',
+    patientName: 'Sophia Martinez',
+    date: '2024-05-28',
+    service: 'Echocardiogram',
+    amount: '$450.00',
+  },
+  {
+    id: 'hist-4',
+    patientName: 'Olivia Smith',
+    date: '2024-06-20',
+    service: 'Vaccination',
+    amount: '$50.00',
+  },
+  {
+    id: 'hist-5',
+    patientName: 'James Taylor',
+    date: '2024-05-18',
+    service: 'Wellness Visit',
+    amount: '$120.00',
+  },
+];
+
 export const doctors: Doctor[] = [
   {
     id: '1',
@@ -103,6 +141,7 @@ export const doctors: Doctor[] = [
       { time: '11:00 AM', patient: '', status: 'Available' },
       { time: '02:00 PM', patient: 'Sophia Martinez', status: 'Booked' },
     ],
+    appointmentHistory: appointmentHistory.slice(0, 3),
   },
   {
     id: '2',
@@ -115,6 +154,7 @@ export const doctors: Doctor[] = [
       { time: '11:30 AM', patient: '', status: 'Available' },
       { time: '01:30 PM', patient: 'James Taylor', status: 'Booked' },
     ],
+    appointmentHistory: appointmentHistory.slice(3, 5),
   },
   {
     id: '3',
@@ -125,6 +165,7 @@ export const doctors: Doctor[] = [
       { time: '10:30 AM', patient: 'Emma Brown', status: 'Booked' },
       { time: '11:00 AM', patient: 'Isabella Anderson', status: 'Booked' },
     ],
+    appointmentHistory: [],
   },
   {
     id: '4',
@@ -132,5 +173,6 @@ export const doctors: Doctor[] = [
     specialty: 'Dentist',
     avatarId: 'doctor-4',
     schedule: [{ time: '11:00 AM', patient: 'Ava Jones', status: 'Booked' }],
+    appointmentHistory: [],
   },
 ];
