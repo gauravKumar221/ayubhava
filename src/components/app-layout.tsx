@@ -25,11 +25,21 @@ import {
   Settings,
   LogOut,
   Hospital,
+  Search,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { cn } from '@/lib/utils';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from './ui/dropdown-menu';
 
 const menuItems = [
   {
@@ -164,6 +174,7 @@ function MainSidebar() {
 }
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
+  const userAvatar = getPlaceholderImage('user-avatar-1');
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -171,9 +182,37 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <main className="flex-1">
           <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6">
             <SidebarTrigger className="md:hidden" />
-            <div className="flex-1">
-              {/* Add search or other header content here */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search..."
+                className="w-full max-w-sm bg-background pl-9"
+              />
             </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Avatar className="h-9 w-9">
+                    {userAvatar && (
+                      <AvatarImage
+                        src={userAvatar.imageUrl}
+                        alt="Admin"
+                        data-ai-hint={userAvatar.imageHint}
+                      />
+                    )}
+                    <AvatarFallback>A</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </header>
           <div className="p-4 sm:p-6 lg:p-8">{children}</div>
         </main>

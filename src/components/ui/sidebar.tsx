@@ -537,6 +537,7 @@ const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
     as?: React.ElementType;
+    asChild?: boolean;
     icon?: React.ReactNode;
     isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
@@ -545,6 +546,7 @@ const SidebarMenuButton = React.forwardRef<
   (
     {
       as: Comp = 'button',
+      asChild = false,
       isActive = false,
       variant = "default",
       size = "default",
@@ -557,9 +559,10 @@ const SidebarMenuButton = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, open } = useSidebar()
+    const Component = asChild ? Slot : Comp
 
     const button = (
-      <Comp
+       <Component
         ref={ref}
         data-sidebar="menu-button"
         data-size={size}
@@ -576,7 +579,7 @@ const SidebarMenuButton = React.forwardRef<
         >
           <Slottable>{children}</Slottable>
         </span>
-      </Comp>
+      </Component>
     )
 
     if (!tooltip) {
