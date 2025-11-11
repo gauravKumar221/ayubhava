@@ -35,6 +35,7 @@ import { Badge } from '@/components/ui/badge';
 import type { Patient } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
+import { Card } from '../ui/card';
 
 export const columns: ColumnDef<Patient>[] = [
   {
