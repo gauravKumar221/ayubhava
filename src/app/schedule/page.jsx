@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { doctors } from '@/lib/data';
-import type { Doctor } from '@/lib/types';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import {
   Card,
@@ -26,7 +25,7 @@ import {
 import { DoctorScheduleCalendar } from '@/components/schedule/doctor-schedule-calendar';
 
 export default function SchedulePage() {
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   return (
     <div className="flex flex-col gap-8">
