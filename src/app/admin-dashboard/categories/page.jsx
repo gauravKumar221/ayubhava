@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -138,6 +138,21 @@ export default function CategoriesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('bitmax_categories');
+    if (saved) {
+      setCategories(JSON.parse(saved));
+    }
+  }, []);
+
+  const persistCategories = (newCategories) => {
+    setCategories(newCategories);
+    localStorage.setItem('bitmax_categories', JSON.stringify(newCategories));
+    // Dispatch a storage event so other tabs/pages know to update
+    window.dispatchEvent(new Event('storage'));
+  };
+
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     category.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -151,16 +166,18 @@ export default function CategoriesPage() {
       description: formData.get('description'),
     };
 
+    let newCategories;
     if (editingCategory) {
-      setCategories(categories.map(c => c.id === editingCategory.id ? { ...c, ...categoryData } : c));
+      newCategories = categories.map(c => c.id === editingCategory.id ? { ...c, ...categoryData } : c);
     } else {
-      setCategories([...categories, { 
+      newCategories = [...categories, { 
         ...categoryData, 
         id: Math.random().toString(36).substr(2, 9), 
         subcategories: [],
         products: []
-      }]);
+      }];
     }
+    persistCategories(newCategories);
     setIsCategoryDialogOpen(false);
     setEditingCategory(null);
   };
@@ -171,8 +188,9 @@ export default function CategoriesPage() {
     const name = formData.get('subcategoryName');
     
     if (activeCategory) {
+      let newCategories;
       if (editingSubcategory) {
-        setCategories(categories.map(c => 
+        newCategories = categories.map(c => 
           c.id === activeCategory.id 
             ? { 
                 ...c, 
@@ -181,15 +199,16 @@ export default function CategoriesPage() {
                 ) 
               } 
             : c
-        ));
+        );
       } else {
         const newSub = { id: Math.random().toString(36).substr(2, 9), name, subSubcategories: [] };
-        setCategories(categories.map(c => 
+        newCategories = categories.map(c => 
           c.id === activeCategory.id 
             ? { ...c, subcategories: [...c.subcategories, newSub] } 
             : c
-        ));
+        );
       }
+      persistCategories(newCategories);
     }
     setIsSubcategoryDialogOpen(false);
     setEditingSubcategory(null);
@@ -201,7 +220,7 @@ export default function CategoriesPage() {
     const name = formData.get('subSubName');
     
     if (activeCategory && activeSubcategory) {
-      setCategories(categories.map(c => {
+      const newCategories = categories.map(c => {
         if (c.id === activeCategory.id) {
           return {
             ...c,
@@ -226,7 +245,8 @@ export default function CategoriesPage() {
           };
         }
         return c;
-      }));
+      });
+      persistCategories(newCategories);
     }
     setIsSubSubcategoryDialogOpen(false);
     setEditingSubSubcategory(null);
@@ -242,8 +262,9 @@ export default function CategoriesPage() {
     };
 
     if (activeCategory) {
+      let newCategories;
       if (editingProduct) {
-        setCategories(categories.map(c => 
+        newCategories = categories.map(c => 
           c.id === activeCategory.id 
             ? { 
                 ...c, 
@@ -252,15 +273,16 @@ export default function CategoriesPage() {
                 ) 
               } 
             : c
-        ));
+        );
       } else {
         const newProd = { ...productData, id: Math.random().toString(36).substr(2, 9) };
-        setCategories(categories.map(c => 
+        newCategories = categories.map(c => 
           c.id === activeCategory.id 
             ? { ...c, products: [...c.products, newProd] } 
             : c
-        ));
+        );
       }
+      persistCategories(newCategories);
     }
     setIsProductDialogOpen(false);
     setEditingProduct(null);
@@ -270,14 +292,15 @@ export default function CategoriesPage() {
     if (!itemToDelete) return;
     const { type, categoryId, subcategoryId, subSubcategoryId, productId } = itemToDelete;
 
+    let newCategories;
     if (type === 'category') {
-      setCategories(categories.filter(c => c.id !== categoryId));
+      newCategories = categories.filter(c => c.id !== categoryId);
     } else if (type === 'subcategory') {
-      setCategories(categories.map(c => 
+      newCategories = categories.map(c => 
         c.id === categoryId ? { ...c, subcategories: c.subcategories.filter(s => s.id !== subcategoryId) } : c
-      ));
+      );
     } else if (type === 'subsubcategory') {
-      setCategories(categories.map(c => {
+      newCategories = categories.map(c => {
         if (c.id === categoryId) {
           return {
             ...c,
@@ -287,12 +310,13 @@ export default function CategoriesPage() {
           };
         }
         return c;
-      }));
+      });
     } else if (type === 'product') {
-      setCategories(categories.map(c => 
+      newCategories = categories.map(c => 
         c.id === categoryId ? { ...c, products: c.products.filter(p => p.id !== productId) } : c
-      ));
+      );
     }
+    persistCategories(newCategories);
     setIsDeleteDialogOpen(false);
     setItemToDelete(null);
   };
@@ -344,7 +368,10 @@ export default function CategoriesPage() {
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveSubcategory}>
             <DialogHeader><DialogTitle>Subcategory</DialogTitle></DialogHeader>
-            <div className="py-4"><Input name="subcategoryName" defaultValue={editingSubcategory?.name} required /></div>
+            <div className="py-4">
+              <Label>Name</Label>
+              <Input name="subcategoryName" defaultValue={editingSubcategory?.name} required />
+            </div>
             <DialogFooter><Button type="submit">Save</Button></DialogFooter>
           </form>
         </DialogContent>
@@ -354,7 +381,10 @@ export default function CategoriesPage() {
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveSubSubcategory}>
             <DialogHeader><DialogTitle>Sub-Subcategory</DialogTitle></DialogHeader>
-            <div className="py-4"><Input name="subSubName" defaultValue={editingSubSubcategory?.name} required /></div>
+            <div className="py-4">
+              <Label>Name</Label>
+              <Input name="subSubName" defaultValue={editingSubSubcategory?.name} required />
+            </div>
             <DialogFooter><Button type="submit">Save</Button></DialogFooter>
           </form>
         </DialogContent>
@@ -363,13 +393,22 @@ export default function CategoriesPage() {
       <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveProduct}>
-            <DialogHeader><DialogTitle>Product Item</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{editingProduct ? 'Edit Product' : 'Add Product to ' + activeCategory?.name}</DialogTitle></DialogHeader>
             <div className="grid gap-4 py-4">
-              <Input name="productName" placeholder="Name" defaultValue={editingProduct?.name} required />
-              <Input name="sku" placeholder="SKU" defaultValue={editingProduct?.sku} />
-              <Input name="price" type="number" step="0.01" placeholder="Price" defaultValue={editingProduct?.price} />
+              <div className="grid gap-2">
+                <Label>Product Name</Label>
+                <Input name="productName" placeholder="e.g. Stethoscope" defaultValue={editingProduct?.name} required />
+              </div>
+              <div className="grid gap-2">
+                <Label>SKU</Label>
+                <Input name="sku" placeholder="SKU-123" defaultValue={editingProduct?.sku} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Price ($)</Label>
+                <Input name="price" type="number" step="0.01" placeholder="0.00" defaultValue={editingProduct?.price} />
+              </div>
             </div>
-            <DialogFooter><Button type="submit">Save</Button></DialogFooter>
+            <DialogFooter><Button type="submit">Save Product</Button></DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
@@ -377,6 +416,9 @@ export default function CategoriesPage() {
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader><AlertDialogTitle>Confirm Delete</AlertDialogTitle></AlertDialogHeader>
+          <AlertDialogDescription>
+            Are you sure you want to delete this item? This action cannot be undone.
+          </AlertDialogDescription>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">Delete</AlertDialogAction>
@@ -431,7 +473,7 @@ export default function CategoriesPage() {
 
                 <AccordionContent className="bg-muted/30 px-6 pb-6 pt-2">
                   <div className="space-y-8">
-                    {/* Subcategories with Sub-Subcategories */}
+                    {/* Subcategories */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         <Tag className="h-4 w-4 text-primary" /> Subcategories
@@ -506,7 +548,7 @@ export default function CategoriesPage() {
                                 <TableHead className="h-10 text-xs font-bold uppercase">Name</TableHead>
                                 <TableHead className="h-10 text-xs font-bold uppercase">SKU</TableHead>
                                 <TableHead className="h-10 text-xs font-bold uppercase">Price</TableHead>
-                                <TableHead className="h-10 text-right text-xs font-bold uppercase">Actions</TableHead>
+                                <TableHead className="text-right text-xs font-bold uppercase">Actions</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody className="bg-background">
@@ -530,7 +572,7 @@ export default function CategoriesPage() {
                         </Card>
                       ) : (
                         <div className="text-center py-10 border border-dashed rounded-lg text-muted-foreground text-xs italic">
-                          No product items listed.
+                          No product items listed. Click the menu to add products.
                         </div>
                       )}
                     </div>
@@ -540,6 +582,11 @@ export default function CategoriesPage() {
             </Accordion>
           </Card>
         ))}
+        {filteredCategories.length === 0 && (
+          <div className="flex h-40 flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 text-muted-foreground">
+            <p className="font-medium">No categories found matching your search.</p>
+          </div>
+        )}
       </div>
     </div>
   );

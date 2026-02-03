@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,8 @@ import {
   Type,
   Search,
   Plus,
-  Trash2
+  Trash2,
+  Edit
 } from 'lucide-react';
 import {
   Select,
@@ -69,11 +70,22 @@ export default function NewProductPage() {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('0.00');
+  const [sku, setSku] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [categories, setCategories] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [conditions, setConditions] = useState([
     { id: Date.now(), field: 'tag', operator: 'equals', value: '' }
   ]);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('bitmax_categories');
+    if (saved) {
+      setCategories(JSON.parse(saved));
+    }
+  }, []);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -112,6 +124,30 @@ export default function NewProductPage() {
   };
 
   const handleSave = () => {
+    if (!title || !selectedCategory) {
+      alert("Please provide a title and select a category.");
+      return;
+    }
+
+    const newProduct = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: title,
+      sku: sku,
+      price: parseFloat(price),
+      description: description,
+      images: selectedImages,
+      tags: conditions.map(c => c.value).filter(v => v)
+    };
+
+    const updatedCategories = categories.map(c => {
+      if (c.id === selectedCategory) {
+        return { ...c, products: [...(c.products || []), newProduct] };
+      }
+      return c;
+    });
+
+    localStorage.setItem('bitmax_categories', JSON.stringify(updatedCategories));
+    window.dispatchEvent(new Event('storage'));
     router.push('/admin-dashboard/product-collection');
   };
 
@@ -304,29 +340,44 @@ export default function NewProductPage() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
+              <CardTitle className="text-sm font-semibold">Pricing & Identification</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="price">Price ($)</Label>
+                <Input id="price" type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="sku">SKU</Label>
+                <Input id="sku" value={sku} onChange={(e) => setSku(e.target.value)} placeholder="e.g. SKU-12345" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle className="text-sm font-semibold">Product Organization</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
-                <Select defaultValue="instruments">
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="instruments">Instruments</SelectItem>
-                    <SelectItem value="consumables">Consumables</SelectItem>
-                    <SelectItem value="diagnostics">Diagnostics</SelectItem>
+                    {categories.map(c => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="subcategory">Subcategory</Label>
-                <Select defaultValue="surgical">
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select defaultValue="none">
+                  <SelectTrigger><SelectValue placeholder="Select Subcategory" /></SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
                     <SelectItem value="surgical">Surgical Tools</SelectItem>
                     <SelectItem value="diagnostic">Diagnostic Scopes</SelectItem>
-                    <SelectItem value="protective">Protective Gear</SelectItem>
-                    <SelectItem value="sanitization">Sanitization</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

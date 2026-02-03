@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -34,17 +34,38 @@ import {
   Plus
 } from 'lucide-react';
 
-const initialProducts = [
-  { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99, category: 'Instruments' },
-  { id: 'p2', name: 'Digital Thermometer', sku: 'TH-20', price: 24.50, category: 'Instruments' },
-  { id: 'p3', name: 'N95 Respirators (Pack)', sku: 'MSK-N95', price: 45.00, category: 'Consumables' },
-  { id: 'p4', name: 'Surgical Gowns', sku: 'GWN-01', price: 12.99, category: 'Consumables' },
-  { id: 'p5', name: 'Diagnostic Otoscope', sku: 'OTO-300', price: 299.00, category: 'Instruments' },
-];
-
 export default function ProductCollectionPage() {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Load products from categories in localStorage
+  useEffect(() => {
+    const loadData = () => {
+      const savedCategories = localStorage.getItem('bitmax_categories');
+      if (savedCategories) {
+        const cats = JSON.parse(savedCategories);
+        // Flatten all products from all categories
+        const allProds = cats.flatMap(c => 
+          c.products.map(p => ({ ...p, category: c.name, categoryId: c.id }))
+        );
+        setProducts(allProds);
+      } else {
+        // Fallback to initial products if no storage exists
+        const initialProducts = [
+          { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99, category: 'Instruments' },
+          { id: 'p2', name: 'Digital Thermometer', sku: 'TH-20', price: 24.50, category: 'Instruments' },
+          { id: 'p3', name: 'N95 Respirators (Pack)', sku: 'MSK-N95', price: 45.00, category: 'Consumables' },
+        ];
+        setProducts(initialProducts);
+      }
+    };
+
+    loadData();
+    
+    // Listen for changes in localStorage from other tabs or pages
+    window.addEventListener('storage', loadData);
+    return () => window.removeEventListener('storage', loadData);
+  }, []);
 
   const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -52,8 +73,19 @@ export default function ProductCollectionPage() {
     p.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleDelete = (id) => {
-    setProducts(products.filter(p => p.id !== id));
+  const handleDelete = (productId, categoryId) => {
+    const savedCategories = localStorage.getItem('bitmax_categories');
+    if (savedCategories) {
+      const cats = JSON.parse(savedCategories);
+      const updatedCats = cats.map(c => {
+        if (c.id === categoryId) {
+          return { ...c, products: c.products.filter(p => p.id !== productId) };
+        }
+        return c;
+      });
+      localStorage.setItem('bitmax_categories', JSON.stringify(updatedCats));
+      window.dispatchEvent(new Event('storage')); // Trigger update
+    }
   };
 
   return (
@@ -123,7 +155,7 @@ export default function ProductCollectionPage() {
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(product.id)}>
+                        <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(product.id, product.categoryId)}>
                           <Trash2 className="mr-2 h-4 w-4" /> Delete Item
                         </DropdownMenuItem>
                       </DropdownMenuContent>
