@@ -19,7 +19,6 @@ import {
   Clock,
   Calendar,
   Zap,
-  Image as ImageIcon,
   Upload,
   X
 } from 'lucide-react';
@@ -120,6 +119,7 @@ export default function CouponsPage() {
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [currentTime, setCurrentTime] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isFlashSaleDraft, setIsFlashSaleDraft] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -185,6 +185,7 @@ export default function CouponsPage() {
     setIsDialogOpen(false);
     setEditingCoupon(null);
     setSelectedImage(null);
+    setIsFlashSaleDraft(false);
   };
 
   const handleDeleteCoupon = (id) => {
@@ -194,6 +195,7 @@ export default function CouponsPage() {
   const openEditDialog = (coupon) => {
     setEditingCoupon(coupon);
     setSelectedImage(coupon.customImage || null);
+    setIsFlashSaleDraft(!!coupon.isFlashSale);
     setIsDialogOpen(true);
   };
 
@@ -222,6 +224,7 @@ export default function CouponsPage() {
           if (!open) {
             setEditingCoupon(null);
             setSelectedImage(null);
+            setIsFlashSaleDraft(false);
           }
         }}>
           <DialogTrigger asChild>
@@ -238,46 +241,6 @@ export default function CouponsPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label>Promotion Image</Label>
-                  <div 
-                    className="relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 transition-colors hover:bg-muted/80 overflow-hidden"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    {selectedImage ? (
-                      <>
-                        <Image 
-                          src={selectedImage} 
-                          alt="Preview" 
-                          fill 
-                          className="object-cover"
-                        />
-                        <button 
-                          type="button"
-                          className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedImage(null);
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                        <Upload className="h-8 w-8" />
-                        <span className="text-xs font-medium">Click to upload image</span>
-                      </div>
-                    )}
-                  </div>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    className="hidden" 
-                    accept="image/*" 
-                    onChange={handleImageChange}
-                  />
-                </div>
                 <div className="grid gap-2">
                   <Label htmlFor="code">Coupon Code</Label>
                   <Input id="code" name="code" defaultValue={editingCoupon?.code} placeholder="e.g. SUMMER2024" required className="uppercase" />
@@ -317,7 +280,11 @@ export default function CouponsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="isFlashSale">Campaign Type</Label>
-                    <Select name="isFlashSale" defaultValue={editingCoupon?.isFlashSale?.toString() || 'false'}>
+                    <Select 
+                      name="isFlashSale" 
+                      defaultValue={editingCoupon?.isFlashSale?.toString() || 'false'}
+                      onValueChange={(val) => setIsFlashSaleDraft(val === 'true')}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
@@ -340,6 +307,49 @@ export default function CouponsPage() {
                     </Select>
                   </div>
                 </div>
+
+                {isFlashSaleDraft && (
+                  <div className="grid gap-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <Label>Promotion Image (Required for Flash Sale)</Label>
+                    <div 
+                      className="relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 transition-colors hover:bg-muted/80 overflow-hidden"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {selectedImage ? (
+                        <>
+                          <Image 
+                            src={selectedImage} 
+                            alt="Preview" 
+                            fill 
+                            className="object-cover"
+                          />
+                          <button 
+                            type="button"
+                            className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedImage(null);
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                          <Upload className="h-8 w-8" />
+                          <span className="text-xs font-medium">Click to upload promotional image</span>
+                        </div>
+                      )}
+                    </div>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      className="hidden" 
+                      accept="image/*" 
+                      onChange={handleImageChange}
+                    />
+                  </div>
+                )}
               </div>
               <DialogFooter>
                 <Button type="submit" className="w-full">{editingCoupon ? 'Save Changes' : 'Create Coupon'}</Button>
