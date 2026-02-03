@@ -127,7 +127,6 @@ export default function CategoriesPage() {
       return [...catProds, ...subProds];
     });
     
-    // De-duplicate by SKU + Name to ensure the dropdown shows unique types of products
     const uniqueMap = new Map();
     flattened.forEach(p => {
       const key = `${p.sku || ''}-${p.name || ''}`.toLowerCase();
@@ -139,7 +138,6 @@ export default function CategoriesPage() {
     return Array.from(uniqueMap.values());
   };
 
-  // Load data from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('bitmax_categories');
     if (saved) {
@@ -267,7 +265,6 @@ export default function CategoriesPage() {
     if (activeCategory) {
       let newCategories;
       if (activeSubcategory) {
-        // Add product to subcategory
         newCategories = categories.map(c => {
           if (c.id === activeCategory.id) {
             return {
@@ -284,7 +281,6 @@ export default function CategoriesPage() {
           return c;
         });
       } else {
-        // Add product to category
         const newProd = { ...productData, id: Math.random().toString(36).substr(2, 9) };
         newCategories = categories.map(c => 
           c.id === activeCategory.id 
@@ -324,7 +320,6 @@ export default function CategoriesPage() {
       });
     } else if (type === 'product') {
       if (subcategoryId) {
-        // Delete from subcategory
         newCategories = categories.map(c => {
           if (c.id === categoryId) {
             return {
@@ -340,7 +335,6 @@ export default function CategoriesPage() {
           return c;
         });
       } else {
-        // Delete from category
         newCategories = categories.map(c => 
           c.id === categoryId ? { ...c, products: (c.products || []).filter(p => p.id !== productId) } : c
         );
@@ -426,6 +420,7 @@ export default function CategoriesPage() {
         </Dialog>
       </PageHeader>
 
+      {/* Subcategory Dialog */}
       <Dialog open={isSubcategoryDialogOpen} onOpenChange={setIsSubcategoryDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveSubcategory}>
@@ -439,6 +434,7 @@ export default function CategoriesPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Sub-Subcategory Dialog */}
       <Dialog open={isSubSubcategoryDialogOpen} onOpenChange={setIsSubSubcategoryDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveSubSubcategory}>
@@ -452,7 +448,13 @@ export default function CategoriesPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+      {/* Product Dialog */}
+      <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
+        setIsProductDialogOpen(open);
+        if (!open) {
+          setActiveSubcategory(null);
+        }
+      }}>
         <DialogContent className="sm:max-w-[425px]">
           <div className="grid gap-6 py-4">
             <div>
@@ -568,38 +570,38 @@ export default function CategoriesPage() {
                       
                       <div className="grid grid-cols-1 gap-4">
                         {(category.subcategories || []).map((sub) => (
-                          <div key={sub.id} className="rounded-lg border bg-background p-4 shadow-sm space-y-4">
+                          <div key={sub.id} className="rounded-xl border bg-background p-5 shadow-sm space-y-5">
                             <div className="flex items-center justify-between">
                               <h4 className="font-bold text-md flex items-center gap-2">
                                 <ChevronRight className="h-4 w-4 text-primary" />
                                 {sub.name}
                               </h4>
-                              <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openSubSubDialog(category, sub)} title="Add Sub-Subcategory">
-                                  <Plus className="h-3.5 w-3.5" />
+                              <div className="flex items-center gap-1.5">
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openSubSubDialog(category, sub)} title="Add Sub-Subcategory">
+                                  <Plus className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setEditingProduct(null); setIsProductDialogOpen(true); }} title="Add Product to Subcategory">
-                                  <Package className="h-3.5 w-3.5 text-accent" />
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setEditingProduct(null); setIsProductDialogOpen(true); }} title="Add Product to Subcategory">
+                                  <Package className="h-4 w-4 text-accent" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setItemToDelete({ type: 'subcategory', categoryId: category.id, subcategoryId: sub.id }); setIsDeleteDialogOpen(true); }}>
-                                  <Trash2 className="h-3.5 w-3.5" />
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => { setItemToDelete({ type: 'subcategory', categoryId: category.id, subcategoryId: sub.id }); setIsDeleteDialogOpen(true); }}>
+                                  <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
                             </div>
 
                             {/* Sub-Subcategories section */}
                             {sub.subSubcategories && sub.subSubcategories.length > 0 && (
-                              <div className="pl-6 space-y-2">
-                                <p className="text-[10px] font-bold uppercase text-muted-foreground/60 flex items-center gap-1">
+                              <div className="pl-6 space-y-3">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-1.5">
                                   <ListTree className="h-3 w-3" /> Sub-Subcategories
                                 </p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                   {sub.subSubcategories.map((ss) => (
-                                    <div key={ss.id} className="flex items-center justify-between p-2 rounded bg-muted/50 border border-border/50 group/ss">
-                                      <span className="text-xs font-medium">{ss.name}</span>
+                                    <div key={ss.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/50 group/ss transition-colors hover:bg-muted/40">
+                                      <span className="text-xs font-semibold">{ss.name}</span>
                                       <div className="flex items-center opacity-0 group-hover/ss:opacity-100 transition-opacity">
-                                        <Button variant="ghost" size="icon" className="h-5 w-5 text-destructive" onClick={() => { setItemToDelete({ type: 'subsubcategory', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id }); setIsDeleteDialogOpen(true); }}>
-                                          <Trash2 className="h-3 w-3" />
+                                        <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => { setItemToDelete({ type: 'subsubcategory', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id }); setIsDeleteDialogOpen(true); }}>
+                                          <Trash2 className="h-3.5 w-3.5" />
                                         </Button>
                                       </div>
                                     </div>
@@ -610,34 +612,30 @@ export default function CategoriesPage() {
 
                             {/* Products in Subcategory section */}
                             {sub.products && sub.products.length > 0 && (
-                              <div className="pl-6 space-y-2">
-                                <p className="text-[10px] font-bold uppercase text-muted-foreground/60 flex items-center gap-1">
+                              <div className="pl-6 space-y-3">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-1.5">
                                   <Package className="h-3 w-3" /> Products in {sub.name}
                                 </p>
-                                <div className="rounded border bg-muted/20 overflow-hidden">
-                                  <Table>
-                                    <TableBody>
-                                      {sub.products.map((p) => (
-                                        <TableRow key={p.id} className="hover:bg-muted/40">
-                                          <TableCell className="py-2 text-xs font-medium">{p.name}</TableCell>
-                                          <TableCell className="py-2 text-[10px] font-mono opacity-60">{p.sku}</TableCell>
-                                          <TableCell className="py-2 text-[10px] font-bold">${p.price?.toFixed(2)}</TableCell>
-                                          <TableCell className="py-2 text-right">
-                                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, subcategoryId: sub.id, productId: p.id }); setIsDeleteDialogOpen(true); }}>
-                                              <Trash2 className="h-3 w-3" />
-                                            </Button>
-                                          </TableCell>
-                                        </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
+                                <div className="space-y-2">
+                                  {sub.products.map((p) => (
+                                    <div key={p.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/5 group/prod transition-colors hover:bg-muted/10">
+                                      <div className="flex flex-1 items-center gap-6">
+                                        <span className="text-sm font-bold flex-1">{p.name}</span>
+                                        <span className="text-xs font-mono text-muted-foreground/70 hidden sm:block w-32">{p.sku}</span>
+                                        <span className="text-sm font-extrabold text-primary w-24 text-right">${p.price?.toFixed(2)}</span>
+                                      </div>
+                                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-0 group-hover/prod:opacity-100 transition-opacity ml-4" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, subcategoryId: sub.id, productId: p.id }); setIsDeleteDialogOpen(true); }}>
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
                             )}
                           </div>
                         ))}
                         {(!category.subcategories || category.subcategories.length === 0) && (
-                          <div className="text-center py-4 border border-dashed rounded-lg text-muted-foreground text-xs italic">
+                          <div className="text-center py-6 border-2 border-dashed rounded-xl text-muted-foreground text-xs italic bg-muted/5">
                             No subcategories defined.
                           </div>
                         )}
@@ -651,34 +649,22 @@ export default function CategoriesPage() {
                         <Package className="h-4 w-4 text-accent" /> Direct Category Products (General)
                       </div>
                       {category.products && category.products.length > 0 ? (
-                        <Card className="border-none shadow-sm overflow-hidden">
-                          <Table>
-                            <TableHeader className="bg-muted/50">
-                              <TableRow>
-                                <TableHead className="h-10 text-xs font-bold uppercase">Name</TableHead>
-                                <TableHead className="h-10 text-xs font-bold uppercase">SKU</TableHead>
-                                <TableHead className="h-10 text-xs font-bold uppercase">Price</TableHead>
-                                <TableHead className="text-right text-xs font-bold uppercase">Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody className="bg-background">
-                              {category.products.map((product) => (
-                                <TableRow key={product.id}>
-                                  <TableCell className="py-3 font-medium">{product.name}</TableCell>
-                                  <TableCell className="py-3 font-mono text-xs">{product.sku || 'N/A'}</TableCell>
-                                  <TableCell className="py-3 font-bold text-xs">${product.price?.toFixed(2)}</TableCell>
-                                  <TableCell className="py-3 text-right">
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, productId: product.id }); setIsDeleteDialogOpen(true); }}>
-                                      <Trash2 className="h-3.5 w-3.5" />
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </Card>
+                        <div className="space-y-2">
+                          {category.products.map((product) => (
+                            <div key={product.id} className="flex items-center justify-between p-4 rounded-xl border bg-background group/gen transition-all hover:shadow-sm">
+                              <div className="flex flex-1 items-center gap-6">
+                                <span className="text-sm font-bold flex-1">{product.name}</span>
+                                <span className="text-xs font-mono text-muted-foreground/70 hidden sm:block w-32">{product.sku || 'N/A'}</span>
+                                <span className="text-sm font-extrabold text-primary w-24 text-right">${product.price?.toFixed(2)}</span>
+                              </div>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-0 group-hover/gen:opacity-100 transition-opacity ml-4" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, productId: product.id }); setIsDeleteDialogOpen(true); }}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
                       ) : (
-                        <div className="text-center py-10 border border-dashed rounded-lg text-muted-foreground text-xs italic">
+                        <div className="text-center py-10 border-2 border-dashed rounded-xl text-muted-foreground text-xs italic bg-muted/5">
                           No general products listed. Click the category menu to add products.
                         </div>
                       )}
