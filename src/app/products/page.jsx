@@ -46,14 +46,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 // Mock initial data
 const initialProducts = [
   { id: '1', name: 'Stethoscope', category: 'Instruments', price: 120.00, stock: 45 },
   { id: '2', name: 'Surgical Masks (Box of 50)', category: 'Consumables', price: 25.00, stock: 120 },
-  { id: '3', name: 'Digital Thermometer', category: 'Diagnostics', price: 15.50, stock: 80 },
+  { id: '3', name: 'Digital Thermometer', category: 'Diagnostics', price: 15.50, stock: 8 },
   { id: '4', name: 'Wheelchair (Standard)', category: 'Mobility', price: 350.00, stock: 10 },
-  { id: '5', name: 'Blood Pressure Monitor', category: 'Diagnostics', price: 65.00, stock: 35 },
+  { id: '5', name: 'Blood Pressure Monitor', category: 'Diagnostics', price: 65.00, stock: 0 },
 ];
 
 const categories = ['All', 'Instruments', 'Consumables', 'Diagnostics', 'Mobility'];
@@ -193,7 +194,7 @@ export default function ProductsPage() {
                 <TableHead>Product Name</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead>Stock</TableHead>
+                <TableHead>Stock Level</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -204,9 +205,19 @@ export default function ProductsPage() {
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell>${product.price.toFixed(2)}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
                   <TableCell>
-                    <Badge variant={product.stock > 20 ? 'secondary' : 'destructive'} className={product.stock > 20 ? 'bg-accent/20 text-accent' : ''}>
+                    <span className="font-medium">{product.stock} units</span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={product.stock > 20 ? 'secondary' : product.stock > 0 ? 'outline' : 'destructive'} 
+                      className={cn(
+                        "w-24 justify-center",
+                        product.stock > 20 ? 'bg-accent/20 text-accent border-accent/20' : 
+                        product.stock > 0 ? 'bg-orange-100 text-orange-700 border-orange-200' : 
+                        ''
+                      )}
+                    >
                       {product.stock > 20 ? 'In Stock' : product.stock > 0 ? 'Low Stock' : 'Out of Stock'}
                     </Badge>
                   </TableCell>
