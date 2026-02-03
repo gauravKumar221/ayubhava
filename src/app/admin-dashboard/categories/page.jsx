@@ -120,32 +120,39 @@ export default function CategoriesPage() {
   // Global Product List for the "Existing Product" dropdown
   const [allGlobalProducts, setAllGlobalProducts] = useState([]);
 
+  const getUniqueProducts = (cats) => {
+    const flattened = cats.flatMap(c => {
+      const catProds = c.products || [];
+      const subProds = (c.subcategories || []).flatMap(s => s.products || []);
+      return [...catProds, ...subProds];
+    });
+    
+    // De-duplicate by SKU + Name to ensure the dropdown shows unique types of products
+    const uniqueMap = new Map();
+    flattened.forEach(p => {
+      const key = `${p.sku || ''}-${p.name || ''}`.toLowerCase();
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, p);
+      }
+    });
+    
+    return Array.from(uniqueMap.values());
+  };
+
   // Load data from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('bitmax_categories');
     if (saved) {
       const cats = JSON.parse(saved);
       setCategories(cats);
-      // Flatten all products for the dropdown
-      const flattened = cats.flatMap(c => {
-        const catProds = c.products || [];
-        const subProds = (c.subcategories || []).flatMap(s => s.products || []);
-        return [...catProds, ...subProds];
-      });
-      setAllGlobalProducts(flattened);
+      setAllGlobalProducts(getUniqueProducts(cats));
     }
   }, []);
 
   const persistCategories = (newCategories) => {
     setCategories(newCategories);
     localStorage.setItem('bitmax_categories', JSON.stringify(newCategories));
-    // Flatten and update global products list
-    const flattened = newCategories.flatMap(c => {
-      const catProds = c.products || [];
-      const subProds = (c.subcategories || []).flatMap(s => s.products || []);
-      return [...catProds, ...subProds];
-    });
-    setAllGlobalProducts(flattened);
+    setAllGlobalProducts(getUniqueProducts(newCategories));
     window.dispatchEvent(new Event('storage'));
   };
 
@@ -458,7 +465,7 @@ export default function CategoriesPage() {
                   {allGlobalProducts.length > 0 ? (
                     allGlobalProducts.map(p => (
                       <SelectItem key={p.id} value={p.id}>
-                        {p.name} ({p.sku})
+                        {p.name} {p.sku ? `(${p.sku})` : ''}
                       </SelectItem>
                     ))
                   ) : (
