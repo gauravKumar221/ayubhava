@@ -69,16 +69,24 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
 export default function NewProductPage() {
   const router = useRouter();
   const [description, setDescription] = useState('');
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
   const fileInputRef = useRef(null);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setSelectedImage(reader.result);
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setSelectedImages(prev => [...prev, reader.result]);
+        };
+        reader.readAsDataURL(file);
+      });
     }
+  };
+
+  const removeImage = (index) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSave = () => {
@@ -118,6 +126,55 @@ export default function NewProductPage() {
                 <Label>Description</Label>
                 <RichTextEditor value={description} onChange={setDescription} />
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">Media</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {selectedImages.map((img, index) => (
+                  <div key={index} className="relative aspect-square rounded-lg border overflow-hidden group">
+                    <Image src={img} alt={`Preview ${index}`} fill className="object-cover" />
+                    <button 
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1 right-1 h-6 w-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                <div 
+                  className="relative aspect-square rounded-lg border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-2 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Plus className="h-6 w-6 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground font-medium">Add more</span>
+                </div>
+              </div>
+              
+              {selectedImages.length === 0 && (
+                <div 
+                  className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/5 cursor-pointer hover:bg-muted/10 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="h-10 w-10 text-muted-foreground/40 mb-2" />
+                  <p className="text-sm font-medium">Add multiple images</p>
+                  <p className="text-xs text-muted-foreground mt-1 text-center px-4">Drag and drop images here, or click to browse</p>
+                </div>
+              )}
+              
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept="image/*" 
+                multiple 
+                onChange={handleImageChange} 
+              />
             </CardContent>
           </Card>
 
@@ -231,33 +288,28 @@ export default function NewProductPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-semibold">Image</CardTitle>
+              <CardTitle className="text-sm font-semibold">Product Organization</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div 
-                className="relative aspect-square rounded-lg border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-3 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer overflow-hidden group"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {selectedImage ? (
-                  <>
-                    <Image src={selectedImage} alt="Preview" fill className="object-cover" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                      <Upload className="h-8 w-8 text-white" />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="p-3 rounded-full bg-background border shadow-sm">
-                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <div className="text-center px-4">
-                      <Button variant="link" className="text-primary h-auto p-0">Add image</Button>
-                      <p className="text-[10px] text-muted-foreground mt-1">or drop an image to upload</p>
-                    </div>
-                  </>
-                )}
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="vendor">Vendor</Label>
+                <Input id="vendor" placeholder="e.g. HealthCorp Inc." />
               </div>
-              <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
+              <div className="grid gap-2">
+                <Label htmlFor="category">Category</Label>
+                <Select defaultValue="instruments">
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="instruments">Instruments</SelectItem>
+                    <SelectItem value="consumables">Consumables</SelectItem>
+                    <SelectItem value="diagnostics">Diagnostics</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="tags">Tags</Label>
+                <Input id="tags" placeholder="e.g. New, Featured, Medical" />
+              </div>
             </CardContent>
           </Card>
 
