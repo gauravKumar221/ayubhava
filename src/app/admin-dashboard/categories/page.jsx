@@ -7,14 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { 
   Plus, 
   Search, 
   Edit, 
@@ -41,6 +33,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -95,7 +97,12 @@ export default function CategoriesPage() {
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   
   const [editingCategory, setEditingCategory] = useState(null);
+  const [editingSubcategory, setEditingSubcategory] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
+
+  // Deletion state
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -131,21 +138,35 @@ export default function CategoriesPage() {
     const subName = formData.get('subcategoryName');
     
     if (activeCategory) {
-      const newSub = {
-        id: Math.random().toString(36).substr(2, 9),
-        name: subName,
-        productCount: 0
-      };
-      
-      setCategories(categories.map(c => 
-        c.id === activeCategory.id 
-          ? { ...c, subcategories: [...c.subcategories, newSub] } 
-          : c
-      ));
+      if (editingSubcategory) {
+        setCategories(categories.map(c => 
+          c.id === activeCategory.id 
+            ? { 
+                ...c, 
+                subcategories: c.subcategories.map(s => 
+                  s.id === editingSubcategory.id ? { ...s, name: subName } : s
+                ) 
+              } 
+            : c
+        ));
+      } else {
+        const newSub = {
+          id: Math.random().toString(36).substr(2, 9),
+          name: subName,
+          productCount: 0
+        };
+        
+        setCategories(categories.map(c => 
+          c.id === activeCategory.id 
+            ? { ...c, subcategories: [...c.subcategories, newSub] } 
+            : c
+        ));
+      }
     }
     
     setIsSubcategoryDialogOpen(false);
     setActiveCategory(null);
+    setEditingSubcategory(null);
   };
 
   const handleAddProduct = (e) => {
@@ -161,8 +182,21 @@ export default function CategoriesPage() {
     setActiveCategory(null);
   };
 
-  const handleDeleteCategory = (id) => {
-    setCategories(categories.filter(c => c.id !== id));
+  const handleDelete = () => {
+    if (!itemToDelete) return;
+
+    if (itemToDelete.type === 'category') {
+      setCategories(categories.filter(c => c.id !== itemToDelete.categoryId));
+    } else if (itemToDelete.type === 'subcategory') {
+      setCategories(categories.map(c => 
+        c.id === itemToDelete.categoryId
+          ? { ...c, subcategories: c.subcategories.filter(s => s.id !== itemToDelete.subcategoryId) }
+          : c
+      ));
+    }
+
+    setIsDeleteDialogOpen(false);
+    setItemToDelete(null);
   };
 
   const openEditDialog = (category) => {
@@ -170,14 +204,25 @@ export default function CategoriesPage() {
     setIsCategoryDialogOpen(true);
   };
 
-  const openSubcategoryDialog = (category) => {
+  const openSubcategoryDialog = (category, subcategory = null) => {
     setActiveCategory(category);
+    setEditingSubcategory(subcategory);
     setIsSubcategoryDialogOpen(true);
   };
 
   const openAddProductDialog = (category) => {
     setActiveCategory(category);
     setIsProductDialogOpen(true);
+  };
+
+  const triggerDeleteCategory = (categoryId) => {
+    setItemToDelete({ type: 'category', categoryId });
+    setIsDeleteDialogOpen(true);
+  };
+
+  const triggerDeleteSubcategory = (categoryId, subcategoryId) => {
+    setItemToDelete({ type: 'subcategory', categoryId, subcategoryId });
+    setIsDeleteDialogOpen(true);
   };
 
   return (
@@ -226,24 +271,30 @@ export default function CategoriesPage() {
         </Dialog>
       </PageHeader>
 
-      {/* Add Subcategory Dialog */}
-      <Dialog open={isSubcategoryDialogOpen} onOpenChange={setIsSubcategoryDialogOpen}>
+      {/* Add/Edit Subcategory Dialog */}
+      <Dialog open={isSubcategoryDialogOpen} onOpenChange={(open) => {
+        setIsSubcategoryDialogOpen(open);
+        if (!open) {
+          setEditingSubcategory(null);
+          setActiveCategory(null);
+        }
+      }}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveSubcategory}>
             <DialogHeader>
-              <DialogTitle>New Subcategory for {activeCategory?.name}</DialogTitle>
+              <DialogTitle>{editingSubcategory ? 'Edit Subcategory' : 'New Subcategory'} for {activeCategory?.name}</DialogTitle>
               <DialogDescription>
-                Add a specialized group under this category.
+                {editingSubcategory ? 'Update the name of this specialized group.' : 'Add a specialized group under this category.'}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="subcategoryName">Subcategory Name</Label>
-                <Input id="subcategoryName" name="subcategoryName" placeholder="e.g. MRI Accessories" required />
+                <Input id="subcategoryName" name="subcategoryName" defaultValue={editingSubcategory?.name} placeholder="e.g. MRI Accessories" required />
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Add Subcategory</Button>
+              <Button type="submit">{editingSubcategory ? 'Save Changes' : 'Add Subcategory'}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -281,6 +332,25 @@ export default function CategoriesPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the 
+              {itemToDelete?.type === 'category' ? ' category and all its related data' : ' subcategory'}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setItemToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="relative w-full md:max-w-sm">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -334,7 +404,7 @@ export default function CategoriesPage() {
                             <Edit className="mr-2 h-4 w-4" /> Edit Category
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteCategory(category.id)}>
+                          <DropdownMenuItem className="text-destructive" onClick={() => triggerDeleteCategory(category.id)}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -362,9 +432,24 @@ export default function CategoriesPage() {
                                 <span className="text-sm font-semibold">{sub.name}</span>
                                 <span className="text-[10px] text-muted-foreground">{sub.productCount} items</span>
                               </div>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover/sub:opacity-100 transition-opacity">
-                                <Edit className="h-3 w-3 text-muted-foreground" />
-                              </Button>
+                              <div className="flex items-center gap-1 opacity-0 group-hover/sub:opacity-100 transition-opacity">
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-6 w-6" 
+                                  onClick={() => openSubcategoryDialog(category, sub)}
+                                >
+                                  <Edit className="h-3 w-3 text-muted-foreground" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-6 w-6 text-destructive hover:bg-destructive/10"
+                                  onClick={() => triggerDeleteSubcategory(category.id, sub.id)}
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
                             </div>
                           ))}
                         </div>
