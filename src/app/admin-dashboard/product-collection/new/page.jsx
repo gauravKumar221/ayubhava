@@ -179,30 +179,6 @@ export default function NewProductPage() {
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Product type</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <RadioGroup defaultValue="manual">
-                <div className="flex items-start space-x-3 space-y-0">
-                  <RadioGroupItem value="manual" id="manual" className="mt-1" />
-                  <div className="grid gap-1.5">
-                    <Label htmlFor="manual" className="font-medium">Manual</Label>
-                    <p className="text-xs text-muted-foreground">Add products to this collection one by one.</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 space-y-0 mt-4">
-                  <RadioGroupItem value="smart" id="smart" className="mt-1" />
-                  <div className="grid gap-1.5">
-                    <Label htmlFor="smart" className="font-medium">Smart</Label>
-                    <p className="text-xs text-muted-foreground">Existing and future products that match the conditions you set will automatically be added.</p>
-                  </div>
-                </div>
-              </RadioGroup>
-            </CardContent>
-          </Card>
-
-          <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-semibold">Conditions</CardTitle>
             </CardHeader>
