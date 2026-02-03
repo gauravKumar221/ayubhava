@@ -11,6 +11,7 @@ import {
   Newspaper,
   Users,
   Ticket,
+  BookOpen,
 } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
@@ -37,6 +38,11 @@ const menuItems = [
     href: '/newsletter',
     icon: <Newspaper className="h-4 w-4" />,
     label: 'Newsletter',
+  },
+  {
+    href: '/blog',
+    icon: <BookOpen className="h-4 w-4" />,
+    label: 'Blog Manager',
   },
   {
     href: '/subscribers',
