@@ -12,7 +12,6 @@ import {
   Users,
   Ticket,
   BookOpen,
-  Mail,
   MessageSquare,
 } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
@@ -23,7 +22,6 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { Button } from '@/components/ui/button';
 
 const menuItems = [
   { href: '/admin-dashboard', icon: <Home className="h-4 w-4" />, label: 'Dashboard' },
@@ -143,13 +141,6 @@ export function Sidebar() {
                   ))}
                 </CarouselContent>
               </Carousel>
-              <div className="mt-8">
-                <Link href="/contact-us">
-                  <Button variant="outline" className="w-full text-xs h-8">
-                    <Mail className="mr-2 h-3 w-3" /> View Public Form
-                  </Button>
-                </Link>
-              </div>
             </div>
           )}
         </div>
