@@ -22,7 +22,6 @@ import {
   Type,
   Search,
   Plus,
-  Edit,
   Trash2
 } from 'lucide-react';
 import {
@@ -285,7 +284,6 @@ export default function NewProductPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-semibold">Search engine listing</CardTitle>
-              <Button variant="ghost" size="sm" className="h-8 text-primary"><Edit className="h-3.5 w-3.5 mr-2" /> Edit</Button>
             </CardHeader>
             <CardContent>
               <div className="mt-2 p-4 rounded-lg bg-muted/30 border border-dashed flex flex-col gap-1">
