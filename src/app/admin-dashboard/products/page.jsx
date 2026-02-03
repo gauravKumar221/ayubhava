@@ -20,7 +20,8 @@ import {
   Filter, 
   Edit, 
   Trash2,
-  ChevronDown
+  ChevronDown,
+  Check
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -47,6 +48,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
 // Mock category data with subcategories for the prototype
@@ -58,38 +61,73 @@ const CATEGORY_MAP = {
 };
 
 const initialProducts = [
-  { id: '1', name: 'Premium Stethoscope', category: 'Instruments', subcategory: 'Diagnostic Scopes', price: 120.00, stock: 45 },
-  { id: '2', name: 'Surgical Masks (Box of 50)', category: 'Consumables', subcategory: 'Protective Gear', price: 25.00, stock: 120 },
-  { id: '3', name: 'Digital Thermometer', category: 'Diagnostics', subcategory: 'Monitoring Devices', price: 15.50, stock: 8 },
-  { id: '4', name: 'Wheelchair (Standard)', category: 'Mobility', subcategory: 'Wheelchairs', price: 350.00, stock: 10 },
-  { id: '5', name: 'Blood Pressure Monitor', category: 'Diagnostics', subcategory: 'Monitoring Devices', price: 65.00, stock: 0 },
+  { 
+    id: '1', 
+    name: 'Premium Stethoscope', 
+    categories: ['Instruments'], 
+    subcategories: ['Diagnostic Scopes'], 
+    price: 120.00, 
+    stock: 45 
+  },
+  { 
+    id: '2', 
+    name: 'Surgical Masks (Box of 50)', 
+    categories: ['Consumables'], 
+    subcategories: ['Protective Gear'], 
+    price: 25.00, 
+    stock: 120 
+  },
+  { 
+    id: '3', 
+    name: 'Digital Thermometer', 
+    categories: ['Diagnostics', 'Instruments'], 
+    subcategories: ['Monitoring Devices', 'Diagnostic Scopes'], 
+    price: 15.50, 
+    stock: 8 
+  },
+  { 
+    id: '4', 
+    name: 'Wheelchair (Standard)', 
+    categories: ['Mobility'], 
+    subcategories: ['Wheelchairs'], 
+    price: 350.00, 
+    stock: 10 
+  },
+  { 
+    id: '5', 
+    name: 'Blood Pressure Monitor', 
+    categories: ['Diagnostics'], 
+    subcategories: ['Monitoring Devices'], 
+    price: 65.00, 
+    stock: 0 
+  },
 ];
 
 export default function ProductsPage() {
   const [products, setProducts] = useState(initialProducts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedFilterCategory, setSelectedFilterCategory] = useState('All');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   
-  // State for dynamic subcategory filtering in dialog
-  const [dialogCategory, setDialogCategory] = useState('Instruments');
-  const [dialogSubcategory, setDialogSubcategory] = useState('');
+  // Multi-select state for the dialog
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
 
   // Sync dialog states when editing or resetting
   useEffect(() => {
     if (editingProduct) {
-      setDialogCategory(editingProduct.category);
-      setDialogSubcategory(editingProduct.subcategory);
+      setSelectedCategories(editingProduct.categories || []);
+      setSelectedSubcategories(editingProduct.subcategories || []);
     } else {
-      setDialogCategory('Instruments');
-      setDialogSubcategory(CATEGORY_MAP['Instruments'][0]);
+      setSelectedCategories([]);
+      setSelectedSubcategories([]);
     }
   }, [editingProduct, isDialogOpen]);
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+    const matchesCategory = selectedFilterCategory === 'All' || product.categories.includes(selectedFilterCategory);
     return matchesSearch && matchesCategory;
   });
 
@@ -98,8 +136,8 @@ export default function ProductsPage() {
     const formData = new FormData(e.target);
     const productData = {
       name: formData.get('name'),
-      category: dialogCategory,
-      subcategory: dialogSubcategory,
+      categories: selectedCategories,
+      subcategories: selectedSubcategories,
       price: parseFloat(formData.get('price')),
       stock: parseInt(formData.get('stock')),
     };
@@ -112,6 +150,27 @@ export default function ProductsPage() {
     
     setIsDialogOpen(false);
     setEditingProduct(null);
+  };
+
+  const toggleCategory = (category) => {
+    setSelectedCategories(prev => 
+      prev.includes(category) 
+        ? prev.filter(c => c !== category) 
+        : [...prev, category]
+    );
+    // When a category is removed, we should also remove its related subcategories
+    if (selectedCategories.includes(category)) {
+      const subcatsToRemove = CATEGORY_MAP[category];
+      setSelectedSubcategories(prev => prev.filter(s => !subcatsToRemove.includes(s)));
+    }
+  };
+
+  const toggleSubcategory = (sub) => {
+    setSelectedSubcategories(prev => 
+      prev.includes(sub) 
+        ? prev.filter(s => s !== sub) 
+        : [...prev, sub]
+    );
   };
 
   const handleDeleteProduct = (id) => {
@@ -131,7 +190,7 @@ export default function ProductsPage() {
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="Inventory Management" 
-        description="Manage hospital supplies and medical products with category tracking."
+        description="Manage hospital supplies. Products can now be assigned to multiple categories."
       >
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
@@ -142,66 +201,92 @@ export default function ProductsPage() {
               <Plus className="mr-2 h-4 w-4" /> Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[450px]">
-            <form onSubmit={handleSaveProduct}>
+          <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden flex flex-col">
+            <form onSubmit={handleSaveProduct} className="flex flex-col flex-1">
               <DialogHeader>
                 <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
                 <DialogDescription>
-                  Enter the details of the medical product below.
+                  Tag this product with multiple categories and subcategories.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Product Name</Label>
-                  <Input id="name" name="name" defaultValue={editingProduct?.name} placeholder="e.g. Surgical Gowns" required />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
+              
+              <ScrollArea className="flex-1 pr-4 mt-4">
+                <div className="grid gap-6 py-2">
                   <div className="grid gap-2">
-                    <Label>Category</Label>
-                    <Select value={dialogCategory} onValueChange={(val) => {
-                      setDialogCategory(val);
-                      setDialogSubcategory(CATEGORY_MAP[val][0]); // Auto-select first subcat
-                    }}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.keys(CATEGORY_MAP).map(cat => (
-                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="name">Product Name</Label>
+                    <Input id="name" name="name" defaultValue={editingProduct?.name} placeholder="e.g. Multi-use Diagnostic Kit" required />
                   </div>
                   
-                  <div className="grid gap-2">
-                    <Label>Subcategory</Label>
-                    <Select value={dialogSubcategory} onValueChange={setDialogSubcategory}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Sub" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CATEGORY_MAP[dialogCategory].map(sub => (
-                          <SelectItem key={sub} value={sub}>{sub}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="price">Price ($)</Label>
+                      <Input id="price" name="price" type="number" step="0.01" defaultValue={editingProduct?.price} required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="stock">Stock Level</Label>
+                      <Input id="stock" name="stock" type="number" defaultValue={editingProduct?.stock} required />
+                    </div>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="price">Price ($)</Label>
-                    <Input id="price" name="price" type="number" step="0.01" defaultValue={editingProduct?.price} required />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="stock">Stock Level</Label>
-                    <Input id="stock" name="stock" type="number" defaultValue={editingProduct?.stock} required />
+                  <div className="space-y-4">
+                    <div className="grid gap-3">
+                      <Label className="text-base">Target Categories</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {Object.keys(CATEGORY_MAP).map(cat => (
+                          <div key={cat} className="flex items-center space-x-2 bg-muted/30 p-2 rounded-md border border-border/50 hover:bg-muted/50 transition-colors">
+                            <Checkbox 
+                              id={`cat-${cat}`} 
+                              checked={selectedCategories.includes(cat)}
+                              onCheckedChange={() => toggleCategory(cat)}
+                            />
+                            <label 
+                              htmlFor={`cat-${cat}`}
+                              className="text-sm font-medium leading-none cursor-pointer flex-1"
+                            >
+                              {cat}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {selectedCategories.length > 0 && (
+                      <div className="grid gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <Label className="text-base">Subcategories</Label>
+                        <div className="space-y-4">
+                          {selectedCategories.map(cat => (
+                            <div key={cat} className="space-y-2">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{cat}</span>
+                              <div className="grid grid-cols-2 gap-2">
+                                {CATEGORY_MAP[cat].map(sub => (
+                                  <div key={sub} className="flex items-center space-x-2">
+                                    <Checkbox 
+                                      id={`sub-${sub}`} 
+                                      checked={selectedSubcategories.includes(sub)}
+                                      onCheckedChange={() => toggleSubcategory(sub)}
+                                    />
+                                    <label 
+                                      htmlFor={`sub-${sub}`}
+                                      className="text-xs font-medium leading-none cursor-pointer"
+                                    >
+                                      {sub}
+                                    </label>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit" className="w-full">{editingProduct ? 'Save Changes' : 'Create Product'}</Button>
+              </ScrollArea>
+
+              <DialogFooter className="mt-6 pt-4 border-t">
+                <Button type="submit" className="w-full">
+                  {editingProduct ? 'Update Product Information' : 'Create Multi-category Product'}
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -220,9 +305,9 @@ export default function ProductsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <Select value={selectedFilterCategory} onValueChange={setSelectedFilterCategory}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder="Filter by Category" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Categories</SelectItem>
@@ -239,10 +324,10 @@ export default function ProductsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product Name</TableHead>
-                <TableHead>Category / Subcategory</TableHead>
+                <TableHead className="w-[250px]">Product Name</TableHead>
+                <TableHead>Categories & Subcategories</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead>Stock Level</TableHead>
+                <TableHead>Stock</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -250,14 +335,22 @@ export default function ProductsPage() {
             <TableBody>
               {filteredProducts.map((product) => (
                 <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="font-bold">{product.name}</TableCell>
                   <TableCell>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-semibold">{product.category}</span>
-                      <span className="text-xs text-muted-foreground">{product.subcategory}</span>
+                    <div className="flex flex-wrap gap-1.5 max-w-md">
+                      {product.categories.map(cat => (
+                        <Badge key={cat} variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-[10px] uppercase">
+                          {cat}
+                        </Badge>
+                      ))}
+                      {product.subcategories.map(sub => (
+                        <Badge key={sub} variant="outline" className="text-[10px] bg-muted/50">
+                          {sub}
+                        </Badge>
+                      ))}
                     </div>
                   </TableCell>
-                  <TableCell>${product.price.toFixed(2)}</TableCell>
+                  <TableCell className="font-semibold">${product.price.toFixed(2)}</TableCell>
                   <TableCell>
                     <span className="font-medium">{product.stock} units</span>
                   </TableCell>
@@ -319,7 +412,7 @@ export default function ProductsPage() {
               {filteredProducts.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
-                    No products found matching your criteria.
+                    No products found matching your search.
                   </TableCell>
                 </TableRow>
               )}
