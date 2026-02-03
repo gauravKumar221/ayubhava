@@ -11,7 +11,8 @@ import {
   BookOpen,
   MessageSquare,
   ShoppingCart,
-  User
+  User,
+  Package
 } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
@@ -39,6 +40,11 @@ const menuItems = [
     href: '/admin-dashboard/categories',
     icon: <Tags className="h-4 w-4" />,
     label: 'Categories',
+  },
+  {
+    href: '/admin-dashboard/product-collection',
+    icon: <Package className="h-4 w-4" />,
+    label: 'Product Collection',
   },
   {
     href: '/admin-dashboard/newsletter',
