@@ -22,7 +22,8 @@ import {
   Type,
   ExternalLink,
   Search,
-  Settings2
+  Settings2,
+  Plus
 } from 'lucide-react';
 import {
   Select,
