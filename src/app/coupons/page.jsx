@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,8 @@ import {
   CalendarOff,
   Edit,
   Trash2,
-  MoreVertical
+  MoreVertical,
+  Clock
 } from 'lucide-react';
 import {
   Dialog,
@@ -43,12 +44,13 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 const initialCoupons = [
-  { id: '1', code: 'HEALTH20', type: 'Percentage', value: 20, expiryDate: '2024-12-31', usage: '45/100', status: 'Public', tag: 'Via Barcode Code' },
-  { id: '2', code: 'CHECKUP50', type: 'Fixed Amount', value: 50, expiryDate: '2024-08-15', usage: '12/50', status: 'Public', tag: 'Via Payment with Credit Card' },
-  { id: '3', code: 'WELCOME10', type: 'Percentage', value: 10, expiryDate: '2024-01-01', usage: '100/100', status: 'Expired', tag: 'Via Barcode Code' },
-  { id: '4', code: 'VIP_PRIVATE', type: 'Fixed Amount', value: 100, expiryDate: '2024-11-20', usage: '5/10', status: 'Private', tag: 'Exclusive Access' },
+  { id: '1', code: 'HEALTH20', type: 'Percentage', value: 20, expiryDate: '2024-12-31T23:59', usage: '45/100', status: 'Public', tag: 'Via Barcode Code' },
+  { id: '2', code: 'CHECKUP50', type: 'Fixed Amount', value: 50, expiryDate: '2024-08-15T12:00', usage: '12/50', status: 'Public', tag: 'Via Payment with Credit Card' },
+  { id: '3', code: 'WELCOME10', type: 'Percentage', value: 10, expiryDate: '2024-01-01T00:00', usage: '100/100', status: 'Expired', tag: 'Via Barcode Code' },
+  { id: '4', code: 'VIP_PRIVATE', type: 'Fixed Amount', value: 100, expiryDate: '2024-11-20T18:30', usage: '5/10', status: 'Private', tag: 'Exclusive Access' },
 ];
 
 export default function CouponsPage() {
@@ -57,23 +59,43 @@ export default function CouponsPage() {
   const [filter, setFilter] = useState('All Promo');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
+  const [currentTime, setCurrentTime] = useState(null);
+
+  useEffect(() => {
+    setCurrentTime(new Date());
+  }, []);
+
+  const getIsExpired = (expiryDate) => {
+    if (!currentTime) return false;
+    return new Date(expiryDate) < currentTime;
+  };
 
   const filteredCoupons = coupons.filter(c => {
     const matchesSearch = c.code.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filter === 'All Promo' || c.status === filter;
+    const isExpired = getIsExpired(c.expiryDate);
+    
+    let matchesFilter = true;
+    if (filter === 'Public') matchesFilter = c.status === 'Public' && !isExpired;
+    else if (filter === 'Private') matchesFilter = c.status === 'Private' && !isExpired;
+    else if (filter === 'Expired') matchesFilter = isExpired || c.status === 'Expired';
+    else if (filter === 'All Promo') matchesFilter = true;
+
     return matchesSearch && matchesFilter;
   });
 
   const handleSaveCoupon = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const expiryDate = formData.get('expiryDate');
+    const isExpired = getIsExpired(expiryDate);
+    
     const couponData = {
       code: formData.get('code').toUpperCase(),
       type: formData.get('type'),
       value: parseFloat(formData.get('value')),
-      expiryDate: formData.get('expiryDate'),
+      expiryDate: expiryDate,
       usage: editingCoupon ? editingCoupon.usage : `0/${formData.get('limit') || '∞'}`,
-      status: editingCoupon ? editingCoupon.status : 'Public',
+      status: isExpired ? 'Expired' : (formData.get('status') || 'Public'),
       tag: editingCoupon ? editingCoupon.tag : 'New Promotion',
     };
 
@@ -107,7 +129,7 @@ export default function CouponsPage() {
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="Manage Promos" 
-        description="Create and organize your discount campaigns."
+        description="Create and organize your discount campaigns with precise expiry timing."
       >
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
@@ -123,7 +145,7 @@ export default function CouponsPage() {
               <DialogHeader>
                 <DialogTitle>{editingCoupon ? 'Edit Coupon' : 'New Coupon'}</DialogTitle>
                 <DialogDescription>
-                  Define the discount details for your medical center.
+                  Define the discount details and validity period.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -150,8 +172,26 @@ export default function CouponsPage() {
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="expiryDate">Expiry Date</Label>
-                  <Input id="expiryDate" name="expiryDate" type="date" defaultValue={editingCoupon?.expiryDate} required />
+                  <Label htmlFor="expiryDate">Expiry Date & Time</Label>
+                  <Input 
+                    id="expiryDate" 
+                    name="expiryDate" 
+                    type="datetime-local" 
+                    defaultValue={editingCoupon?.expiryDate} 
+                    required 
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="status">Privacy Status</Label>
+                  <Select name="status" defaultValue={editingCoupon?.status || 'Public'}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Visibility" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Public">Public (Global)</SelectItem>
+                      <SelectItem value="Private">Private (Exclusive)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <DialogFooter>
@@ -163,7 +203,6 @@ export default function CouponsPage() {
       </PageHeader>
 
       <div className="flex flex-col gap-6">
-        {/* Filters Section */}
         <div className="flex flex-wrap items-center gap-3">
           {filters.map((f) => (
             <Button
@@ -181,7 +220,6 @@ export default function CouponsPage() {
           ))}
         </div>
 
-        {/* Search */}
         <div className="relative w-full md:max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -192,66 +230,78 @@ export default function CouponsPage() {
           />
         </div>
 
-        {/* Promo Cards Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredCoupons.map((coupon) => (
-            <Card 
-              key={coupon.id} 
-              className={cn(
-                "group relative overflow-hidden transition-all hover:shadow-lg border-none",
-                coupon.status === 'Expired' ? 'opacity-60 grayscale' : ''
-              )}
-            >
-              <CardContent className="p-0">
-                <div className="flex h-36 flex-col justify-between bg-primary p-5 text-primary-foreground">
-                  <div className="flex items-start justify-between">
-                    <Badge variant="secondary" className="bg-white/20 text-white backdrop-blur-md border-none">
-                      {coupon.tag}
-                    </Badge>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => openEditDialog(coupon)}>
-                          <Edit className="mr-2 h-4 w-4" /> Edit Promo
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteCoupon(coupon.id)}>
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete Coupon
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+          {filteredCoupons.map((coupon) => {
+            const isExpired = getIsExpired(coupon.expiryDate);
+            const displayDate = coupon.expiryDate ? format(new Date(coupon.expiryDate), 'MMM d, yyyy HH:mm') : 'No date';
+
+            return (
+              <Card 
+                key={coupon.id} 
+                className={cn(
+                  "group relative overflow-hidden transition-all hover:shadow-lg border-none",
+                  isExpired ? 'opacity-60 grayscale' : ''
+                )}
+              >
+                <CardContent className="p-0">
+                  <div className={cn(
+                    "flex h-36 flex-col justify-between p-5 text-primary-foreground transition-colors",
+                    isExpired ? "bg-muted-foreground" : "bg-primary"
+                  )}>
+                    <div className="flex items-start justify-between">
+                      <Badge variant="secondary" className="bg-white/20 text-white border-none">
+                        {isExpired ? 'Expired' : coupon.tag}
+                      </Badge>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => openEditDialog(coupon)}>
+                            <Edit className="mr-2 h-4 w-4" /> Edit Promo
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteCoupon(coupon.id)}>
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete Coupon
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold tracking-tight">
+                        {coupon.type === 'Percentage' ? `Discount ${coupon.value}%` : `Save $${coupon.value}`}
+                      </h3>
+                      <p className="mt-1 text-sm text-white/80 font-mono">
+                        CODE: {coupon.code}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-2xl font-bold tracking-tight">
-                      {coupon.type === 'Percentage' ? `Discount ${coupon.value}%` : `Save $${coupon.value}`}
-                    </h3>
-                    <p className="mt-1 text-sm text-white/80 font-mono">
-                      CODE: {coupon.code}
-                    </p>
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        Usage: {coupon.usage}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 p-2 rounded-md">
+                      <Clock className="h-3 w-3" />
+                      <span>Expires: {displayDate}</span>
+                    </div>
+                    <div className="pt-1">
+                      <Button variant="outline" size="sm" className="w-full" onClick={() => openEditDialog(coupon)}>
+                        View Details
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <div className="p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Usage: {coupon.usage}</span>
-                    <span>Exp: {coupon.expiryDate}</span>
-                  </div>
-                  <div className="pt-2">
-                    <Button variant="outline" size="sm" className="w-full" onClick={() => openEditDialog(coupon)}>
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
           {filteredCoupons.length === 0 && (
             <div className="col-span-full flex h-40 items-center justify-center rounded-xl border-2 border-dashed text-muted-foreground">
-              No promotions found.
+              No promotions found matching your criteria.
             </div>
           )}
         </div>
