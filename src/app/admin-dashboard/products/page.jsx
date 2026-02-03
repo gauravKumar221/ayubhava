@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,6 @@ import {
   Plus, 
   Search, 
   Filter, 
-  MoreHorizontal, 
   Edit, 
   Trash2,
   ChevronDown
@@ -50,16 +49,21 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
-// Mock initial data
-const initialProducts = [
-  { id: '1', name: 'Stethoscope', category: 'Instruments', price: 120.00, stock: 45 },
-  { id: '2', name: 'Surgical Masks (Box of 50)', category: 'Consumables', price: 25.00, stock: 120 },
-  { id: '3', name: 'Digital Thermometer', category: 'Diagnostics', price: 15.50, stock: 8 },
-  { id: '4', name: 'Wheelchair (Standard)', category: 'Mobility', price: 350.00, stock: 10 },
-  { id: '5', name: 'Blood Pressure Monitor', category: 'Diagnostics', price: 65.00, stock: 0 },
-];
+// Mock category data with subcategories for the prototype
+const CATEGORY_MAP = {
+  'Instruments': ['Surgical Tools', 'Diagnostic Scopes', 'Dental Tools'],
+  'Consumables': ['Protective Gear', 'Sanitization', 'Syringes'],
+  'Diagnostics': ['Testing Kits', 'Monitoring Devices'],
+  'Mobility': ['Wheelchairs', 'Walking Aids'],
+};
 
-const categories = ['All', 'Instruments', 'Consumables', 'Diagnostics', 'Mobility'];
+const initialProducts = [
+  { id: '1', name: 'Premium Stethoscope', category: 'Instruments', subcategory: 'Diagnostic Scopes', price: 120.00, stock: 45 },
+  { id: '2', name: 'Surgical Masks (Box of 50)', category: 'Consumables', subcategory: 'Protective Gear', price: 25.00, stock: 120 },
+  { id: '3', name: 'Digital Thermometer', category: 'Diagnostics', subcategory: 'Monitoring Devices', price: 15.50, stock: 8 },
+  { id: '4', name: 'Wheelchair (Standard)', category: 'Mobility', subcategory: 'Wheelchairs', price: 350.00, stock: 10 },
+  { id: '5', name: 'Blood Pressure Monitor', category: 'Diagnostics', subcategory: 'Monitoring Devices', price: 65.00, stock: 0 },
+];
 
 export default function ProductsPage() {
   const [products, setProducts] = useState(initialProducts);
@@ -67,6 +71,21 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  
+  // State for dynamic subcategory filtering in dialog
+  const [dialogCategory, setDialogCategory] = useState('Instruments');
+  const [dialogSubcategory, setDialogSubcategory] = useState('');
+
+  // Sync dialog states when editing or resetting
+  useEffect(() => {
+    if (editingProduct) {
+      setDialogCategory(editingProduct.category);
+      setDialogSubcategory(editingProduct.subcategory);
+    } else {
+      setDialogCategory('Instruments');
+      setDialogSubcategory(CATEGORY_MAP['Instruments'][0]);
+    }
+  }, [editingProduct, isDialogOpen]);
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -79,7 +98,8 @@ export default function ProductsPage() {
     const formData = new FormData(e.target);
     const productData = {
       name: formData.get('name'),
-      category: formData.get('category'),
+      category: dialogCategory,
+      subcategory: dialogSubcategory,
       price: parseFloat(formData.get('price')),
       stock: parseInt(formData.get('stock')),
     };
@@ -111,7 +131,7 @@ export default function ProductsPage() {
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="Inventory Management" 
-        description="Manage hospital supplies and medical products."
+        description="Manage hospital supplies and medical products with category tracking."
       >
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
@@ -122,7 +142,7 @@ export default function ProductsPage() {
               <Plus className="mr-2 h-4 w-4" /> Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[450px]">
             <form onSubmit={handleSaveProduct}>
               <DialogHeader>
                 <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
@@ -133,21 +153,42 @@ export default function ProductsPage() {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Product Name</Label>
-                  <Input id="name" name="name" defaultValue={editingProduct?.name} required />
+                  <Input id="name" name="name" defaultValue={editingProduct?.name} placeholder="e.g. Surgical Gowns" required />
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="category">Category</Label>
-                  <Select name="category" defaultValue={editingProduct?.category || 'Instruments'}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.filter(c => c !== 'All').map(cat => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Category</Label>
+                    <Select value={dialogCategory} onValueChange={(val) => {
+                      setDialogCategory(val);
+                      setDialogSubcategory(CATEGORY_MAP[val][0]); // Auto-select first subcat
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(CATEGORY_MAP).map(cat => (
+                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="grid gap-2">
+                    <Label>Subcategory</Label>
+                    <Select value={dialogSubcategory} onValueChange={setDialogSubcategory}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Sub" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORY_MAP[dialogCategory].map(sub => (
+                          <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="price">Price ($)</Label>
@@ -160,7 +201,7 @@ export default function ProductsPage() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">{editingProduct ? 'Save Changes' : 'Create Product'}</Button>
+                <Button type="submit" className="w-full">{editingProduct ? 'Save Changes' : 'Create Product'}</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -184,7 +225,8 @@ export default function ProductsPage() {
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map(cat => (
+              <SelectItem value="All">All Categories</SelectItem>
+              {Object.keys(CATEGORY_MAP).map(cat => (
                 <SelectItem key={cat} value={cat}>{cat}</SelectItem>
               ))}
             </SelectContent>
@@ -198,7 +240,7 @@ export default function ProductsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Product Name</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>Category / Subcategory</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Stock Level</TableHead>
                 <TableHead>Status</TableHead>
@@ -209,7 +251,12 @@ export default function ProductsPage() {
               {filteredProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold">{product.category}</span>
+                      <span className="text-xs text-muted-foreground">{product.subcategory}</span>
+                    </div>
+                  </TableCell>
                   <TableCell>${product.price.toFixed(2)}</TableCell>
                   <TableCell>
                     <span className="font-medium">{product.stock} units</span>
@@ -272,7 +319,7 @@ export default function ProductsPage() {
               {filteredProducts.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
-                    No products found.
+                    No products found matching your criteria.
                   </TableCell>
                 </TableRow>
               )}
