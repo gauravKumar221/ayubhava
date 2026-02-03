@@ -8,6 +8,7 @@ import {
   Home,
   Package,
   Tags,
+  Newspaper,
 } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
@@ -24,6 +25,11 @@ const menuItems = [
     href: '/products',
     icon: <Package className="h-4 w-4" />,
     label: 'Products',
+  },
+  {
+    href: '/newsletter',
+    icon: <Newspaper className="h-4 w-4" />,
+    label: 'Newsletter',
   },
   {
     href: '/payments',
