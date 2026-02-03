@@ -22,7 +22,8 @@ import {
   Type,
   Search,
   Plus,
-  Edit
+  Edit,
+  Trash2
 } from 'lucide-react';
 import {
   Select,
@@ -70,6 +71,9 @@ export default function NewProductPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedImages, setSelectedImages] = useState([]);
+  const [conditions, setConditions] = useState([
+    { id: Date.now(), field: 'tag', operator: 'equals', value: '' }
+  ]);
   const fileInputRef = useRef(null);
 
   const handleImageChange = (e) => {
@@ -89,13 +93,34 @@ export default function NewProductPage() {
     setSelectedImages(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleAddCondition = () => {
+    setConditions([
+      ...conditions,
+      { id: Date.now(), field: 'tag', operator: 'equals', value: '' }
+    ]);
+  };
+
+  const handleRemoveCondition = (id) => {
+    if (conditions.length > 1) {
+      setConditions(conditions.filter(c => c.id !== id));
+    }
+  };
+
+  const handleConditionChange = (id, field, value) => {
+    setConditions(conditions.map(c => 
+      c.id === id ? { ...c, [field]: value } : c
+    ));
+  };
+
   const handleSave = () => {
     router.push('/admin-dashboard/product-collection');
   };
 
-  // Helper to strip HTML tags for SEO preview
   const stripHtml = (html) => {
-    return html.replace(/<[^>]*>?/gm, ' ');
+    if (typeof document === 'undefined') return '';
+    const tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
   };
 
   const seoDescription = stripHtml(description).trim() || 'Add a title and description to see how this product might appear in a search engine listing.';
@@ -206,25 +231,54 @@ export default function NewProductPage() {
                   </div>
                 </RadioGroup>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <Select defaultValue="tag">
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="tag">Tag</SelectItem>
-                    <SelectItem value="title">Product title</SelectItem>
-                    <SelectItem value="price">Price</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select defaultValue="equals">
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="equals">is equal to</SelectItem>
-                    <SelectItem value="contains">contains</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input placeholder="Condition value" />
+
+              <div className="space-y-3">
+                {conditions.map((condition) => (
+                  <div key={condition.id} className="flex flex-col md:flex-row items-start md:items-center gap-3">
+                    <Select 
+                      value={condition.field} 
+                      onValueChange={(val) => handleConditionChange(condition.id, 'field', val)}
+                    >
+                      <SelectTrigger className="w-full md:w-[200px]"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="tag">Tag</SelectItem>
+                        <SelectItem value="title">Product title</SelectItem>
+                        <SelectItem value="price">Price</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select 
+                      value={condition.operator} 
+                      onValueChange={(val) => handleConditionChange(condition.id, 'operator', val)}
+                    >
+                      <SelectTrigger className="w-full md:w-[200px]"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="equals">is equal to</SelectItem>
+                        <SelectItem value="contains">contains</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input 
+                      placeholder="Condition value" 
+                      className="flex-1"
+                      value={condition.value}
+                      onChange={(e) => handleConditionChange(condition.id, 'value', e.target.value)}
+                    />
+                    {conditions.length > 1 && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleRemoveCondition(condition.id)}
+                        className="text-muted-foreground hover:text-destructive shrink-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
               </div>
-              <Button variant="outline" size="sm"><Plus className="mr-2 h-3 w-3" /> Add another condition</Button>
+
+              <Button variant="outline" size="sm" onClick={handleAddCondition}>
+                <Plus className="mr-2 h-3 w-3" /> Add another condition
+              </Button>
             </CardContent>
           </Card>
 
