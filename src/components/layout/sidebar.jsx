@@ -3,8 +3,6 @@ import Link from 'next/link';
 import {
   Building,
   CreditCard,
-  Calendar,
-  User,
   Home,
   Package,
   Tags,
@@ -14,10 +12,12 @@ import {
   BookOpen,
   MessageSquare,
   ShoppingCart,
+  User
 } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import {
   Carousel,
   CarouselContent,
