@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -32,17 +33,7 @@ import {
   Tag,
   Plus
 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 
-// Mock data reflecting products from Categories page
 const initialProducts = [
   { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99, category: 'Instruments' },
   { id: 'p2', name: 'Digital Thermometer', sku: 'TH-20', price: 24.50, category: 'Instruments' },
@@ -54,8 +45,6 @@ const initialProducts = [
 export default function ProductCollectionPage() {
   const [products, setProducts] = useState(initialProducts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -67,34 +56,16 @@ export default function ProductCollectionPage() {
     setProducts(products.filter(p => p.id !== id));
   };
 
-  const handleSaveProduct = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const productData = {
-      name: formData.get('name'),
-      sku: formData.get('sku'),
-      price: parseFloat(formData.get('price')),
-      category: formData.get('category'),
-    };
-
-    if (editingProduct) {
-      setProducts(products.map(p => p.id === editingProduct.id ? { ...p, ...productData } : p));
-    } else {
-      setProducts([...products, { ...productData, id: Math.random().toString(36).substr(2, 9) }]);
-    }
-    
-    setIsDialogOpen(false);
-    setEditingProduct(null);
-  };
-
   return (
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="Product Collection" 
         description="A centralized view of all medical supplies and clinical items."
       >
-        <Button onClick={() => setIsDialogOpen(true)} className="bg-primary text-primary-foreground">
-          <Plus className="mr-2 h-4 w-4" /> Add Global Item
+        <Button asChild className="bg-primary text-primary-foreground">
+          <Link href="/admin-dashboard/product-collection/new">
+            <Plus className="mr-2 h-4 w-4" /> Add Product
+          </Link>
         </Button>
       </PageHeader>
 
@@ -147,11 +118,10 @@ export default function ProductCollectionPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Item Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => {
-                          setEditingProduct(product);
-                          setIsDialogOpen(true);
-                        }}>
-                          <Edit className="mr-2 h-4 w-4" /> Edit Details
+                        <DropdownMenuItem asChild>
+                          <Link href={`/admin-dashboard/product-collection/edit/${product.id}`} className="flex items-center">
+                            <Edit className="mr-2 h-4 w-4" /> Edit Details
+                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(product.id)}>
                           <Trash2 className="mr-2 h-4 w-4" /> Delete Item
@@ -175,45 +145,6 @@ export default function ProductCollectionPage() {
           </Table>
         </CardContent>
       </Card>
-
-      <Dialog open={isDialogOpen} onOpenChange={(open) => {
-        setIsDialogOpen(open);
-        if (!open) setEditingProduct(null);
-      }}>
-        <DialogContent className="sm:max-w-[425px]">
-          <form onSubmit={handleSaveProduct}>
-            <DialogHeader>
-              <DialogTitle>{editingProduct ? 'Edit Global Product' : 'Add New Global Product'}</DialogTitle>
-              <DialogDescription>
-                Manage item details across the entire collection.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Product Name</Label>
-                <Input id="name" name="name" defaultValue={editingProduct?.name} required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="category">Main Category</Label>
-                <Input id="category" name="category" defaultValue={editingProduct?.category} placeholder="e.g. Instruments" required />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="sku">SKU</Label>
-                  <Input id="sku" name="sku" defaultValue={editingProduct?.sku} required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="price">Price ($)</Label>
-                  <Input id="price" name="price" type="number" step="0.01" defaultValue={editingProduct?.price} required />
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">{editingProduct ? 'Save Changes' : 'Add to Collection'}</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
