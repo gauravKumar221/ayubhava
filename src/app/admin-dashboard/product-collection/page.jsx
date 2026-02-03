@@ -39,38 +39,33 @@ export default function ProductCollectionPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Load products from categories in localStorage
-  useEffect(() => {
-    const loadData = () => {
-      const savedCategories = localStorage.getItem('bitmax_categories');
-      if (savedCategories) {
-        const cats = JSON.parse(savedCategories);
-        // Flatten all products from all categories
-        const allProds = cats.flatMap(c => 
-          c.products.map(p => ({ ...p, category: c.name, categoryId: c.id }))
-        );
-        setProducts(allProds);
-      } else {
-        // Fallback to initial products if no storage exists
-        const initialProducts = [
-          { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99, category: 'Instruments' },
-          { id: 'p2', name: 'Digital Thermometer', sku: 'TH-20', price: 24.50, category: 'Instruments' },
-          { id: 'p3', name: 'N95 Respirators (Pack)', sku: 'MSK-N95', price: 45.00, category: 'Consumables' },
-        ];
-        setProducts(initialProducts);
-      }
-    };
+  const loadData = () => {
+    const savedCategories = localStorage.getItem('bitmax_categories');
+    if (savedCategories) {
+      const cats = JSON.parse(savedCategories);
+      // Flatten all products from all categories
+      const allProds = cats.flatMap(c => 
+        (c.products || []).map(p => ({ ...p, category: c.name, categoryId: c.id }))
+      );
+      setProducts(allProds);
+    } else {
+      const initialProducts = [
+        { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99, category: 'Instruments' },
+      ];
+      setProducts(initialProducts);
+    }
+  };
 
+  useEffect(() => {
     loadData();
-    
-    // Listen for changes in localStorage from other tabs or pages
     window.addEventListener('storage', loadData);
     return () => window.removeEventListener('storage', loadData);
   }, []);
 
   const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.category.toLowerCase().includes(searchTerm.toLowerCase())
+    (p.sku && p.sku.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (p.category && p.category.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleDelete = (productId, categoryId) => {
@@ -79,12 +74,13 @@ export default function ProductCollectionPage() {
       const cats = JSON.parse(savedCategories);
       const updatedCats = cats.map(c => {
         if (c.id === categoryId) {
-          return { ...c, products: c.products.filter(p => p.id !== productId) };
+          return { ...c, products: (c.products || []).filter(p => p.id !== productId) };
         }
         return c;
       });
       localStorage.setItem('bitmax_categories', JSON.stringify(updatedCats));
-      window.dispatchEvent(new Event('storage')); // Trigger update
+      loadData();
+      window.dispatchEvent(new Event('storage'));
     }
   };
 
@@ -130,14 +126,14 @@ export default function ProductCollectionPage() {
                   <TableCell>
                     <Badge variant="outline" className="flex w-fit items-center gap-1 border-primary/20 bg-primary/5 text-primary">
                       <Tag className="h-3 w-3" />
-                      {product.category}
+                      {product.category || 'Uncategorized'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">{product.sku}</TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{product.sku || 'N/A'}</TableCell>
                   <TableCell>
                     <div className="flex items-center font-bold">
                       <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                      {product.price.toFixed(2)}
+                      {(product.price || 0).toFixed(2)}
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
@@ -151,7 +147,7 @@ export default function ProductCollectionPage() {
                         <DropdownMenuLabel>Item Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
-                          <Link href={`/admin-dashboard/product-collection/edit/${product.id}`} className="flex items-center">
+                          <Link href={`/admin-dashboard/product-collection/new?id=${product.id}`} className="flex items-center">
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                           </Link>
                         </DropdownMenuItem>

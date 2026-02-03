@@ -17,9 +17,9 @@ import {
   MoreHorizontal,
   Package,
   Tag,
-  DollarSign,
   ChevronRight,
-  ListTree
+  ListTree,
+  Check
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -64,6 +64,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from '@/lib/utils';
 
 const initialCategories = [
   { 
@@ -78,41 +86,12 @@ const initialCategories = [
           { id: 'ss1', name: 'Scalpels' },
           { id: 'ss2', name: 'Forceps' }
         ]
-      },
-      { 
-        id: 's2', 
-        name: 'Diagnostic Scopes',
-        subSubcategories: []
       }
     ],
     products: [
-      { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99 },
-      { id: 'p2', name: 'Digital Thermometer', sku: 'TH-20', price: 24.50 }
+      { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99 }
     ]
-  },
-  { 
-    id: '2', 
-    name: 'Consumables', 
-    description: 'Single-use items like masks and gloves', 
-    subcategories: [
-      { 
-        id: 's3', 
-        name: 'Protective Gear',
-        subSubcategories: [
-          { id: 'ss3', name: 'N95 Face Masks' },
-          { id: 'ss4', name: 'Nitrile Gloves' }
-        ]
-      },
-      { 
-        id: 's4', 
-        name: 'Sanitization',
-        subSubcategories: []
-      }
-    ],
-    products: [
-      { id: 'p3', name: 'N95 Respirators (Pack)', sku: 'MSK-N95', price: 45.00 }
-    ]
-  },
+  }
 ];
 
 export default function CategoriesPage() {
@@ -138,18 +117,27 @@ export default function CategoriesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
+  // Global Product List for the "Existing Product" dropdown
+  const [allGlobalProducts, setAllGlobalProducts] = useState([]);
+
   // Load data from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('bitmax_categories');
     if (saved) {
-      setCategories(JSON.parse(saved));
+      const cats = JSON.parse(saved);
+      setCategories(cats);
+      // Flatten all products for the dropdown
+      const flattened = cats.flatMap(c => c.products || []);
+      setAllGlobalProducts(flattened);
     }
   }, []);
 
   const persistCategories = (newCategories) => {
     setCategories(newCategories);
     localStorage.setItem('bitmax_categories', JSON.stringify(newCategories));
-    // Dispatch a storage event so other tabs/pages know to update
+    // Flatten and update global products list
+    const flattened = newCategories.flatMap(c => c.products || []);
+    setAllGlobalProducts(flattened);
     window.dispatchEvent(new Event('storage'));
   };
 
@@ -194,7 +182,7 @@ export default function CategoriesPage() {
           c.id === activeCategory.id 
             ? { 
                 ...c, 
-                subcategories: c.subcategories.map(s => 
+                subcategories: (c.subcategories || []).map(s => 
                   s.id === editingSubcategory.id ? { ...s, name } : s
                 ) 
               } 
@@ -204,7 +192,7 @@ export default function CategoriesPage() {
         const newSub = { id: Math.random().toString(36).substr(2, 9), name, subSubcategories: [] };
         newCategories = categories.map(c => 
           c.id === activeCategory.id 
-            ? { ...c, subcategories: [...c.subcategories, newSub] } 
+            ? { ...c, subcategories: [...(c.subcategories || []), newSub] } 
             : c
         );
       }
@@ -224,12 +212,12 @@ export default function CategoriesPage() {
         if (c.id === activeCategory.id) {
           return {
             ...c,
-            subcategories: c.subcategories.map(s => {
+            subcategories: (c.subcategories || []).map(s => {
               if (s.id === activeSubcategory.id) {
                 if (editingSubSubcategory) {
                   return {
                     ...s,
-                    subSubcategories: s.subSubcategories.map(ss => 
+                    subSubcategories: (s.subSubcategories || []).map(ss => 
                       ss.id === editingSubSubcategory.id ? { ...ss, name } : ss
                     )
                   };
@@ -268,7 +256,7 @@ export default function CategoriesPage() {
           c.id === activeCategory.id 
             ? { 
                 ...c, 
-                products: c.products.map(p => 
+                products: (c.products || []).map(p => 
                   p.id === editingProduct.id ? { ...p, ...productData } : p
                 ) 
               } 
@@ -278,7 +266,7 @@ export default function CategoriesPage() {
         const newProd = { ...productData, id: Math.random().toString(36).substr(2, 9) };
         newCategories = categories.map(c => 
           c.id === activeCategory.id 
-            ? { ...c, products: [...c.products, newProd] } 
+            ? { ...c, products: [...(c.products || []), newProd] } 
             : c
         );
       }
@@ -297,15 +285,15 @@ export default function CategoriesPage() {
       newCategories = categories.filter(c => c.id !== categoryId);
     } else if (type === 'subcategory') {
       newCategories = categories.map(c => 
-        c.id === categoryId ? { ...c, subcategories: c.subcategories.filter(s => s.id !== subcategoryId) } : c
+        c.id === categoryId ? { ...c, subcategories: (c.subcategories || []).filter(s => s.id !== subcategoryId) } : c
       );
     } else if (type === 'subsubcategory') {
       newCategories = categories.map(c => {
         if (c.id === categoryId) {
           return {
             ...c,
-            subcategories: c.subcategories.map(s => 
-              s.id === subcategoryId ? { ...s, subSubcategories: s.subSubcategories.filter(ss => ss.id !== subSubcategoryId) } : s
+            subcategories: (c.subcategories || []).map(s => 
+              s.id === subcategoryId ? { ...s, subSubcategories: (s.subSubcategories || []).filter(ss => ss.id !== subSubcategoryId) } : s
             )
           };
         }
@@ -313,7 +301,7 @@ export default function CategoriesPage() {
       });
     } else if (type === 'product') {
       newCategories = categories.map(c => 
-        c.id === categoryId ? { ...c, products: c.products.filter(p => p.id !== productId) } : c
+        c.id === categoryId ? { ...c, products: (c.products || []).filter(p => p.id !== productId) } : c
       );
     }
     persistCategories(newCategories);
@@ -326,6 +314,21 @@ export default function CategoriesPage() {
     setActiveSubcategory(subcategory);
     setEditingSubSubcategory(subSub);
     setIsSubSubcategoryDialogOpen(true);
+  };
+
+  const handleSelectExistingProduct = (productId) => {
+    const selected = allGlobalProducts.find(p => p.id === productId);
+    if (selected && activeCategory) {
+      const newCategories = categories.map(c => {
+        if (c.id === activeCategory.id) {
+          // Avoid duplicate SKUs in same category if desired, but here we just add
+          return { ...c, products: [...(c.products || []), { ...selected, id: Math.random().toString(36).substr(2, 9) }] };
+        }
+        return c;
+      });
+      persistCategories(newCategories);
+      setIsProductDialogOpen(false);
+    }
   };
 
   return (
@@ -363,7 +366,6 @@ export default function CategoriesPage() {
         </Dialog>
       </PageHeader>
 
-      {/* Other Dialogs */}
       <Dialog open={isSubcategoryDialogOpen} onOpenChange={setIsSubcategoryDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveSubcategory}>
@@ -392,24 +394,48 @@ export default function CategoriesPage() {
 
       <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
-          <form onSubmit={handleSaveProduct}>
-            <DialogHeader><DialogTitle>{editingProduct ? 'Edit Product' : 'Add Product to ' + activeCategory?.name}</DialogTitle></DialogHeader>
-            <div className="grid gap-4 py-4">
+          <div className="grid gap-6 py-4">
+            <div>
+              <Label className="mb-2 block">Quick Select Existing Product</Label>
+              <Select onValueChange={handleSelectExistingProduct}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select from collection..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {allGlobalProducts.length > 0 ? (
+                    allGlobalProducts.map(p => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name} ({p.sku})
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="p-2 text-xs text-muted-foreground text-center">No existing products found</div>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Separator />
+
+            <form onSubmit={handleSaveProduct} className="grid gap-4">
+              <DialogHeader><DialogTitle>{editingProduct ? 'Edit Product' : 'Create New Product'}</DialogTitle></DialogHeader>
               <div className="grid gap-2">
                 <Label>Product Name</Label>
                 <Input name="productName" placeholder="e.g. Stethoscope" defaultValue={editingProduct?.name} required />
               </div>
-              <div className="grid gap-2">
-                <Label>SKU</Label>
-                <Input name="sku" placeholder="SKU-123" defaultValue={editingProduct?.sku} />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>SKU</Label>
+                  <Input name="sku" placeholder="SKU-123" defaultValue={editingProduct?.sku} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Price ($)</Label>
+                  <Input name="price" type="number" step="0.01" placeholder="0.00" defaultValue={editingProduct?.price} />
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label>Price ($)</Label>
-                <Input name="price" type="number" step="0.01" placeholder="0.00" defaultValue={editingProduct?.price} />
-              </div>
-            </div>
-            <DialogFooter><Button type="submit">Save Product</Button></DialogFooter>
-          </form>
+              <DialogFooter><Button type="submit" className="w-full">Add to {activeCategory?.name}</Button></DialogFooter>
+            </form>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -428,7 +454,7 @@ export default function CategoriesPage() {
 
       <div className="relative w-full md:max-w-sm">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search..." className="pl-8" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+        <Input placeholder="Search categories..." className="pl-8" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
 
       <div className="grid gap-4">
@@ -473,14 +499,13 @@ export default function CategoriesPage() {
 
                 <AccordionContent className="bg-muted/30 px-6 pb-6 pt-2">
                   <div className="space-y-8">
-                    {/* Subcategories */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         <Tag className="h-4 w-4 text-primary" /> Subcategories
                       </div>
                       
                       <div className="grid grid-cols-1 gap-4">
-                        {category.subcategories.map((sub) => (
+                        {(category.subcategories || []).map((sub) => (
                           <div key={sub.id} className="rounded-lg border bg-background p-4 shadow-sm space-y-4">
                             <div className="flex items-center justify-between">
                               <h4 className="font-bold text-md flex items-center gap-2">
@@ -500,7 +525,6 @@ export default function CategoriesPage() {
                               </div>
                             </div>
 
-                            {/* Sub-Subcategories */}
                             {sub.subSubcategories && sub.subSubcategories.length > 0 && (
                               <div className="pl-6 space-y-2">
                                 <p className="text-[10px] font-bold uppercase text-muted-foreground/60 flex items-center gap-1">
@@ -525,7 +549,7 @@ export default function CategoriesPage() {
                             )}
                           </div>
                         ))}
-                        {category.subcategories.length === 0 && (
+                        {(!category.subcategories || category.subcategories.length === 0) && (
                           <div className="text-center py-4 border border-dashed rounded-lg text-muted-foreground text-xs italic">
                             No subcategories defined.
                           </div>
@@ -535,12 +559,11 @@ export default function CategoriesPage() {
 
                     <Separator className="bg-border/50" />
 
-                    {/* Products */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                        <Package className="h-4 w-4 text-accent" /> Product Items
+                        <Package className="h-4 w-4 text-accent" /> Product Items in {category.name}
                       </div>
-                      {category.products.length > 0 ? (
+                      {category.products && category.products.length > 0 ? (
                         <Card className="border-none shadow-sm overflow-hidden">
                           <Table>
                             <TableHeader className="bg-muted/50">
