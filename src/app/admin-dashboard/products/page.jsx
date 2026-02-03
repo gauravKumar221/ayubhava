@@ -20,8 +20,7 @@ import {
   Filter, 
   Edit, 
   Trash2,
-  ChevronDown,
-  Check
+  ChevronDown
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -52,7 +51,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
-// Mock category data with subcategories for the prototype
+// Mock category data with subcategories for the clinical inventory
 const CATEGORY_MAP = {
   'Instruments': ['Surgical Tools', 'Diagnostic Scopes', 'Dental Tools'],
   'Consumables': ['Protective Gear', 'Sanitization', 'Syringes'],
@@ -110,11 +109,9 @@ export default function ProductsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   
-  // Multi-select state for the dialog
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
 
-  // Sync dialog states when editing or resetting
   useEffect(() => {
     if (editingProduct) {
       setSelectedCategories(editingProduct.categories || []);
@@ -153,16 +150,17 @@ export default function ProductsPage() {
   };
 
   const toggleCategory = (category) => {
-    setSelectedCategories(prev => 
-      prev.includes(category) 
-        ? prev.filter(c => c !== category) 
-        : [...prev, category]
-    );
-    // When a category is removed, we should also remove its related subcategories
-    if (selectedCategories.includes(category)) {
-      const subcatsToRemove = CATEGORY_MAP[category];
-      setSelectedSubcategories(prev => prev.filter(s => !subcatsToRemove.includes(s)));
-    }
+    setSelectedCategories(prev => {
+      const exists = prev.includes(category);
+      if (exists) {
+        // Remove category and its associated subcategories
+        const subcatsToRemove = CATEGORY_MAP[category] || [];
+        setSelectedSubcategories(currentSubs => currentSubs.filter(s => !subcatsToRemove.includes(s)));
+        return prev.filter(c => c !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
   };
 
   const toggleSubcategory = (sub) => {
@@ -190,7 +188,7 @@ export default function ProductsPage() {
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="Inventory Management" 
-        description="Manage hospital supplies. Products can now be assigned to multiple categories."
+        description="Catalog and track hospital supplies with multi-category support."
       >
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
@@ -206,7 +204,7 @@ export default function ProductsPage() {
               <DialogHeader>
                 <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
                 <DialogDescription>
-                  Tag this product with multiple categories and subcategories.
+                  Apply multiple categories and specific subcategories to this item.
                 </DialogDescription>
               </DialogHeader>
               
@@ -230,10 +228,10 @@ export default function ProductsPage() {
 
                   <div className="space-y-4">
                     <div className="grid gap-3">
-                      <Label className="text-base">Target Categories</Label>
+                      <Label className="text-base font-bold">Primary Categories</Label>
                       <div className="grid grid-cols-2 gap-3">
                         {Object.keys(CATEGORY_MAP).map(cat => (
-                          <div key={cat} className="flex items-center space-x-2 bg-muted/30 p-2 rounded-md border border-border/50 hover:bg-muted/50 transition-colors">
+                          <div key={cat} className="flex items-center space-x-2 bg-muted/30 p-2.5 rounded-md border border-border/50 hover:bg-muted/50 transition-colors">
                             <Checkbox 
                               id={`cat-${cat}`} 
                               checked={selectedCategories.includes(cat)}
@@ -241,7 +239,7 @@ export default function ProductsPage() {
                             />
                             <label 
                               htmlFor={`cat-${cat}`}
-                              className="text-sm font-medium leading-none cursor-pointer flex-1"
+                              className="text-sm font-semibold leading-none cursor-pointer flex-1"
                             >
                               {cat}
                             </label>
@@ -252,11 +250,11 @@ export default function ProductsPage() {
 
                     {selectedCategories.length > 0 && (
                       <div className="grid gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                        <Label className="text-base">Subcategories</Label>
+                        <Label className="text-base font-bold">Target Subcategories</Label>
                         <div className="space-y-4">
                           {selectedCategories.map(cat => (
                             <div key={cat} className="space-y-2">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{cat}</span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{cat} Options</span>
                               <div className="grid grid-cols-2 gap-2">
                                 {CATEGORY_MAP[cat].map(sub => (
                                   <div key={sub} className="flex items-center space-x-2">
@@ -285,7 +283,7 @@ export default function ProductsPage() {
 
               <DialogFooter className="mt-6 pt-4 border-t">
                 <Button type="submit" className="w-full">
-                  {editingProduct ? 'Update Product Information' : 'Create Multi-category Product'}
+                  {editingProduct ? 'Save Product Changes' : 'Create Inventory Item'}
                 </Button>
               </DialogFooter>
             </form>
@@ -297,7 +295,7 @@ export default function ProductsPage() {
         <div className="relative w-full md:max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search products..."
+            placeholder="Search clinical supplies..."
             className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -307,7 +305,7 @@ export default function ProductsPage() {
           <Filter className="h-4 w-4 text-muted-foreground" />
           <Select value={selectedFilterCategory} onValueChange={setSelectedFilterCategory}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by Category" />
+              <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Categories</SelectItem>
@@ -325,10 +323,10 @@ export default function ProductsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[250px]">Product Name</TableHead>
-                <TableHead>Categories & Subcategories</TableHead>
+                <TableHead>Clinical Classification</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Available Stock</TableHead>
+                <TableHead>Inventory Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -344,7 +342,7 @@ export default function ProductsPage() {
                         </Badge>
                       ))}
                       {product.subcategories.map(sub => (
-                        <Badge key={sub} variant="outline" className="text-[10px] bg-muted/50">
+                        <Badge key={sub} variant="outline" className="text-[10px] bg-muted/50 border-muted">
                           {sub}
                         </Badge>
                       ))}
@@ -361,7 +359,7 @@ export default function ProductsPage() {
                           <Badge 
                             variant={product.stock > 20 ? 'secondary' : product.stock > 0 ? 'outline' : 'destructive'} 
                             className={cn(
-                              "w-28 justify-between cursor-pointer hover:opacity-80 transition-opacity",
+                              "w-32 justify-between cursor-pointer hover:opacity-80 transition-opacity",
                               product.stock > 20 ? 'bg-accent/20 text-accent border-accent/20' : 
                               product.stock > 0 ? 'bg-orange-100 text-orange-700 border-orange-200' : 
                               ''
@@ -373,7 +371,7 @@ export default function ProductsPage() {
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start">
-                        <DropdownMenuLabel>Quick Update</DropdownMenuLabel>
+                        <DropdownMenuLabel>Stock Quick Edit</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => updateStockLevel(product.id, 50)}>
                           Set as In Stock (50)
@@ -391,7 +389,7 @@ export default function ProductsPage() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                          Actions
+                          Manage
                           <ChevronDown className="h-4 w-4 text-muted-foreground" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -401,6 +399,7 @@ export default function ProductsPage() {
                         <DropdownMenuItem onClick={() => openEditDialog(product)}>
                           <Edit className="mr-2 h-4 w-4" /> Edit Details
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteProduct(product.id)}>
                           <Trash2 className="mr-2 h-4 w-4" /> Delete Product
                         </DropdownMenuItem>
@@ -411,8 +410,9 @@ export default function ProductsPage() {
               ))}
               {filteredProducts.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
-                    No products found matching your search.
+                  <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                    <Search className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                    <p>No inventory items match your search criteria.</p>
                   </TableCell>
                 </TableRow>
               )}
