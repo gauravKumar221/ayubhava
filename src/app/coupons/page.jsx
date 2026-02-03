@@ -16,7 +16,8 @@ import {
   Edit,
   Trash2,
   MoreVertical,
-  Clock
+  Clock,
+  Calendar
 } from 'lucide-react';
 import {
   Dialog,
@@ -50,7 +51,7 @@ const initialCoupons = [
   { id: '1', code: 'HEALTH20', type: 'Percentage', value: 20, expiryDate: '2024-12-31T23:59', usage: '45/100', status: 'Public', tag: 'Via Barcode Code' },
   { id: '2', code: 'CHECKUP50', type: 'Fixed Amount', value: 50, expiryDate: '2024-08-15T12:00', usage: '12/50', status: 'Public', tag: 'Via Payment with Credit Card' },
   { id: '3', code: 'WELCOME10', type: 'Percentage', value: 10, expiryDate: '2024-01-01T00:00', usage: '100/100', status: 'Expired', tag: 'Via Barcode Code' },
-  { id: '4', code: 'VIP_PRIVATE', type: 'Fixed Amount', value: 100, expiryDate: '2024-11-20T18:30', usage: '5/10', status: 'Private', tag: 'Exclusive Access' },
+  { id: '4', code: 'VIP_PRIVATE', type: 'Fixed Amount', value: 100, expiryDate: '2025-11-20T18:30', usage: '5/10', status: 'Private', tag: 'Exclusive Access' },
 ];
 
 export default function CouponsPage() {
@@ -62,6 +63,7 @@ export default function CouponsPage() {
   const [currentTime, setCurrentTime] = useState(null);
 
   useEffect(() => {
+    // Handling hydration mismatch by setting time only on client
     setCurrentTime(new Date());
   }, []);
 
@@ -131,6 +133,12 @@ export default function CouponsPage() {
         title="Manage Promos" 
         description="Create and organize your discount campaigns with precise expiry timing."
       >
+        <div className="flex flex-col items-end gap-1 mr-4 hidden sm:flex">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50">
+            <Calendar className="h-3 w-3 text-primary" />
+            <span>Today: {currentTime ? format(currentTime, 'MMMM do, yyyy') : '...'}</span>
+          </div>
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
           if (!open) setEditingCoupon(null);
@@ -173,13 +181,17 @@ export default function CouponsPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="expiryDate">Expiry Date & Time</Label>
-                  <Input 
-                    id="expiryDate" 
-                    name="expiryDate" 
-                    type="datetime-local" 
-                    defaultValue={editingCoupon?.expiryDate} 
-                    required 
-                  />
+                  <div className="relative group">
+                    <Input 
+                      id="expiryDate" 
+                      name="expiryDate" 
+                      type="datetime-local" 
+                      defaultValue={editingCoupon?.expiryDate} 
+                      required 
+                      className="pr-10"
+                    />
+                    <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  </div>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="status">Privacy Status</Label>
@@ -233,7 +245,10 @@ export default function CouponsPage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredCoupons.map((coupon) => {
             const isExpired = getIsExpired(coupon.expiryDate);
-            const displayDate = coupon.expiryDate ? format(new Date(coupon.expiryDate), 'MMM d, yyyy HH:mm') : 'No date';
+            // Matching the requested visual format: MM/dd/yyyy hh:mm a
+            const displayDate = coupon.expiryDate 
+              ? format(new Date(coupon.expiryDate), 'MM/dd/yyyy hh:mm a') 
+              : 'No date';
 
             return (
               <Card 
@@ -281,16 +296,20 @@ export default function CouponsPage() {
                   </div>
                   <div className="p-4 space-y-3">
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        Usage: {coupon.usage}
+                      <span className="flex items-center gap-1 font-medium">
+                        Usage: <span className="text-foreground">{coupon.usage}</span>
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 p-2 rounded-md">
-                      <Clock className="h-3 w-3" />
-                      <span>Expires: {displayDate}</span>
+                    <div className="flex flex-col gap-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 mb-1">
+                      Expiry Date & Time
                     </div>
-                    <div className="pt-1">
-                      <Button variant="outline" size="sm" className="w-full" onClick={() => openEditDialog(coupon)}>
+                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/40 p-2.5 rounded-lg border border-border/50">
+                      <Clock className="h-3.5 w-3.5 text-primary" />
+                      <span>{displayDate}</span>
+                      <Calendar className="h-3.5 w-3.5 ml-auto opacity-40" />
+                    </div>
+                    <div className="pt-2">
+                      <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => openEditDialog(coupon)}>
                         View Details
                       </Button>
                     </div>
