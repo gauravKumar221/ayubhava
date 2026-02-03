@@ -2,7 +2,7 @@
 import './globals.css';
 import { usePathname } from 'next/navigation';
 import { Toaster } from '@/components/ui/toaster.jsx';
-import { Menu, Search, Bell, Building } from 'lucide-react';
+import { Menu, Search, Bell, Building, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -18,7 +18,7 @@ import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { Sidebar, menuItems } from '@/components/layout/sidebar';
 import { SidebarProvider, useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import Link from 'next/link';
 
 function AppLayout({ children }) {
@@ -137,17 +137,18 @@ function SidebarToggleButton() {
           </div>
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-1 py-4">
             {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50',
-                  pathname === item.href && 'bg-muted text-primary'
-                )}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
+              <SheetClose asChild key={item.href}>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50',
+                    pathname === item.href && 'bg-muted text-primary'
+                  )}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              </SheetClose>
             ))}
           </nav>
         </SheetContent>
