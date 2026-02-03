@@ -98,6 +98,7 @@ const initialCategories = [
 export default function CategoriesPage() {
   const [categories, setCategories] = useState(initialCategories);
   const [searchTerm, setSearchTerm] = useState('');
+  const [expandedSubcategories, setExpandedSubcategories] = useState({});
   
   // Dialog controls
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
@@ -157,6 +158,13 @@ export default function CategoriesPage() {
     localStorage.setItem('bitmax_categories', JSON.stringify(newCategories));
     setAllGlobalProducts(getUniqueProducts(newCategories));
     window.dispatchEvent(new Event('storage'));
+  };
+
+  const toggleSubcategory = (id) => {
+    setExpandedSubcategories(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
   };
 
   const filteredCategories = categories.filter(category =>
@@ -560,99 +568,113 @@ export default function CategoriesPage() {
                       </div>
                       
                       <div className="grid grid-cols-1 gap-4">
-                        {(category.subcategories || []).map((sub) => (
-                          <div key={sub.id} className="rounded-xl border bg-background p-5 shadow-sm space-y-5">
-                            <div className="flex items-center justify-between">
-                              <h4 className="font-bold text-md flex items-center gap-2">
-                                <ChevronRight className="h-4 w-4 text-primary" />
-                                {sub.name}
-                              </h4>
-                              <div className="flex items-center gap-1.5">
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openSubSubDialog(category, sub)} title="Add Sub-Subcategory">
-                                  <Plus className="h-4 w-4" />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setActiveSubSubcategory(null); setIsProductDialogOpen(true); }} title="Add Product to Subcategory">
-                                  <Package className="h-4 w-4 text-accent" />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => { setItemToDelete({ type: 'subcategory', categoryId: category.id, subcategoryId: sub.id }); setIsDeleteDialogOpen(true); }}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                        {(category.subcategories || []).map((sub) => {
+                          const isExpanded = !!expandedSubcategories[sub.id];
+                          return (
+                            <div key={sub.id} className="rounded-xl border bg-background p-5 shadow-sm space-y-5">
+                              <div className="flex items-center justify-between">
+                                <h4 
+                                  className="font-bold text-md flex items-center gap-2 cursor-pointer select-none"
+                                  onClick={() => toggleSubcategory(sub.id)}
+                                >
+                                  {isExpanded ? (
+                                    <ChevronDown className="h-4 w-4 text-primary" />
+                                  ) : (
+                                    <ChevronRight className="h-4 w-4 text-primary" />
+                                  )}
+                                  {sub.name}
+                                </h4>
+                                <div className="flex items-center gap-1.5">
+                                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openSubSubDialog(category, sub)} title="Add Sub-Subcategory">
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setActiveSubSubcategory(null); setIsProductDialogOpen(true); }} title="Add Product to Subcategory">
+                                    <Package className="h-4 w-4 text-accent" />
+                                  </Button>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => { setItemToDelete({ type: 'subcategory', categoryId: category.id, subcategoryId: sub.id }); setIsDeleteDialogOpen(true); }}>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </div>
-                            </div>
 
-                            {/* Sub-Subcategories section */}
-                            {sub.subSubcategories && sub.subSubcategories.length > 0 && (
-                              <div className="pl-6 space-y-3">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-1.5">
-                                  <ListTree className="h-3 w-3" /> Sub-Subcategories
-                                </p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                                  {sub.subSubcategories.map((ss) => (
-                                    <div key={ss.id} className="flex flex-col p-3 rounded-lg bg-muted/20 border border-border/50 group/ss transition-colors hover:bg-muted/40">
-                                      <div className="flex items-center justify-between mb-2">
-                                        <span className="text-xs font-semibold">{ss.name}</span>
-                                        <div className="flex items-center gap-1 opacity-0 group-hover/ss:opacity-100 transition-opacity">
-                                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setActiveSubSubcategory(ss); setIsProductDialogOpen(true); }} title="Add Product to Sub-Subcategory">
-                                            <Package className="h-3.5 w-3.5 text-accent" />
-                                          </Button>
-                                          <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => { setItemToDelete({ type: 'subsubcategory', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id }); setIsDeleteDialogOpen(true); }}>
-                                            <Trash2 className="h-3.5 w-3.5" />
-                                          </Button>
-                                        </div>
-                                      </div>
-                                      
-                                      {/* Products in Sub-Subcategory section */}
-                                      {ss.products && ss.products.length > 0 && (
-                                        <div className="space-y-1.5 mt-2 pt-2 border-t border-border/40">
-                                          {ss.products.map(p => (
-                                            <div key={p.id} className="flex items-center justify-between text-[10px] group/ssp">
-                                              <div className="flex items-center gap-1 truncate max-w-[70%]">
-                                                <Box className="h-2.5 w-2.5 text-muted-foreground/60" />
-                                                <span className="font-medium truncate">{p.name}</span>
-                                              </div>
-                                              <div className="flex items-center gap-1.5">
-                                                <span className="font-bold text-primary">${p.price?.toFixed(2)}</span>
-                                                <button 
-                                                  onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id, productId: p.id }); setIsDeleteDialogOpen(true); }}
-                                                  className="text-destructive opacity-0 group-hover/ssp:opacity-100 transition-opacity"
-                                                >
-                                                  <Trash2 className="h-2.5 w-2.5" />
-                                                </button>
+                              {isExpanded && (
+                                <div className="pt-2 animate-in fade-in slide-in-from-top-1 duration-200 space-y-5">
+                                  {/* Sub-Subcategories section */}
+                                  {sub.subSubcategories && sub.subSubcategories.length > 0 && (
+                                    <div className="pl-6 space-y-3">
+                                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-1.5">
+                                        <ListTree className="h-3 w-3" /> Sub-Subcategories
+                                      </p>
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                        {sub.subSubcategories.map((ss) => (
+                                          <div key={ss.id} className="flex flex-col p-3 rounded-lg bg-muted/20 border border-border/50 group/ss transition-colors hover:bg-muted/40">
+                                            <div className="flex items-center justify-between mb-2">
+                                              <span className="text-xs font-semibold">{ss.name}</span>
+                                              <div className="flex items-center gap-1 opacity-0 group-hover/ss:opacity-100 transition-opacity">
+                                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setActiveSubSubcategory(ss); setIsProductDialogOpen(true); }} title="Add Product to Sub-Subcategory">
+                                                  <Package className="h-3.5 w-3.5 text-accent" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => { setItemToDelete({ type: 'subsubcategory', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id }); setIsDeleteDialogOpen(true); }}>
+                                                  <Trash2 className="h-3.5 w-3.5" />
+                                                </Button>
                                               </div>
                                             </div>
-                                          ))}
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Products in Subcategory section */}
-                            {sub.products && sub.products.length > 0 && (
-                              <div className="pl-6 space-y-3">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-1.5">
-                                  <Package className="h-3 w-3" /> Products in {sub.name}
-                                </p>
-                                <div className="space-y-2">
-                                  {sub.products.map((p) => (
-                                    <div key={p.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/5 group/prod transition-colors hover:bg-muted/10">
-                                      <div className="flex flex-1 items-center gap-6">
-                                        <span className="text-sm font-bold flex-1">{p.name}</span>
-                                        <span className="text-xs font-mono text-muted-foreground/70 hidden sm:block w-32">{p.sku}</span>
-                                        <span className="text-sm font-extrabold text-primary w-24 text-right">${p.price?.toFixed(2)}</span>
+                                            
+                                            {/* Products in Sub-Subcategory section */}
+                                            {ss.products && ss.products.length > 0 && (
+                                              <div className="space-y-1.5 mt-2 pt-2 border-t border-border/40">
+                                                {ss.products.map(p => (
+                                                  <div key={p.id} className="flex items-center justify-between text-[10px] group/ssp">
+                                                    <div className="flex items-center gap-1 truncate max-w-[70%]">
+                                                      <Box className="h-2.5 w-2.5 text-muted-foreground/60" />
+                                                      <span className="font-medium truncate">{p.name}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5">
+                                                      <span className="font-bold text-primary">${p.price?.toFixed(2)}</span>
+                                                      <button 
+                                                        onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id, productId: p.id }); setIsDeleteDialogOpen(true); }}
+                                                        className="text-destructive opacity-0 group-hover/ssp:opacity-100 transition-opacity"
+                                                      >
+                                                        <Trash2 className="h-2.5 w-2.5" />
+                                                      </button>
+                                                    </div>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            )}
+                                          </div>
+                                        ))}
                                       </div>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-0 group-hover/prod:opacity-100 transition-opacity ml-4" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, subcategoryId: sub.id, productId: p.id }); setIsDeleteDialogOpen(true); }}>
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
                                     </div>
-                                  ))}
+                                  )}
+
+                                  {/* Products in Subcategory section */}
+                                  {sub.products && sub.products.length > 0 && (
+                                    <div className="pl-6 space-y-3">
+                                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-1.5">
+                                        <Package className="h-3 w-3" /> Products in {sub.name}
+                                      </p>
+                                      <div className="space-y-2">
+                                        {sub.products.map((p) => (
+                                          <div key={p.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/5 group/prod transition-colors hover:bg-muted/10">
+                                            <div className="flex flex-1 items-center gap-6">
+                                              <span className="text-sm font-bold flex-1">{p.name}</span>
+                                              <span className="text-xs font-mono text-muted-foreground/70 hidden sm:block w-32">{p.sku}</span>
+                                              <span className="text-sm font-extrabold text-primary w-24 text-right">${p.price?.toFixed(2)}</span>
+                                            </div>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive opacity-0 group-hover/prod:opacity-100 transition-opacity ml-4" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, subcategoryId: sub.id, productId: p.id }); setIsDeleteDialogOpen(true); }}>
+                                              <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                              )}
+                            </div>
+                          );
+                        })}
                         {(!category.subcategories || category.subcategories.length === 0) && (
                           <div className="text-center py-6 border-2 border-dashed rounded-xl text-muted-foreground text-xs italic bg-muted/5">
                             No subcategories defined.
