@@ -10,6 +10,7 @@ import {
   Tags,
   Newspaper,
   Users,
+  Ticket,
 } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,11 @@ const menuItems = [
     href: '/subscribers',
     icon: <Users className="h-4 w-4" />,
     label: 'Subscribers',
+  },
+  {
+    href: '/coupons',
+    icon: <Ticket className="h-4 w-4" />,
+    label: 'Coupons',
   },
   {
     href: '/payments',
