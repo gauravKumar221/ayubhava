@@ -319,6 +319,18 @@ export default function NewProductPage() {
                 </Select>
               </div>
               <div className="grid gap-2">
+                <Label htmlFor="subcategory">Subcategory</Label>
+                <Select defaultValue="surgical">
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="surgical">Surgical Tools</SelectItem>
+                    <SelectItem value="diagnostic">Diagnostic Scopes</SelectItem>
+                    <SelectItem value="protective">Protective Gear</SelectItem>
+                    <SelectItem value="sanitization">Sanitization</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="tags">Tags</Label>
                 <Input id="tags" placeholder="e.g. New, Featured, Medical" />
               </div>
