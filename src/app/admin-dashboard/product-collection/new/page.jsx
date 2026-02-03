@@ -292,10 +292,6 @@ export default function NewProductPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="vendor">Vendor</Label>
-                <Input id="vendor" placeholder="e.g. HealthCorp Inc." />
-              </div>
-              <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
                 <Select defaultValue="instruments">
                   <SelectTrigger><SelectValue /></SelectTrigger>
