@@ -17,7 +17,8 @@ import {
   Package,
   Tag,
   ChevronRight,
-  ListTree
+  ListTree,
+  DollarSign
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -80,6 +81,7 @@ const initialCategories = [
       { 
         id: 's1', 
         name: 'Surgical Tools',
+        products: [],
         subSubcategories: [
           { id: 'ss1', name: 'Scalpels' },
           { id: 'ss2', name: 'Forceps' }
@@ -125,7 +127,11 @@ export default function CategoriesPage() {
       const cats = JSON.parse(saved);
       setCategories(cats);
       // Flatten all products for the dropdown
-      const flattened = cats.flatMap(c => c.products || []);
+      const flattened = cats.flatMap(c => {
+        const catProds = c.products || [];
+        const subProds = (c.subcategories || []).flatMap(s => s.products || []);
+        return [...catProds, ...subProds];
+      });
       setAllGlobalProducts(flattened);
     }
   }, []);
@@ -134,7 +140,11 @@ export default function CategoriesPage() {
     setCategories(newCategories);
     localStorage.setItem('bitmax_categories', JSON.stringify(newCategories));
     // Flatten and update global products list
-    const flattened = newCategories.flatMap(c => c.products || []);
+    const flattened = newCategories.flatMap(c => {
+      const catProds = c.products || [];
+      const subProds = (c.subcategories || []).flatMap(s => s.products || []);
+      return [...catProds, ...subProds];
+    });
     setAllGlobalProducts(flattened);
     window.dispatchEvent(new Event('storage'));
   };
@@ -187,7 +197,7 @@ export default function CategoriesPage() {
             : c
         );
       } else {
-        const newSub = { id: Math.random().toString(36).substr(2, 9), name, subSubcategories: [] };
+        const newSub = { id: Math.random().toString(36).substr(2, 9), name, subSubcategories: [], products: [] };
         newCategories = categories.map(c => 
           c.id === activeCategory.id 
             ? { ...c, subcategories: [...(c.subcategories || []), newSub] } 
@@ -249,18 +259,25 @@ export default function CategoriesPage() {
 
     if (activeCategory) {
       let newCategories;
-      if (editingProduct) {
-        newCategories = categories.map(c => 
-          c.id === activeCategory.id 
-            ? { 
-                ...c, 
-                products: (c.products || []).map(p => 
-                  p.id === editingProduct.id ? { ...p, ...productData } : p
-                ) 
-              } 
-            : c
-        );
+      if (activeSubcategory) {
+        // Add product to subcategory
+        newCategories = categories.map(c => {
+          if (c.id === activeCategory.id) {
+            return {
+              ...c,
+              subcategories: (c.subcategories || []).map(s => {
+                if (s.id === activeSubcategory.id) {
+                  const newProd = { ...productData, id: Math.random().toString(36).substr(2, 9) };
+                  return { ...s, products: [...(s.products || []), newProd] };
+                }
+                return s;
+              })
+            };
+          }
+          return c;
+        });
       } else {
+        // Add product to category
         const newProd = { ...productData, id: Math.random().toString(36).substr(2, 9) };
         newCategories = categories.map(c => 
           c.id === activeCategory.id 
@@ -272,6 +289,7 @@ export default function CategoriesPage() {
     }
     setIsProductDialogOpen(false);
     setEditingProduct(null);
+    setActiveSubcategory(null);
   };
 
   const handleDelete = () => {
@@ -298,9 +316,28 @@ export default function CategoriesPage() {
         return c;
       });
     } else if (type === 'product') {
-      newCategories = categories.map(c => 
-        c.id === categoryId ? { ...c, products: (c.products || []).filter(p => p.id !== productId) } : c
-      );
+      if (subcategoryId) {
+        // Delete from subcategory
+        newCategories = categories.map(c => {
+          if (c.id === categoryId) {
+            return {
+              ...c,
+              subcategories: (c.subcategories || []).map(s => {
+                if (s.id === subcategoryId) {
+                  return { ...s, products: (s.products || []).filter(p => p.id !== productId) };
+                }
+                return s;
+              })
+            };
+          }
+          return c;
+        });
+      } else {
+        // Delete from category
+        newCategories = categories.map(c => 
+          c.id === categoryId ? { ...c, products: (c.products || []).filter(p => p.id !== productId) } : c
+        );
+      }
     }
     persistCategories(newCategories);
     setIsDeleteDialogOpen(false);
@@ -317,15 +354,33 @@ export default function CategoriesPage() {
   const handleSelectExistingProduct = (productId) => {
     const selected = allGlobalProducts.find(p => p.id === productId);
     if (selected && activeCategory) {
-      const newCategories = categories.map(c => {
-        if (c.id === activeCategory.id) {
-          // Avoid duplicate SKUs in same category if desired, but here we just add
-          return { ...c, products: [...(c.products || []), { ...selected, id: Math.random().toString(36).substr(2, 9) }] };
-        }
-        return c;
-      });
+      let newCategories;
+      if (activeSubcategory) {
+        newCategories = categories.map(c => {
+          if (c.id === activeCategory.id) {
+            return {
+              ...c,
+              subcategories: (c.subcategories || []).map(s => {
+                if (s.id === activeSubcategory.id) {
+                  return { ...s, products: [...(s.products || []), { ...selected, id: Math.random().toString(36).substr(2, 9) }] };
+                }
+                return s;
+              })
+            };
+          }
+          return c;
+        });
+      } else {
+        newCategories = categories.map(c => {
+          if (c.id === activeCategory.id) {
+            return { ...c, products: [...(c.products || []), { ...selected, id: Math.random().toString(36).substr(2, 9) }] };
+          }
+          return c;
+        });
+      }
       persistCategories(newCategories);
       setIsProductDialogOpen(false);
+      setActiveSubcategory(null);
     }
   };
 
@@ -416,7 +471,12 @@ export default function CategoriesPage() {
             <Separator />
 
             <form onSubmit={handleSaveProduct} className="grid gap-4">
-              <DialogHeader><DialogTitle>{editingProduct ? 'Edit Product' : 'Create New Product'}</DialogTitle></DialogHeader>
+              <DialogHeader>
+                <DialogTitle>{editingProduct ? 'Edit Product' : 'Create New Product'}</DialogTitle>
+                <DialogDescription className="text-xs">
+                  Adding to {activeSubcategory ? activeSubcategory.name : activeCategory?.name}
+                </DialogDescription>
+              </DialogHeader>
               <div className="grid gap-2">
                 <Label>Product Name</Label>
                 <Input name="productName" placeholder="e.g. Stethoscope" defaultValue={editingProduct?.name} required />
@@ -431,7 +491,7 @@ export default function CategoriesPage() {
                   <Input name="price" type="number" step="0.01" placeholder="0.00" defaultValue={editingProduct?.price} />
                 </div>
               </div>
-              <DialogFooter><Button type="submit" className="w-full">Add to {activeCategory?.name}</Button></DialogFooter>
+              <DialogFooter><Button type="submit" className="w-full">Add Product</Button></DialogFooter>
             </form>
           </div>
         </DialogContent>
@@ -479,7 +539,7 @@ export default function CategoriesPage() {
                         <DropdownMenuItem onClick={() => { setActiveCategory(category); setIsSubcategoryDialogOpen(true); }}>
                           <Plus className="mr-2 h-4 w-4" /> Add Subcategory
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setActiveCategory(category); setIsProductDialogOpen(true); }}>
+                        <DropdownMenuItem onClick={() => { setActiveCategory(category); setActiveSubcategory(null); setIsProductDialogOpen(true); }}>
                           <Package className="mr-2 h-4 w-4" /> Add Product
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -508,8 +568,11 @@ export default function CategoriesPage() {
                                 {sub.name}
                               </h4>
                               <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openSubSubDialog(category, sub)}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openSubSubDialog(category, sub)} title="Add Sub-Subcategory">
                                   <Plus className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setEditingProduct(null); setIsProductDialogOpen(true); }} title="Add Product to Subcategory">
+                                  <Package className="h-3.5 w-3.5 text-accent" />
                                 </Button>
                                 <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setItemToDelete({ type: 'subcategory', categoryId: category.id, subcategoryId: sub.id }); setIsDeleteDialogOpen(true); }}>
                                   <Trash2 className="h-3.5 w-3.5" />
@@ -517,6 +580,7 @@ export default function CategoriesPage() {
                               </div>
                             </div>
 
+                            {/* Sub-Subcategories section */}
                             {sub.subSubcategories && sub.subSubcategories.length > 0 && (
                               <div className="pl-6 space-y-2">
                                 <p className="text-[10px] font-bold uppercase text-muted-foreground/60 flex items-center gap-1">
@@ -536,6 +600,33 @@ export default function CategoriesPage() {
                                 </div>
                               </div>
                             )}
+
+                            {/* Products in Subcategory section */}
+                            {sub.products && sub.products.length > 0 && (
+                              <div className="pl-6 space-y-2">
+                                <p className="text-[10px] font-bold uppercase text-muted-foreground/60 flex items-center gap-1">
+                                  <Package className="h-3 w-3" /> Products in {sub.name}
+                                </p>
+                                <div className="rounded border bg-muted/20 overflow-hidden">
+                                  <Table>
+                                    <TableBody>
+                                      {sub.products.map((p) => (
+                                        <TableRow key={p.id} className="hover:bg-muted/40">
+                                          <TableCell className="py-2 text-xs font-medium">{p.name}</TableCell>
+                                          <TableCell className="py-2 text-[10px] font-mono opacity-60">{p.sku}</TableCell>
+                                          <TableCell className="py-2 text-[10px] font-bold">${p.price?.toFixed(2)}</TableCell>
+                                          <TableCell className="py-2 text-right">
+                                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, subcategoryId: sub.id, productId: p.id }); setIsDeleteDialogOpen(true); }}>
+                                              <Trash2 className="h-3 w-3" />
+                                            </Button>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         ))}
                         {(!category.subcategories || category.subcategories.length === 0) && (
@@ -550,7 +641,7 @@ export default function CategoriesPage() {
 
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                        <Package className="h-4 w-4 text-accent" /> Product Items in {category.name}
+                        <Package className="h-4 w-4 text-accent" /> Direct Category Products (General)
                       </div>
                       {category.products && category.products.length > 0 ? (
                         <Card className="border-none shadow-sm overflow-hidden">
@@ -568,7 +659,7 @@ export default function CategoriesPage() {
                                 <TableRow key={product.id}>
                                   <TableCell className="py-3 font-medium">{product.name}</TableCell>
                                   <TableCell className="py-3 font-mono text-xs">{product.sku || 'N/A'}</TableCell>
-                                  <TableCell className="py-3 font-bold text-xs">${product.price.toFixed(2)}</TableCell>
+                                  <TableCell className="py-3 font-bold text-xs">${product.price?.toFixed(2)}</TableCell>
                                   <TableCell className="py-3 text-right">
                                     <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, productId: product.id }); setIsDeleteDialogOpen(true); }}>
                                       <Trash2 className="h-3.5 w-3.5" />
@@ -581,7 +672,7 @@ export default function CategoriesPage() {
                         </Card>
                       ) : (
                         <div className="text-center py-10 border border-dashed rounded-lg text-muted-foreground text-xs italic">
-                          No product items listed. Click the menu to add products.
+                          No general products listed. Click the category menu to add products.
                         </div>
                       )}
                     </div>
