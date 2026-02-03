@@ -20,9 +20,7 @@ import {
   List,
   ListOrdered,
   Type,
-  ExternalLink,
   Search,
-  Settings2,
   Plus,
   Edit
 } from 'lucide-react';
@@ -252,32 +250,6 @@ export default function NewProductPage() {
         </div>
 
         <div className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-semibold">Publishing</CardTitle>
-              <Button variant="ghost" size="sm" className="h-8 text-primary">Manage</Button>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Sales channels</Label>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-green-500" />
-                    <span>Online Store</span>
-                  </div>
-                  <Settings2 className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-primary" />
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-                    <span>Point of Sale</span>
-                  </div>
-                  <Settings2 className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-semibold">Product Organization</CardTitle>
