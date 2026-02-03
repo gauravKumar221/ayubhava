@@ -17,7 +17,9 @@ import {
   MoreHorizontal,
   Package,
   Tag,
-  DollarSign
+  DollarSign,
+  ChevronRight,
+  ListTree
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -69,8 +71,19 @@ const initialCategories = [
     name: 'Instruments', 
     description: 'Medical tools and machinery', 
     subcategories: [
-      { id: 's1', name: 'Surgical Tools' },
-      { id: 's2', name: 'Diagnostic Scopes' }
+      { 
+        id: 's1', 
+        name: 'Surgical Tools',
+        subSubcategories: [
+          { id: 'ss1', name: 'Scalpels' },
+          { id: 'ss2', name: 'Forceps' }
+        ]
+      },
+      { 
+        id: 's2', 
+        name: 'Diagnostic Scopes',
+        subSubcategories: []
+      }
     ],
     products: [
       { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99 },
@@ -82,19 +95,23 @@ const initialCategories = [
     name: 'Consumables', 
     description: 'Single-use items like masks and gloves', 
     subcategories: [
-      { id: 's3', name: 'Protective Gear' },
-      { id: 's4', name: 'Sanitization' }
+      { 
+        id: 's3', 
+        name: 'Protective Gear',
+        subSubcategories: [
+          { id: 'ss3', name: 'N95 Face Masks' },
+          { id: 'ss4', name: 'Nitrile Gloves' }
+        ]
+      },
+      { 
+        id: 's4', 
+        name: 'Sanitization',
+        subSubcategories: []
+      }
     ],
     products: [
       { id: 'p3', name: 'N95 Respirators (Pack)', sku: 'MSK-N95', price: 45.00 }
     ]
-  },
-  { 
-    id: '3', 
-    name: 'Diagnostics', 
-    description: 'Equipment for testing and analysis', 
-    subcategories: [],
-    products: []
   },
 ];
 
@@ -105,13 +122,17 @@ export default function CategoriesPage() {
   // Dialog controls
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [isSubcategoryDialogOpen, setIsSubcategoryDialogOpen] = useState(false);
+  const [isSubSubcategoryDialogOpen, setIsSubSubcategoryDialogOpen] = useState(false);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   
-  // Active edit items
+  // Active items for context
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingSubcategory, setEditingSubcategory] = useState(null);
+  const [editingSubSubcategory, setEditingSubSubcategory] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
+  
   const [activeCategory, setActiveCategory] = useState(null);
+  const [activeSubcategory, setActiveSubcategory] = useState(null);
 
   // Deletion confirmation
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -140,7 +161,6 @@ export default function CategoriesPage() {
         products: []
       }]);
     }
-    
     setIsCategoryDialogOpen(false);
     setEditingCategory(null);
   };
@@ -148,7 +168,7 @@ export default function CategoriesPage() {
   const handleSaveSubcategory = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const subName = formData.get('subcategoryName');
+    const name = formData.get('subcategoryName');
     
     if (activeCategory) {
       if (editingSubcategory) {
@@ -157,17 +177,13 @@ export default function CategoriesPage() {
             ? { 
                 ...c, 
                 subcategories: c.subcategories.map(s => 
-                  s.id === editingSubcategory.id ? { ...s, name: subName } : s
+                  s.id === editingSubcategory.id ? { ...s, name } : s
                 ) 
               } 
             : c
         ));
       } else {
-        const newSub = {
-          id: Math.random().toString(36).substr(2, 9),
-          name: subName
-        };
-        
+        const newSub = { id: Math.random().toString(36).substr(2, 9), name, subSubcategories: [] };
         setCategories(categories.map(c => 
           c.id === activeCategory.id 
             ? { ...c, subcategories: [...c.subcategories, newSub] } 
@@ -175,10 +191,45 @@ export default function CategoriesPage() {
         ));
       }
     }
-    
     setIsSubcategoryDialogOpen(false);
-    setActiveCategory(null);
     setEditingSubcategory(null);
+  };
+
+  const handleSaveSubSubcategory = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const name = formData.get('subSubName');
+    
+    if (activeCategory && activeSubcategory) {
+      setCategories(categories.map(c => {
+        if (c.id === activeCategory.id) {
+          return {
+            ...c,
+            subcategories: c.subcategories.map(s => {
+              if (s.id === activeSubcategory.id) {
+                if (editingSubSubcategory) {
+                  return {
+                    ...s,
+                    subSubcategories: s.subSubcategories.map(ss => 
+                      ss.id === editingSubSubcategory.id ? { ...ss, name } : ss
+                    )
+                  };
+                } else {
+                  return {
+                    ...s,
+                    subSubcategories: [...(s.subSubcategories || []), { id: Math.random().toString(36).substr(2, 9), name }]
+                  };
+                }
+              }
+              return s;
+            })
+          };
+        }
+        return c;
+      }));
+    }
+    setIsSubSubcategoryDialogOpen(false);
+    setEditingSubSubcategory(null);
   };
 
   const handleSaveProduct = (e) => {
@@ -203,11 +254,7 @@ export default function CategoriesPage() {
             : c
         ));
       } else {
-        const newProd = {
-          ...productData,
-          id: Math.random().toString(36).substr(2, 9)
-        };
-        
+        const newProd = { ...productData, id: Math.random().toString(36).substr(2, 9) };
         setCategories(categories.map(c => 
           c.id === activeCategory.id 
             ? { ...c, products: [...c.products, newProd] } 
@@ -215,69 +262,55 @@ export default function CategoriesPage() {
         ));
       }
     }
-    
     setIsProductDialogOpen(false);
-    setActiveCategory(null);
     setEditingProduct(null);
   };
 
   const handleDelete = () => {
     if (!itemToDelete) return;
+    const { type, categoryId, subcategoryId, subSubcategoryId, productId } = itemToDelete;
 
-    if (itemToDelete.type === 'category') {
-      setCategories(categories.filter(c => c.id !== itemToDelete.categoryId));
-    } else if (itemToDelete.type === 'subcategory') {
+    if (type === 'category') {
+      setCategories(categories.filter(c => c.id !== categoryId));
+    } else if (type === 'subcategory') {
       setCategories(categories.map(c => 
-        c.id === itemToDelete.categoryId
-          ? { ...c, subcategories: c.subcategories.filter(s => s.id !== itemToDelete.subcategoryId) }
-          : c
+        c.id === categoryId ? { ...c, subcategories: c.subcategories.filter(s => s.id !== subcategoryId) } : c
       ));
-    } else if (itemToDelete.type === 'product') {
+    } else if (type === 'subsubcategory') {
+      setCategories(categories.map(c => {
+        if (c.id === categoryId) {
+          return {
+            ...c,
+            subcategories: c.subcategories.map(s => 
+              s.id === subcategoryId ? { ...s, subSubcategories: s.subSubcategories.filter(ss => ss.id !== subSubcategoryId) } : s
+            )
+          };
+        }
+        return c;
+      }));
+    } else if (type === 'product') {
       setCategories(categories.map(c => 
-        c.id === itemToDelete.categoryId
-          ? { ...c, products: c.products.filter(p => p.id !== itemToDelete.productId) }
-          : c
+        c.id === categoryId ? { ...c, products: c.products.filter(p => p.id !== productId) } : c
       ));
     }
-
     setIsDeleteDialogOpen(false);
     setItemToDelete(null);
   };
 
-  const openEditCategoryDialog = (category) => {
-    setEditingCategory(category);
-    setIsCategoryDialogOpen(true);
-  };
-
-  const openSubcategoryDialog = (category, subcategory = null) => {
+  const openSubSubDialog = (category, subcategory, subSub = null) => {
     setActiveCategory(category);
-    setEditingSubcategory(subcategory);
-    setIsSubcategoryDialogOpen(true);
-  };
-
-  const openProductDialog = (category, product = null) => {
-    setActiveCategory(category);
-    setEditingProduct(product);
-    setIsProductDialogOpen(true);
-  };
-
-  const triggerDelete = (type, categoryId, itemId = null) => {
-    if (type === 'category') setItemToDelete({ type, categoryId });
-    else if (type === 'subcategory') setItemToDelete({ type, categoryId, subcategoryId: itemId });
-    else if (type === 'product') setItemToDelete({ type, categoryId, productId: itemId });
-    setIsDeleteDialogOpen(true);
+    setActiveSubcategory(subcategory);
+    setEditingSubSubcategory(subSub);
+    setIsSubSubcategoryDialogOpen(true);
   };
 
   return (
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="Category Management" 
-        description="Organize clinical groupings, subcategories, and associated product items."
+        description="Organize clinical groupings, subcategories, sub-subcategories, and products."
       >
-        <Dialog open={isCategoryDialogOpen} onOpenChange={(open) => {
-          setIsCategoryDialogOpen(open);
-          if (!open) setEditingCategory(null);
-        }}>
+        <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Plus className="mr-2 h-4 w-4" /> Add Category
@@ -287,308 +320,226 @@ export default function CategoriesPage() {
             <form onSubmit={handleSaveCategory}>
               <DialogHeader>
                 <DialogTitle>{editingCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
-                <DialogDescription>
-                  Define a main category for clinical organization.
-                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Category Name</Label>
-                  <Input id="name" name="name" defaultValue={editingCategory?.name} placeholder="e.g. Diagnostics" required />
+                  <Input id="name" name="name" defaultValue={editingCategory?.name} required />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="description">Description</Label>
-                  <Textarea 
-                    id="description" 
-                    name="description" 
-                    defaultValue={editingCategory?.description} 
-                    placeholder="Brief description of clinical use..."
-                  />
+                  <Textarea id="description" name="description" defaultValue={editingCategory?.description} />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">{editingCategory ? 'Save Changes' : 'Create Category'}</Button>
+                <Button type="submit">Save</Button>
               </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
       </PageHeader>
 
-      {/* Subcategory Dialog */}
-      <Dialog open={isSubcategoryDialogOpen} onOpenChange={(open) => {
-        setIsSubcategoryDialogOpen(open);
-        if (!open) {
-          setEditingSubcategory(null);
-          setActiveCategory(null);
-        }
-      }}>
+      {/* Other Dialogs */}
+      <Dialog open={isSubcategoryDialogOpen} onOpenChange={setIsSubcategoryDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveSubcategory}>
-            <DialogHeader>
-              <DialogTitle>{editingSubcategory ? 'Edit Subcategory' : 'New Subcategory'} for {activeCategory?.name}</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="subcategoryName">Subcategory Name</Label>
-                <Input id="subcategoryName" name="subcategoryName" defaultValue={editingSubcategory?.name} placeholder="e.g. MRI Accessories" required />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">{editingSubcategory ? 'Save Changes' : 'Add Subcategory'}</Button>
-            </DialogFooter>
+            <DialogHeader><DialogTitle>Subcategory</DialogTitle></DialogHeader>
+            <div className="py-4"><Input name="subcategoryName" defaultValue={editingSubcategory?.name} required /></div>
+            <DialogFooter><Button type="submit">Save</Button></DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Product Dialog */}
-      <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
-        setIsProductDialogOpen(open);
-        if (!open) {
-          setEditingProduct(null);
-          setActiveCategory(null);
-        }
-      }}>
+      <Dialog open={isSubSubcategoryDialogOpen} onOpenChange={setIsSubSubcategoryDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <form onSubmit={handleSaveSubSubcategory}>
+            <DialogHeader><DialogTitle>Sub-Subcategory</DialogTitle></DialogHeader>
+            <div className="py-4"><Input name="subSubName" defaultValue={editingSubSubcategory?.name} required /></div>
+            <DialogFooter><Button type="submit">Save</Button></DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveProduct}>
-            <DialogHeader>
-              <DialogTitle>{editingProduct ? 'Edit Product Item' : 'Add Product Item'} to {activeCategory?.name}</DialogTitle>
-              <DialogDescription>
-                Define a specific medical item belonging to this category.
-              </DialogDescription>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>Product Item</DialogTitle></DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="productName">Product Name</Label>
-                <Input id="productName" name="productName" defaultValue={editingProduct?.name} placeholder="e.g. UltraView Stethoscope" required />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="sku">SKU / Model</Label>
-                  <Input id="sku" name="sku" defaultValue={editingProduct?.sku} placeholder="e.g. ST-202" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="price">Price ($)</Label>
-                  <Input id="price" name="price" type="number" step="0.01" defaultValue={editingProduct?.price} placeholder="0.00" />
-                </div>
-              </div>
+              <Input name="productName" placeholder="Name" defaultValue={editingProduct?.name} required />
+              <Input name="sku" placeholder="SKU" defaultValue={editingProduct?.sku} />
+              <Input name="price" type="number" step="0.01" placeholder="Price" defaultValue={editingProduct?.price} />
             </div>
-            <DialogFooter>
-              <Button type="submit">{editingProduct ? 'Save Changes' : 'Add Item'}</Button>
-            </DialogFooter>
+            <DialogFooter><Button type="submit">Save</Button></DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the 
-              {itemToDelete?.type === 'category' ? ' category and all its related sub-items' : ` selected ${itemToDelete?.type}`}.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+          <AlertDialogHeader><AlertDialogTitle>Confirm Delete</AlertDialogTitle></AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setItemToDelete(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
       <div className="relative w-full md:max-w-sm">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search categories..."
-          className="pl-8"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <Input placeholder="Search..." className="pl-8" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
 
       <div className="grid gap-4">
         {filteredCategories.map((category) => (
-          <Card key={category.id} className="overflow-hidden border-none shadow-sm bg-card hover:shadow-md transition-all">
-            <CardContent className="p-0">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value={category.id} className="border-none">
-                  <div className="flex items-center justify-between p-4 sm:p-6 group">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                        <Layers className="h-5 w-5" />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-lg">{category.name}</h3>
-                          <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 px-2 py-0">
-                            {category.products.length} Items
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground line-clamp-1">{category.description}</p>
-                      </div>
+          <Card key={category.id} className="overflow-hidden border-none shadow-sm bg-card">
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value={category.id} className="border-none">
+                <div className="flex items-center justify-between p-4 sm:p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <Layers className="h-5 w-5" />
                     </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Management</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => openSubcategoryDialog(category)}>
-                            <Plus className="mr-2 h-4 w-4 text-primary" /> Add Subcategory
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => openProductDialog(category)}>
-                            <Package className="mr-2 h-4 w-4 text-accent" /> Add Product Item
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => openEditCategoryDialog(category)}>
-                            <Edit className="mr-2 h-4 w-4" /> Edit Category
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive" onClick={() => triggerDelete('category', category.id)}>
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      <AccordionTrigger className="p-0 hover:no-underline [&[data-state=open]>svg]:rotate-180">
-                        <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-200" />
-                      </AccordionTrigger>
+                    <div>
+                      <h3 className="font-bold text-lg">{category.name}</h3>
+                      <p className="text-sm text-muted-foreground">{category.description}</p>
                     </div>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => { setActiveCategory(category); setIsSubcategoryDialogOpen(true); }}>
+                          <Plus className="mr-2 h-4 w-4" /> Add Subcategory
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { setActiveCategory(category); setIsProductDialogOpen(true); }}>
+                          <Package className="mr-2 h-4 w-4" /> Add Product
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => { setEditingCategory(category); setIsCategoryDialogOpen(true); }}>
+                          <Edit className="mr-2 h-4 w-4" /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onClick={() => { setItemToDelete({ type: 'category', categoryId: category.id }); setIsDeleteDialogOpen(true); }}>
+                          <Trash2 className="mr-2 h-4 w-4" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <AccordionTrigger className="p-0 hover:no-underline" />
+                  </div>
+                </div>
 
-                  <AccordionContent className="bg-muted/30 px-6 pb-6 pt-2">
-                    <div className="space-y-8">
-                      {/* Subcategories Section */}
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Tag className="h-4 w-4 text-primary" />
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Subcategories</h4>
-                          </div>
-                          <Button variant="ghost" size="sm" onClick={() => openSubcategoryDialog(category)} className="h-7 text-xs px-2 text-primary">
-                            <Plus className="h-3 w-3 mr-1" /> New Sub
-                          </Button>
-                        </div>
-                        
-                        {category.subcategories.length > 0 ? (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                            {category.subcategories.map((sub) => (
-                              <div key={sub.id} className="flex items-center justify-between p-3 rounded-md bg-background border shadow-sm group/sub">
-                                <span className="text-sm font-semibold">{sub.name}</span>
-                                <div className="flex items-center gap-1 opacity-0 group-hover/sub:opacity-100 transition-opacity">
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="h-6 w-6" 
-                                    onClick={() => openSubcategoryDialog(category, sub)}
-                                  >
-                                    <Edit className="h-3 w-3 text-muted-foreground" />
-                                  </Button>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="h-6 w-6 text-destructive hover:bg-destructive/10"
-                                    onClick={() => triggerDelete('subcategory', category.id, sub.id)}
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
+                <AccordionContent className="bg-muted/30 px-6 pb-6 pt-2">
+                  <div className="space-y-8">
+                    {/* Subcategories with Sub-Subcategories */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        <Tag className="h-4 w-4 text-primary" /> Subcategories
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-4">
+                        {category.subcategories.map((sub) => (
+                          <div key={sub.id} className="rounded-lg border bg-background p-4 shadow-sm space-y-4">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-bold text-md flex items-center gap-2">
+                                <ChevronRight className="h-4 w-4 text-primary" />
+                                {sub.name}
+                              </h4>
+                              <div className="flex items-center gap-1">
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openSubSubDialog(category, sub)}>
+                                  <Plus className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setActiveCategory(category); setEditingSubcategory(sub); setIsSubcategoryDialogOpen(true); }}>
+                                  <Edit className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setItemToDelete({ type: 'subcategory', categoryId: category.id, subcategoryId: sub.id }); setIsDeleteDialogOpen(true); }}>
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+
+                            {/* Sub-Subcategories */}
+                            {sub.subSubcategories && sub.subSubcategories.length > 0 && (
+                              <div className="pl-6 space-y-2">
+                                <p className="text-[10px] font-bold uppercase text-muted-foreground/60 flex items-center gap-1">
+                                  <ListTree className="h-3 w-3" /> Sub-Subcategories
+                                </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                  {sub.subSubcategories.map((ss) => (
+                                    <div key={ss.id} className="flex items-center justify-between p-2 rounded bg-muted/50 border border-border/50 group/ss">
+                                      <span className="text-xs font-medium">{ss.name}</span>
+                                      <div className="flex items-center opacity-0 group-hover/ss:opacity-100 transition-opacity">
+                                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => openSubSubDialog(category, sub, ss)}>
+                                          <Edit className="h-3 w-3" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="h-5 w-5 text-destructive" onClick={() => { setItemToDelete({ type: 'subsubcategory', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id }); setIsDeleteDialogOpen(true); }}>
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
-                            ))}
+                            )}
                           </div>
-                        ) : (
-                          <div className="text-center py-4 border border-dashed rounded-lg text-muted-foreground bg-background/50">
-                            <p className="text-xs italic">No subcategories defined.</p>
-                          </div>
-                        )}
-                      </div>
-
-                      <Separator className="bg-border/50" />
-
-                      {/* Product Items Section */}
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Package className="h-4 w-4 text-accent" />
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Product Items</h4>
-                          </div>
-                          <Button variant="ghost" size="sm" onClick={() => openProductDialog(category)} className="h-7 text-xs px-2 text-accent">
-                            <Plus className="h-3 w-3 mr-1" /> New Item
-                          </Button>
-                        </div>
-
-                        {category.products.length > 0 ? (
-                          <Card className="border-none shadow-sm overflow-hidden">
-                            <Table>
-                              <TableHeader className="bg-muted/50">
-                                <TableRow>
-                                  <TableHead className="h-10 text-xs font-bold uppercase">Item Name</TableHead>
-                                  <TableHead className="h-10 text-xs font-bold uppercase">SKU</TableHead>
-                                  <TableHead className="h-10 text-xs font-bold uppercase">Price</TableHead>
-                                  <TableHead className="h-10 text-right text-xs font-bold uppercase">Actions</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody className="bg-background">
-                                {category.products.map((product) => (
-                                  <TableRow key={product.id}>
-                                    <TableCell className="py-3 font-medium">{product.name}</TableCell>
-                                    <TableCell className="py-3 font-mono text-xs">{product.sku || 'N/A'}</TableCell>
-                                    <TableCell className="py-3">
-                                      <div className="flex items-center text-xs font-bold">
-                                        <DollarSign className="h-3 w-3 text-muted-foreground" />
-                                        {product.price.toFixed(2)}
-                                      </div>
-                                    </TableCell>
-                                    <TableCell className="py-3 text-right">
-                                      <div className="flex items-center justify-end gap-1">
-                                        <Button 
-                                          variant="ghost" 
-                                          size="icon" 
-                                          className="h-7 w-7" 
-                                          onClick={() => openProductDialog(category, product)}
-                                        >
-                                          <Edit className="h-3.5 w-3.5 text-muted-foreground" />
-                                        </Button>
-                                        <Button 
-                                          variant="ghost" 
-                                          size="icon" 
-                                          className="h-7 w-7 text-destructive hover:bg-destructive/10"
-                                          onClick={() => triggerDelete('product', category.id, product.id)}
-                                        >
-                                          <Trash2 className="h-3.5 w-3.5" />
-                                        </Button>
-                                      </div>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </Card>
-                        ) : (
-                          <div className="text-center py-10 border border-dashed rounded-lg text-muted-foreground bg-background/50">
-                            <Package className="h-8 w-8 mx-auto mb-2 opacity-20" />
-                            <p className="text-xs italic">No product items listed in this category.</p>
+                        ))}
+                        {category.subcategories.length === 0 && (
+                          <div className="text-center py-4 border border-dashed rounded-lg text-muted-foreground text-xs italic">
+                            No subcategories defined.
                           </div>
                         )}
                       </div>
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </CardContent>
+
+                    <Separator className="bg-border/50" />
+
+                    {/* Products */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        <Package className="h-4 w-4 text-accent" /> Product Items
+                      </div>
+                      {category.products.length > 0 ? (
+                        <Card className="border-none shadow-sm overflow-hidden">
+                          <Table>
+                            <TableHeader className="bg-muted/50">
+                              <TableRow>
+                                <TableHead className="h-10 text-xs font-bold uppercase">Name</TableHead>
+                                <TableHead className="h-10 text-xs font-bold uppercase">SKU</TableHead>
+                                <TableHead className="h-10 text-xs font-bold uppercase">Price</TableHead>
+                                <TableHead className="h-10 text-right text-xs font-bold uppercase">Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody className="bg-background">
+                              {category.products.map((product) => (
+                                <TableRow key={product.id}>
+                                  <TableCell className="py-3 font-medium">{product.name}</TableCell>
+                                  <TableCell className="py-3 font-mono text-xs">{product.sku || 'N/A'}</TableCell>
+                                  <TableCell className="py-3 font-bold text-xs">${product.price.toFixed(2)}</TableCell>
+                                  <TableCell className="py-3 text-right">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setActiveCategory(category); setEditingProduct(product); setIsProductDialogOpen(true); }}>
+                                      <Edit className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, productId: product.id }); setIsDeleteDialogOpen(true); }}>
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </Card>
+                      ) : (
+                        <div className="text-center py-10 border border-dashed rounded-lg text-muted-foreground text-xs italic">
+                          No product items listed.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </Card>
         ))}
-        {filteredCategories.length === 0 && (
-          <div className="flex h-40 flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 text-muted-foreground bg-muted/5">
-            <Layers className="h-10 w-10 mb-2 opacity-20" />
-            <p className="font-medium">No categories found matching your search.</p>
-          </div>
-        )}
       </div>
     </div>
   );
