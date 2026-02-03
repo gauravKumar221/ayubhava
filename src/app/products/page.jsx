@@ -20,7 +20,8 @@ import {
   Filter, 
   MoreHorizontal, 
   Edit, 
-  Trash2 
+  Trash2,
+  ChevronDown
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -28,6 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Dialog,
@@ -94,6 +96,10 @@ export default function ProductsPage() {
 
   const handleDeleteProduct = (id) => {
     setProducts(products.filter(p => p.id !== id));
+  };
+
+  const updateStockLevel = (id, newStock) => {
+    setProducts(products.map(p => p.id === id ? { ...p, stock: newStock } : p));
   };
 
   const openEditDialog = (product) => {
@@ -209,32 +215,54 @@ export default function ProductsPage() {
                     <span className="font-medium">{product.stock} units</span>
                   </TableCell>
                   <TableCell>
-                    <Badge 
-                      variant={product.stock > 20 ? 'secondary' : product.stock > 0 ? 'outline' : 'destructive'} 
-                      className={cn(
-                        "w-24 justify-center",
-                        product.stock > 20 ? 'bg-accent/20 text-accent border-accent/20' : 
-                        product.stock > 0 ? 'bg-orange-100 text-orange-700 border-orange-200' : 
-                        ''
-                      )}
-                    >
-                      {product.stock > 20 ? 'In Stock' : product.stock > 0 ? 'Low Stock' : 'Out of Stock'}
-                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="outline-none">
+                          <Badge 
+                            variant={product.stock > 20 ? 'secondary' : product.stock > 0 ? 'outline' : 'destructive'} 
+                            className={cn(
+                              "w-28 justify-between cursor-pointer hover:opacity-80 transition-opacity",
+                              product.stock > 20 ? 'bg-accent/20 text-accent border-accent/20' : 
+                              product.stock > 0 ? 'bg-orange-100 text-orange-700 border-orange-200' : 
+                              ''
+                            )}
+                          >
+                            {product.stock > 20 ? 'In Stock' : product.stock > 0 ? 'Low Stock' : 'Out of Stock'}
+                            <ChevronDown className="h-3 w-3 ml-1 opacity-50" />
+                          </Badge>
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuLabel>Quick Update</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => updateStockLevel(product.id, 50)}>
+                          Set as In Stock (50)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => updateStockLevel(product.id, 10)}>
+                          Set as Low Stock (10)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => updateStockLevel(product.id, 0)} className="text-destructive">
+                          Mark as Out of Stock
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                          Actions
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuLabel>Product Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => openEditDialog(product)}>
-                          <Edit className="mr-2 h-4 w-4" /> Edit
+                          <Edit className="mr-2 h-4 w-4" /> Edit Details
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteProduct(product.id)}>
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
+                          <Trash2 className="mr-2 h-4 w-4" /> Delete Product
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
