@@ -61,6 +61,7 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
         onInput={(e) => onChange(e.currentTarget.innerHTML)}
         className="min-h-[150px] p-4 outline-none prose prose-sm max-w-none dark:prose-invert"
         placeholder={placeholder}
+        dangerouslySetInnerHTML={{ __html: value }}
       />
     </div>
   );
@@ -68,6 +69,7 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
 
 export default function NewProductPage() {
   const router = useRouter();
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedImages, setSelectedImages] = useState([]);
   const fileInputRef = useRef(null);
@@ -90,9 +92,15 @@ export default function NewProductPage() {
   };
 
   const handleSave = () => {
-    // Logic to save product would go here
     router.push('/admin-dashboard/product-collection');
   };
+
+  // Helper to strip HTML tags for SEO preview
+  const stripHtml = (html) => {
+    return html.replace(/<[^>]*>?/gm, ' ');
+  };
+
+  const seoDescription = stripHtml(description).trim() || 'Add a title and description to see how this product might appear in a search engine listing.';
 
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto pb-20">
@@ -114,13 +122,17 @@ export default function NewProductPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content Column */}
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardContent className="pt-6 space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="title">Title</Label>
-                <Input id="title" placeholder="e.g. Premium Stethoscope, Surgical Masks Pack" />
+                <Input 
+                  id="title" 
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Premium Stethoscope, Surgical Masks Pack" 
+                />
               </div>
               <div className="grid gap-2">
                 <Label>Description</Label>
@@ -224,17 +236,21 @@ export default function NewProductPage() {
               <Button variant="ghost" size="sm" className="h-8 text-primary"><Edit className="h-3.5 w-3.5 mr-2" /> Edit</Button>
             </CardHeader>
             <CardContent>
-              <p className="text-xs text-muted-foreground">Add a title and description to see how this product might appear in a search engine listing.</p>
-              <div className="mt-4 p-4 rounded-lg bg-muted/30 border border-dashed flex flex-col gap-1">
-                <span className="text-blue-600 text-sm font-medium hover:underline cursor-pointer">Product Title - Healthcare Store</span>
-                <span className="text-green-700 text-xs">https://healthstore.com/products/example</span>
-                <span className="text-muted-foreground text-xs line-clamp-2">This is an example description of the product showing how it will look on Google results.</span>
+              <div className="mt-2 p-4 rounded-lg bg-muted/30 border border-dashed flex flex-col gap-1">
+                <span className="text-blue-600 text-sm font-medium hover:underline cursor-pointer">
+                  {title || 'Product Title'} - Healthcare Store
+                </span>
+                <span className="text-green-700 text-xs">
+                  https://healthstore.com/products/{title.toLowerCase().replace(/\s+/g, '-') || 'example'}
+                </span>
+                <span className="text-muted-foreground text-xs line-clamp-2">
+                  {seoDescription}
+                </span>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Sidebar Column */}
         <div className="space-y-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
