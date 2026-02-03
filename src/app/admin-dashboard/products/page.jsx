@@ -135,8 +135,8 @@ export default function ProductsPage() {
       name: formData.get('name'),
       categories: selectedCategories,
       subcategories: selectedSubcategories,
-      price: parseFloat(formData.get('price')),
-      stock: parseInt(formData.get('stock')),
+      price: parseFloat(formData.get('price')) || 0,
+      stock: parseInt(formData.get('stock')) || 0,
     };
 
     if (editingProduct) {
@@ -256,7 +256,7 @@ export default function ProductsPage() {
                             <div key={cat} className="space-y-2">
                               <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{cat} Options</span>
                               <div className="grid grid-cols-2 gap-2">
-                                {CATEGORY_MAP[cat].map(sub => (
+                                {(CATEGORY_MAP[cat] || []).map(sub => (
                                   <div key={sub} className="flex items-center space-x-2">
                                     <Checkbox 
                                       id={`sub-${sub}`} 
