@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { 
   Plus, 
   Search, 
@@ -16,7 +17,13 @@ import {
   X,
   Calendar,
   User,
-  FileText
+  FileText,
+  Bold,
+  Italic,
+  Underline,
+  List,
+  ListOrdered,
+  Type
 } from 'lucide-react';
 import {
   Dialog,
@@ -28,7 +35,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -40,12 +46,100 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
+// Simple Rich Text Editor Component
+const RichTextEditor = ({ value, onChange, placeholder }) => {
+  const editorRef = useRef(null);
+
+  const execCommand = (command, val = null) => {
+    document.execCommand(command, false, val);
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML);
+    }
+  };
+
+  return (
+    <div className="flex flex-col rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      <div className="flex items-center gap-1 border-b bg-muted/30 p-1.5">
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => execCommand('bold')}
+          className="h-8 w-8 p-0 hover:bg-muted"
+          title="Bold"
+        >
+          <Bold className="h-4 w-4" />
+        </Button>
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => execCommand('italic')}
+          className="h-8 w-8 p-0 hover:bg-muted"
+          title="Italic"
+        >
+          <Italic className="h-4 w-4" />
+        </Button>
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => execCommand('underline')}
+          className="h-8 w-8 p-0 hover:bg-muted"
+          title="Underline"
+        >
+          <Underline className="h-4 w-4" />
+        </Button>
+        <Separator orientation="vertical" className="mx-1 h-4" />
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => execCommand('insertUnorderedList')}
+          className="h-8 w-8 p-0 hover:bg-muted"
+          title="Bullet List"
+        >
+          <List className="h-4 w-4" />
+        </Button>
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => execCommand('insertOrderedList')}
+          className="h-8 w-8 p-0 hover:bg-muted"
+          title="Numbered List"
+        >
+          <ListOrdered className="h-4 w-4" />
+        </Button>
+        <Separator orientation="vertical" className="mx-1 h-4" />
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => execCommand('formatBlock', 'h2')}
+          className="h-8 w-8 p-0 hover:bg-muted"
+          title="Heading"
+        >
+          <Type className="h-4 w-4" />
+        </Button>
+      </div>
+      <div
+        ref={editorRef}
+        contentEditable
+        onInput={(e) => onChange(e.currentTarget.innerHTML)}
+        className="min-h-[250px] p-4 outline-none prose prose-sm max-w-none dark:prose-invert overflow-y-auto"
+        dangerouslySetInnerHTML={{ __html: value }}
+      />
+    </div>
+  );
+};
+
 const initialBlogs = [
   { 
     id: '1', 
     title: 'Modern Healthcare Trends 2024', 
     description: 'Exploring the shift towards digital health and remote monitoring.', 
-    content: 'Telemedicine is no longer just an option; it is a necessity. Artificial intelligence is being integrated into diagnostic tools at an unprecedented rate, helping clinicians identify issues earlier and with greater precision.',
+    content: '<p>Telemedicine is no longer just an option; it is a necessity. Artificial intelligence is being integrated into diagnostic tools at an unprecedented rate, helping clinicians identify issues earlier and with greater precision.</p><ul><li>Remote monitoring</li><li>AI Diagnostics</li><li>Patient Empowerment</li></ul>',
     author: 'Dr. Emily Carter',
     status: 'Published', 
     date: '2024-07-20',
@@ -55,7 +149,7 @@ const initialBlogs = [
     id: '2', 
     title: 'Top 5 Hospital Management Tips', 
     description: 'Efficiency is key to patient satisfaction. Here is how we optimize our workflows.', 
-    content: '1. Digitize records immediately. 2. Automate scheduling. 3. Empower nursing staff. 4. Maintain a robust supply chain. 5. Prioritize patient feedback loops.',
+    content: '<ol><li>Digitize records immediately.</li><li>Automate scheduling.</li><li>Empower nursing staff.</li><li>Maintain a robust supply chain.</li><li>Prioritize patient feedback loops.</li></ol>',
     author: 'Admin',
     status: 'Draft', 
     date: '2024-07-25',
@@ -69,7 +163,17 @@ export default function BlogManagerPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [editorContent, setEditorContent] = useState('');
   const fileInputRef = useRef(null);
+
+  // Sync editor content when editing starts
+  useEffect(() => {
+    if (editingBlog) {
+      setEditorContent(editingBlog.content);
+    } else {
+      setEditorContent('');
+    }
+  }, [editingBlog]);
 
   const filteredBlogs = blogs.filter(b =>
     b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,7 +197,7 @@ export default function BlogManagerPage() {
     const blogData = {
       title: formData.get('title'),
       description: formData.get('description'),
-      content: formData.get('content'),
+      content: editorContent,
       status: formData.get('status') || 'Draft',
       author: 'Admin',
       date: editingBlog?.date || format(new Date(), 'yyyy-MM-dd'),
@@ -109,6 +213,7 @@ export default function BlogManagerPage() {
     setIsDialogOpen(false);
     setEditingBlog(null);
     setSelectedImage(null);
+    setEditorContent('');
   };
 
   const handleDeleteBlog = (id) => {
@@ -118,6 +223,7 @@ export default function BlogManagerPage() {
   const openEditDialog = (blog) => {
     setEditingBlog(blog);
     setSelectedImage(blog.image);
+    setEditorContent(blog.content);
     setIsDialogOpen(true);
   };
 
@@ -132,6 +238,7 @@ export default function BlogManagerPage() {
           if (!open) {
             setEditingBlog(null);
             setSelectedImage(null);
+            setEditorContent('');
           }
         }}>
           <DialogTrigger asChild>
@@ -139,7 +246,7 @@ export default function BlogManagerPage() {
               <Plus className="mr-2 h-4 w-4" /> Create Blog Post
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
             <form onSubmit={handleSaveBlog}>
               <DialogHeader>
                 <DialogTitle>{editingBlog ? 'Edit Blog Post' : 'New Blog Post'}</DialogTitle>
@@ -148,49 +255,47 @@ export default function BlogManagerPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-6 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="title">Post Title</Label>
-                  <Input id="title" name="title" defaultValue={editingBlog?.title} placeholder="e.g. The Future of Medical AI" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Short Description</Label>
-                  <Input id="description" name="description" defaultValue={editingBlog?.description} placeholder="Brief summary of the article" required />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="status">Status</Label>
-                    <Select name="status" defaultValue={editingBlog?.status || 'Draft'}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Draft">Draft</SelectItem>
-                        <SelectItem value="Published">Published</SelectItem>
-                      </SelectContent>
-                    </Select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="title">Post Title</Label>
+                      <Input id="title" name="title" defaultValue={editingBlog?.title} placeholder="e.g. The Future of Medical AI" required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="description">Short Description</Label>
+                      <Input id="description" name="description" defaultValue={editingBlog?.description} placeholder="Brief summary of the article" required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="status">Status</Label>
+                      <Select name="status" defaultValue={editingBlog?.status || 'Draft'}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Draft">Draft</SelectItem>
+                          <SelectItem value="Published">Published</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label>Cover Image</Label>
-                    <div className="flex items-center gap-4">
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-full"
-                      >
-                        <Upload className="mr-2 h-4 w-4" /> {selectedImage ? 'Change Image' : 'Upload Image'}
-                      </Button>
-                      {selectedImage && (
-                        <Button 
-                          type="button" 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => setSelectedImage(null)}
-                          className="text-destructive hover:bg-destructive/10"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                    <div 
+                      className="relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 transition-colors hover:bg-muted/80 overflow-hidden"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {selectedImage ? (
+                        <>
+                          <Image src={selectedImage} alt="Preview" fill className="object-cover" />
+                          <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity hover:opacity-100 flex items-center justify-center">
+                            <Upload className="h-8 w-8 text-white" />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                          <ImageIcon className="h-10 w-10 opacity-50" />
+                          <span className="text-sm">Click to upload cover image</span>
+                        </div>
                       )}
                     </div>
                     <input 
@@ -203,21 +308,12 @@ export default function BlogManagerPage() {
                   </div>
                 </div>
 
-                {selectedImage && (
-                  <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
-                    <Image src={selectedImage} alt="Preview" fill className="object-cover" />
-                  </div>
-                )}
-
                 <div className="grid gap-2">
-                  <Label htmlFor="content">Full Content / Main Points</Label>
-                  <Textarea 
-                    id="content" 
-                    name="content" 
-                    defaultValue={editingBlog?.content} 
-                    className="min-h-[200px]" 
+                  <Label>Full Content / Main Points</Label>
+                  <RichTextEditor 
+                    value={editorContent} 
+                    onChange={setEditorContent} 
                     placeholder="Write the detailed article content here..." 
-                    required 
                   />
                 </div>
               </div>
