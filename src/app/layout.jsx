@@ -2,7 +2,7 @@
 import './globals.css';
 import { usePathname } from 'next/navigation';
 import { Toaster } from '@/components/ui/toaster.jsx';
-import { Menu, Search } from 'lucide-react';
+import { Menu, Search, Bell } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -61,31 +61,41 @@ function AppLayout({ children }) {
               </div>
             </form>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="secondary" size="icon" className="rounded-full">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage
-                    src={getPlaceholderImage('user-avatar-1')?.imageUrl}
-                    alt="Admin"
-                    data-ai-hint={
-                      getPlaceholderImage('user-avatar-1')?.imageHint
-                    }
-                  />
-                  <AvatarFallback>A</AvatarFallback>
-                </Avatar>
-                <span className="sr-only">Toggle user menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" className="relative h-9 w-9 rounded-full bg-background">
+              <Bell className="h-4 w-4" />
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                3
+              </span>
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" size="icon" className="rounded-full">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage
+                      src={getPlaceholderImage('user-avatar-1')?.imageUrl}
+                      alt="Admin"
+                      data-ai-hint={
+                        getPlaceholderImage('user-avatar-1')?.imageHint
+                      }
+                    />
+                    <AvatarFallback>A</AvatarFallback>
+                  </Avatar>
+                  <span className="sr-only">Toggle user menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           {children}

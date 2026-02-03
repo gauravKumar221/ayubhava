@@ -13,6 +13,7 @@ import {
   Ticket,
   BookOpen,
   MessageSquare,
+  ShoppingCart,
 } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
@@ -31,6 +32,11 @@ import {
 
 const menuItems = [
   { href: '/admin-dashboard', icon: <Home className="h-4 w-4" />, label: 'Dashboard' },
+  {
+    href: '/admin-dashboard/orders',
+    icon: <ShoppingCart className="h-4 w-4" />,
+    label: 'Orders',
+  },
   {
     href: '/admin-dashboard/categories',
     icon: <Tags className="h-4 w-4" />,
