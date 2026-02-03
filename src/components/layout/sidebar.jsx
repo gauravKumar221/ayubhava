@@ -22,6 +22,12 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const menuItems = [
   { href: '/admin-dashboard', icon: <Home className="h-4 w-4" />, label: 'Dashboard' },
@@ -101,24 +107,34 @@ export function Sidebar() {
           </Link>
         </div>
         <div className="flex-1 overflow-y-auto py-4">
-          <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-1">
-            {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50',
-                  pathname === item.href && 'bg-muted text-primary',
-                  !isSidebarOpen && 'justify-center'
-                )}
-              >
-                {item.icon}
-                <span className={cn(!isSidebarOpen && 'hidden')}>
-                  {item.label}
-                </span>
-              </Link>
-            ))}
-          </nav>
+          <TooltipProvider delayDuration={0}>
+            <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-1">
+              {menuItems.map((item) => (
+                <Tooltip key={item.href}>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50',
+                        pathname === item.href && 'bg-muted text-primary',
+                        !isSidebarOpen && 'justify-center'
+                      )}
+                    >
+                      {item.icon}
+                      <span className={cn(!isSidebarOpen && 'hidden')}>
+                        {item.label}
+                      </span>
+                    </Link>
+                  </TooltipTrigger>
+                  {!isSidebarOpen && (
+                    <TooltipContent side="right" className="font-semibold">
+                      {item.label}
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              ))}
+            </nav>
+          </TooltipProvider>
 
           {isSidebarOpen && (
             <div className="mt-8 px-4 pb-6">
