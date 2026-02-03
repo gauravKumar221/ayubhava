@@ -17,7 +17,9 @@ import {
   Trash2,
   MoreVertical,
   Clock,
-  Calendar
+  Calendar,
+  Zap,
+  Image as ImageIcon
 } from 'lucide-react';
 import {
   Dialog,
@@ -46,12 +48,66 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import Image from 'next/image';
+import { getPlaceholderImage } from '@/lib/placeholder-images';
 
 const initialCoupons = [
-  { id: '1', code: 'HEALTH20', type: 'Percentage', value: 20, expiryDate: '2024-12-31T23:59', usage: '45/100', status: 'Public', tag: 'Via Barcode Code' },
-  { id: '2', code: 'CHECKUP50', type: 'Fixed Amount', value: 50, expiryDate: '2024-08-15T12:00', usage: '12/50', status: 'Public', tag: 'Via Payment with Credit Card' },
-  { id: '3', code: 'WELCOME10', type: 'Percentage', value: 10, expiryDate: '2024-01-01T00:00', usage: '100/100', status: 'Expired', tag: 'Via Barcode Code' },
-  { id: '4', code: 'VIP_PRIVATE', type: 'Fixed Amount', value: 100, expiryDate: '2025-11-20T18:30', usage: '5/10', status: 'Private', tag: 'Exclusive Access' },
+  { 
+    id: '1', 
+    code: 'HEALTH20', 
+    type: 'Percentage', 
+    value: 20, 
+    expiryDate: '2024-12-31T23:59', 
+    usage: '45/100', 
+    status: 'Public', 
+    tag: 'Via Barcode Code',
+    isFlashSale: false
+  },
+  { 
+    id: 'flash-1', 
+    code: 'FLASH50', 
+    type: 'Percentage', 
+    value: 50, 
+    expiryDate: '2024-08-15T12:00', 
+    usage: '88/100', 
+    status: 'Public', 
+    tag: 'Flash Sale Promo', 
+    isFlashSale: true,
+    avatarId: 'flash-sale-1'
+  },
+  { 
+    id: '2', 
+    code: 'CHECKUP50', 
+    type: 'Fixed Amount', 
+    value: 50, 
+    expiryDate: '2024-08-15T12:00', 
+    usage: '12/50', 
+    status: 'Public', 
+    tag: 'Via Payment with Credit Card',
+    isFlashSale: false
+  },
+  { 
+    id: '3', 
+    code: 'WELCOME10', 
+    type: 'Percentage', 
+    value: 10, 
+    expiryDate: '2024-01-01T00:00', 
+    usage: '100/100', 
+    status: 'Expired', 
+    tag: 'Via Barcode Code',
+    isFlashSale: false
+  },
+  { 
+    id: '4', 
+    code: 'VIP_PRIVATE', 
+    type: 'Fixed Amount', 
+    value: 100, 
+    expiryDate: '2025-11-20T18:30', 
+    usage: '5/10', 
+    status: 'Private', 
+    tag: 'Exclusive Access',
+    isFlashSale: false
+  },
 ];
 
 export default function CouponsPage() {
@@ -63,7 +119,6 @@ export default function CouponsPage() {
   const [currentTime, setCurrentTime] = useState(null);
 
   useEffect(() => {
-    // Handling hydration mismatch by setting time only on client
     setCurrentTime(new Date());
   }, []);
 
@@ -80,6 +135,7 @@ export default function CouponsPage() {
     if (filter === 'Public') matchesFilter = c.status === 'Public' && !isExpired;
     else if (filter === 'Private') matchesFilter = c.status === 'Private' && !isExpired;
     else if (filter === 'Expired') matchesFilter = isExpired || c.status === 'Expired';
+    else if (filter === 'Flash Sale') matchesFilter = c.isFlashSale && !isExpired;
     else if (filter === 'All Promo') matchesFilter = true;
 
     return matchesSearch && matchesFilter;
@@ -90,6 +146,7 @@ export default function CouponsPage() {
     const formData = new FormData(e.target);
     const expiryDate = formData.get('expiryDate');
     const isExpired = getIsExpired(expiryDate);
+    const isFlashSale = formData.get('isFlashSale') === 'true';
     
     const couponData = {
       code: formData.get('code').toUpperCase(),
@@ -98,7 +155,9 @@ export default function CouponsPage() {
       expiryDate: expiryDate,
       usage: editingCoupon ? editingCoupon.usage : `0/${formData.get('limit') || '∞'}`,
       status: isExpired ? 'Expired' : (formData.get('status') || 'Public'),
-      tag: editingCoupon ? editingCoupon.tag : 'New Promotion',
+      tag: isFlashSale ? 'Flash Sale Promo' : (editingCoupon ? editingCoupon.tag : 'New Promotion'),
+      isFlashSale,
+      avatarId: isFlashSale ? 'flash-sale-1' : null
     };
 
     if (editingCoupon) {
@@ -122,6 +181,7 @@ export default function CouponsPage() {
 
   const filters = [
     { label: 'All Promo', icon: <Ticket className="h-4 w-4" /> },
+    { label: 'Flash Sale', icon: <Zap className="h-4 w-4" /> },
     { label: 'Public', icon: <Globe className="h-4 w-4" /> },
     { label: 'Private', icon: <Lock className="h-4 w-4" /> },
     { label: 'Expired', icon: <CalendarOff className="h-4 w-4" /> },
@@ -131,7 +191,7 @@ export default function CouponsPage() {
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="Manage Promos" 
-        description="Create and organize your discount campaigns with precise expiry timing."
+        description="Create and organize your discount campaigns with flash sale support."
       >
         <div className="flex flex-col items-end gap-1 mr-4 hidden sm:flex">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50">
@@ -190,8 +250,20 @@ export default function CouponsPage() {
                       required 
                       className="pr-10"
                     />
-                    <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Clock className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
                   </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="isFlashSale">Campaign Type</Label>
+                  <Select name="isFlashSale" defaultValue={editingCoupon?.isFlashSale?.toString() || 'false'}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="false">Standard Promo</SelectItem>
+                      <SelectItem value="true">Flash Sale (Featured)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="status">Privacy Status</Label>
@@ -245,26 +317,41 @@ export default function CouponsPage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredCoupons.map((coupon) => {
             const isExpired = getIsExpired(coupon.expiryDate);
-            // Matching the requested visual format: MM/dd/yyyy hh:mm a
             const displayDate = coupon.expiryDate 
               ? format(new Date(coupon.expiryDate), 'MM/dd/yyyy hh:mm a') 
               : 'No date';
+            const promoImage = coupon.avatarId ? getPlaceholderImage(coupon.avatarId) : null;
 
             return (
               <Card 
                 key={coupon.id} 
                 className={cn(
-                  "group relative overflow-hidden transition-all hover:shadow-lg border-none",
+                  "group relative overflow-hidden transition-all hover:shadow-lg border-none flex flex-col h-full",
                   isExpired ? 'opacity-60 grayscale' : ''
                 )}
               >
-                <CardContent className="p-0">
+                <CardContent className="p-0 flex-1 flex flex-col">
                   <div className={cn(
-                    "flex h-36 flex-col justify-between p-5 text-primary-foreground transition-colors",
-                    isExpired ? "bg-muted-foreground" : "bg-primary"
+                    "relative h-44 flex flex-col justify-between p-5 text-primary-foreground transition-colors overflow-hidden",
+                    isExpired ? "bg-muted-foreground" : (coupon.isFlashSale ? "bg-orange-600" : "bg-primary")
                   )}>
-                    <div className="flex items-start justify-between">
-                      <Badge variant="secondary" className="bg-white/20 text-white border-none">
+                    {promoImage && !isExpired && (
+                      <div className="absolute inset-0 z-0">
+                        <Image 
+                          src={promoImage.imageUrl} 
+                          alt="Promo" 
+                          fill 
+                          className="object-cover opacity-40 mix-blend-overlay"
+                          data-ai-hint={promoImage.imageHint}
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-start justify-between relative z-10">
+                      <Badge variant="secondary" className={cn(
+                        "bg-white/20 text-white border-none backdrop-blur-sm",
+                        coupon.isFlashSale && "bg-yellow-400 text-orange-900 font-bold"
+                      )}>
+                        {isExpired ? 'Expired' : (coupon.isFlashSale ? <Zap className="h-3 w-3 mr-1 fill-current" /> : null)}
                         {isExpired ? 'Expired' : coupon.tag}
                       </Badge>
                       <DropdownMenu>
@@ -285,7 +372,7 @@ export default function CouponsPage() {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
-                    <div>
+                    <div className="relative z-10">
                       <h3 className="text-2xl font-bold tracking-tight">
                         {coupon.type === 'Percentage' ? `Discount ${coupon.value}%` : `Save $${coupon.value}`}
                       </h3>
@@ -294,19 +381,26 @@ export default function CouponsPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="p-4 space-y-3">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1 font-medium">
-                        Usage: <span className="text-foreground">{coupon.usage}</span>
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 mb-1">
-                      Expiry Date & Time
-                    </div>
-                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/40 p-2.5 rounded-lg border border-border/50">
-                      <Clock className="h-3.5 w-3.5 text-primary" />
-                      <span>{displayDate}</span>
-                      <Calendar className="h-3.5 w-3.5 ml-auto opacity-40" />
+                  <div className="p-4 space-y-4 flex-1 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1 font-medium">
+                          Usage: <span className="text-foreground">{coupon.usage}</span>
+                        </span>
+                        {coupon.isFlashSale && !isExpired && (
+                          <Badge variant="outline" className="text-[10px] text-orange-600 border-orange-200 bg-orange-50">
+                            FLASH SALE ACTIVE
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+                        Expiry Date & Time
+                      </div>
+                      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/40 p-2.5 rounded-lg border border-border/50">
+                        <Clock className="h-3.5 w-3.5 text-primary" />
+                        <span>{displayDate}</span>
+                        <Calendar className="h-3.5 w-3.5 ml-auto opacity-40" />
+                      </div>
                     </div>
                     <div className="pt-2">
                       <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => openEditDialog(coupon)}>

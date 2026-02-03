@@ -53,6 +53,12 @@
       "description": "Dr. Marcus Rodriguez",
       "imageUrl": "https://images.unsplash.com/photo-1612276529731-4b21494e6d71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZG9jdG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyODExMTQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "doctor portrait"
+    },
+    {
+      "id": "flash-sale-1",
+      "description": "Flash Sale Promo Image",
+      "imageUrl": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzYWxlfGVufDB8fHx8MTc2MjgxMTE0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sale promo"
     }
   ]
 }
