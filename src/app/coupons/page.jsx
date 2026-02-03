@@ -13,6 +13,9 @@ import {
   Globe,
   Lock,
   CalendarOff,
+  Edit,
+  Trash2,
+  MoreVertical
 } from 'lucide-react';
 import {
   Dialog,
@@ -31,6 +34,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
 const initialCoupons = [
@@ -45,6 +56,7 @@ export default function CouponsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('All Promo');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState(null);
 
   const filteredCoupons = coupons.filter(c => {
     const matchesSearch = c.code.toLowerCase().includes(searchTerm.toLowerCase());
@@ -60,13 +72,28 @@ export default function CouponsPage() {
       type: formData.get('type'),
       value: parseFloat(formData.get('value')),
       expiryDate: formData.get('expiryDate'),
-      usage: `0/${formData.get('limit') || '∞'}`,
-      status: 'Public',
-      tag: 'New Promotion',
+      usage: editingCoupon ? editingCoupon.usage : `0/${formData.get('limit') || '∞'}`,
+      status: editingCoupon ? editingCoupon.status : 'Public',
+      tag: editingCoupon ? editingCoupon.tag : 'New Promotion',
     };
 
-    setCoupons([...coupons, { ...couponData, id: Math.random().toString(36).substr(2, 9) }]);
+    if (editingCoupon) {
+      setCoupons(coupons.map(c => c.id === editingCoupon.id ? { ...couponData, id: c.id } : c));
+    } else {
+      setCoupons([...coupons, { ...couponData, id: Math.random().toString(36).substr(2, 9) }]);
+    }
+    
     setIsDialogOpen(false);
+    setEditingCoupon(null);
+  };
+
+  const handleDeleteCoupon = (id) => {
+    setCoupons(coupons.filter(c => c.id !== id));
+  };
+
+  const openEditDialog = (coupon) => {
+    setEditingCoupon(coupon);
+    setIsDialogOpen(true);
   };
 
   const filters = [
@@ -82,7 +109,10 @@ export default function CouponsPage() {
         title="Manage Promos" 
         description="Create and organize your discount campaigns."
       >
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) setEditingCoupon(null);
+        }}>
           <DialogTrigger asChild>
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Plus className="mr-2 h-4 w-4" /> Create Coupon
@@ -91,20 +121,20 @@ export default function CouponsPage() {
           <DialogContent className="sm:max-w-[425px]">
             <form onSubmit={handleSaveCoupon}>
               <DialogHeader>
-                <DialogTitle>New Coupon</DialogTitle>
+                <DialogTitle>{editingCoupon ? 'Edit Coupon' : 'New Coupon'}</DialogTitle>
                 <DialogDescription>
-                  Define a new discount code for your medical center.
+                  Define the discount details for your medical center.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="code">Coupon Code</Label>
-                  <Input id="code" name="code" placeholder="e.g. SUMMER2024" required className="uppercase" />
+                  <Input id="code" name="code" defaultValue={editingCoupon?.code} placeholder="e.g. SUMMER2024" required className="uppercase" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="type">Type</Label>
-                    <Select name="type" defaultValue="Percentage">
+                    <Select name="type" defaultValue={editingCoupon?.type || 'Percentage'}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
@@ -116,16 +146,16 @@ export default function CouponsPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="value">Value</Label>
-                    <Input id="value" name="value" type="number" step="0.01" placeholder="20" required />
+                    <Input id="value" name="value" type="number" step="0.01" defaultValue={editingCoupon?.value} placeholder="20" required />
                   </div>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="expiryDate">Expiry Date</Label>
-                  <Input id="expiryDate" name="expiryDate" type="date" required />
+                  <Input id="expiryDate" name="expiryDate" type="date" defaultValue={editingCoupon?.expiryDate} required />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">Create Coupon</Button>
+                <Button type="submit">{editingCoupon ? 'Save Changes' : 'Create Coupon'}</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -178,13 +208,28 @@ export default function CouponsPage() {
                     <Badge variant="secondary" className="bg-white/20 text-white backdrop-blur-md border-none">
                       {coupon.tag}
                     </Badge>
-                    <Ticket className="h-5 w-5 text-white/40" />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => openEditDialog(coupon)}>
+                          <Edit className="mr-2 h-4 w-4" /> Edit Promo
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteCoupon(coupon.id)}>
+                          <Trash2 className="mr-2 h-4 w-4" /> Delete Coupon
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold tracking-tight">
                       {coupon.type === 'Percentage' ? `Discount ${coupon.value}%` : `Save $${coupon.value}`}
                     </h3>
-                    {coupon.id === '1' && <h3 className="text-2xl font-bold">Buy 2 Get 1</h3>}
                     <p className="mt-1 text-sm text-white/80 font-mono">
                       CODE: {coupon.code}
                     </p>
@@ -196,7 +241,7 @@ export default function CouponsPage() {
                     <span>Exp: {coupon.expiryDate}</span>
                   </div>
                   <div className="pt-2">
-                    <Button variant="outline" size="sm" className="w-full">
+                    <Button variant="outline" size="sm" className="w-full" onClick={() => openEditDialog(coupon)}>
                       View Details
                     </Button>
                   </div>
