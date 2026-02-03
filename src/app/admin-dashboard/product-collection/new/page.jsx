@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,8 +37,6 @@ import Image from 'next/image';
 const RichTextEditor = ({ value, onChange, placeholder }) => {
   const editorRef = useRef(null);
 
-  // Synchronize internal editor HTML with the value prop only when it differs.
-  // This prevents the cursor from jumping to the start/left on every keystroke.
   useEffect(() => {
     if (editorRef.current && editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value || '';
@@ -73,8 +71,11 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
   );
 };
 
-export default function NewProductPage() {
+function ProductForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('id');
+  
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('0.00');
@@ -90,9 +91,42 @@ export default function NewProductPage() {
   useEffect(() => {
     const saved = localStorage.getItem('bitmax_categories');
     if (saved) {
-      setCategories(JSON.parse(saved));
+      const parsedCategories = JSON.parse(saved);
+      setCategories(parsedCategories);
+      
+      if (productId) {
+        let foundProduct = null;
+        let foundCategoryId = null;
+        
+        for (const cat of parsedCategories) {
+          const prod = (cat.products || []).find(p => p.id === productId);
+          if (prod) {
+            foundProduct = prod;
+            foundCategoryId = cat.id;
+            break;
+          }
+        }
+        
+        if (foundProduct) {
+          setTitle(foundProduct.name || '');
+          setDescription(foundProduct.description || '');
+          setPrice((foundProduct.price || 0).toFixed(2));
+          setSku(foundProduct.sku || '');
+          setSelectedCategory(foundCategoryId || '');
+          setSelectedImages(foundProduct.images || []);
+          
+          if (foundProduct.tags && foundProduct.tags.length > 0) {
+            setConditions(foundProduct.tags.map((tag, idx) => ({
+              id: Date.now() + idx,
+              field: 'tag',
+              operator: 'equals',
+              value: tag
+            })));
+          }
+        }
+      }
     }
-  }, []);
+  }, [productId]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -136,8 +170,9 @@ export default function NewProductPage() {
       return;
     }
 
-    const newProduct = {
-      id: Math.random().toString(36).substr(2, 9),
+    const currentId = productId || Math.random().toString(36).substr(2, 9);
+    const productData = {
+      id: currentId,
       name: title,
       sku: sku,
       price: parseFloat(price),
@@ -147,10 +182,12 @@ export default function NewProductPage() {
     };
 
     const updatedCategories = categories.map(c => {
+      const otherProducts = (c.products || []).filter(p => p.id !== currentId);
+      
       if (c.id === selectedCategory) {
-        return { ...c, products: [...(c.products || []), newProduct] };
+        return { ...c, products: [...otherProducts, productData] };
       }
-      return c;
+      return { ...c, products: otherProducts };
     });
 
     localStorage.setItem('bitmax_categories', JSON.stringify(updatedCategories));
@@ -176,13 +213,15 @@ export default function NewProductPage() {
               <ChevronLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold tracking-tight">Add Product</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {productId ? 'Edit Product' : 'Add Product'}
+          </h1>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
             <Link href="/admin-dashboard/product-collection">Discard</Link>
           </Button>
-          <Button onClick={handleSave}>Save Product</Button>
+          <Button onClick={handleSave}>{productId ? 'Save Changes' : 'Save Product'}</Button>
         </div>
       </div>
 
@@ -415,5 +454,13 @@ export default function NewProductPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewProductPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center p-20">Loading...</div>}>
+      <ProductForm />
+    </Suspense>
   );
 }
