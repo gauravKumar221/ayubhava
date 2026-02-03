@@ -20,6 +20,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog.jsx';
 import { DoctorScheduleCalendar } from '@/components/schedule/doctor-schedule-calendar.jsx';
@@ -111,6 +112,9 @@ export default function SchedulePage() {
           <DialogContent className="sm:max-w-4xl">
             <DialogHeader>
               <DialogTitle>Schedule for {selectedDoctor.name}</DialogTitle>
+              <DialogDescription>
+                Review and manage daily appointments and history for {selectedDoctor.name}.
+              </DialogDescription>
             </DialogHeader>
             <DoctorScheduleCalendar
               schedule={selectedDoctor.schedule}

@@ -419,6 +419,9 @@ export default function CategoriesPage() {
             <form onSubmit={handleSaveCategory}>
               <DialogHeader>
                 <DialogTitle>{editingCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
+                <DialogDescription>
+                  Enter the details for your medical product category below.
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
@@ -442,7 +445,12 @@ export default function CategoriesPage() {
       <Dialog open={isSubcategoryDialogOpen} onOpenChange={setIsSubcategoryDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveSubcategory}>
-            <DialogHeader><DialogTitle>Subcategory</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Subcategory</DialogTitle>
+              <DialogDescription>
+                Define a subcategory to further organize your clinical products.
+              </DialogDescription>
+            </DialogHeader>
             <div className="py-4">
               <Label>Name</Label>
               <Input name="subcategoryName" defaultValue={editingSubcategory?.name} required />
@@ -456,7 +464,12 @@ export default function CategoriesPage() {
       <Dialog open={isSubSubcategoryDialogOpen} onOpenChange={setIsSubSubcategoryDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveSubSubcategory}>
-            <DialogHeader><DialogTitle>Sub-Subcategory</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Sub-Subcategory</DialogTitle>
+              <DialogDescription>
+                Create a specific sub-subcategory for highly specialized items.
+              </DialogDescription>
+            </DialogHeader>
             <div className="py-4">
               <Label>Name</Label>
               <Input name="subSubName" defaultValue={editingSubSubcategory?.name} required />
@@ -507,10 +520,12 @@ export default function CategoriesPage() {
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
-          <AlertDialogHeader><AlertDialogTitle>Confirm Delete</AlertDialogTitle></AlertDialogHeader>
-          <AlertDialogDescription>
-            Are you sure you want to delete this item? This action cannot be undone.
-          </AlertDialogDescription>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this item? This action cannot be undone and will remove the item from this list.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">Delete</AlertDialogAction>
