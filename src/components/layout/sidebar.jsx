@@ -86,12 +86,12 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        'hidden border-r bg-muted/40 transition-all duration-300 md:block',
+        'hidden border-r bg-muted/40 transition-all duration-300 md:block sticky top-0 h-screen overflow-hidden',
         isSidebarOpen ? 'w-[220px] lg:w-[280px]' : 'w-[68px]'
       )}
     >
-      <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+      <div className="flex h-full flex-col">
+        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 shrink-0">
           <Link
             href="/admin-dashboard"
             className="flex items-center gap-2 font-semibold text-primary"
@@ -100,14 +100,14 @@ export function Sidebar() {
             <span className={cn(!isSidebarOpen && 'hidden')}>Bit Max</span>
           </Link>
         </div>
-        <div className="flex-1 overflow-y-auto">
-          <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+        <div className="flex-1 overflow-y-auto py-4">
+          <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-1">
             {menuItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
+                  'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50',
                   pathname === item.href && 'bg-muted text-primary',
                   !isSidebarOpen && 'justify-center'
                 )}
@@ -121,7 +121,7 @@ export function Sidebar() {
           </nav>
 
           {isSidebarOpen && (
-            <div className="mt-8 px-4">
+            <div className="mt-8 px-4 pb-6">
               <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Active Promos
               </p>
