@@ -23,10 +23,10 @@ function AppLayout({ children }) {
   const pathname = usePathname();
   const { isSidebarOpen } = useSidebar();
 
-  // Define routes that should not use the admin dashboard layout
-  const isPublicRoute = pathname === '/contact-us';
+  // Admin shell is only shown for routes starting with /admin-dashboard
+  const isAdminRoute = pathname?.startsWith('/admin-dashboard');
 
-  if (isPublicRoute) {
+  if (!isAdminRoute) {
     return (
       <div className="min-h-screen w-full bg-background flex flex-col">
         <main className="flex-1">

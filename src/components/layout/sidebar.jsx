@@ -26,53 +26,53 @@ import {
 import { Button } from '@/components/ui/button';
 
 const menuItems = [
-  { href: '/', icon: <Home className="h-4 w-4" />, label: 'Dashboard' },
+  { href: '/admin-dashboard', icon: <Home className="h-4 w-4" />, label: 'Dashboard' },
   {
-    href: '/categories',
+    href: '/admin-dashboard/categories',
     icon: <Tags className="h-4 w-4" />,
     label: 'Categories',
   },
   {
-    href: '/products',
+    href: '/admin-dashboard/products',
     icon: <Package className="h-4 w-4" />,
     label: 'Products',
   },
   {
-    href: '/newsletter',
+    href: '/admin-dashboard/newsletter',
     icon: <Newspaper className="h-4 w-4" />,
     label: 'Newsletter',
   },
   {
-    href: '/blog',
+    href: '/admin-dashboard/blog',
     icon: <BookOpen className="h-4 w-4" />,
     label: 'Blog Manager',
   },
   {
-    href: '/subscribers',
+    href: '/admin-dashboard/subscribers',
     icon: <Users className="h-4 w-4" />,
     label: 'Subscribers',
   },
   {
-    href: '/coupons',
+    href: '/admin-dashboard/coupons',
     icon: <Ticket className="h-4 w-4" />,
     label: 'Coupons',
   },
   {
-    href: '/contact-messages',
+    href: '/admin-dashboard/contact-messages',
     icon: <MessageSquare className="h-4 w-4" />,
     label: 'Contact Messages',
   },
   {
-    href: '/payments',
+    href: '/admin-dashboard/payments',
     icon: <CreditCard className="h-4 w-4" />,
     label: 'Payments',
   },
   {
-    href: '/schedule',
+    href: '/admin-dashboard/schedule',
     icon: <Calendar className="h-4 w-4" />,
     label: 'Schedule',
   },
-  { href: '/profile', icon: <User className="h-4 w-4" />, label: 'Profile' },
+  { href: '/admin-dashboard/profile', icon: <User className="h-4 w-4" />, label: 'Profile' },
 ];
 
 const promos = [
@@ -95,7 +95,7 @@ export function Sidebar() {
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
           <Link
-            href="/"
+            href="/admin-dashboard"
             className="flex items-center gap-2 font-semibold text-primary"
           >
             <Building className="h-6 w-6" />
