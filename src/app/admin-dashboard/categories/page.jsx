@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { 
   Plus, 
   Search, 
@@ -13,7 +14,10 @@ import {
   Trash2,
   ChevronDown,
   Layers,
-  MoreHorizontal
+  MoreHorizontal,
+  Package,
+  Tag,
+  DollarSign
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -50,6 +54,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const initialCategories = [
   { 
@@ -59,6 +71,10 @@ const initialCategories = [
     subcategories: [
       { id: 's1', name: 'Surgical Tools' },
       { id: 's2', name: 'Diagnostic Scopes' }
+    ],
+    products: [
+      { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99 },
+      { id: 'p2', name: 'Digital Thermometer', sku: 'TH-20', price: 24.50 }
     ]
   },
   { 
@@ -68,33 +84,36 @@ const initialCategories = [
     subcategories: [
       { id: 's3', name: 'Protective Gear' },
       { id: 's4', name: 'Sanitization' }
+    ],
+    products: [
+      { id: 'p3', name: 'N95 Respirators (Pack)', sku: 'MSK-N95', price: 45.00 }
     ]
   },
   { 
     id: '3', 
     name: 'Diagnostics', 
     description: 'Equipment for testing and analysis', 
-    subcategories: []
-  },
-  { 
-    id: '4', 
-    name: 'Mobility', 
-    description: 'Aids for patient movement', 
-    subcategories: []
+    subcategories: [],
+    products: []
   },
 ];
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState(initialCategories);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Dialog controls
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [isSubcategoryDialogOpen, setIsSubcategoryDialogOpen] = useState(false);
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   
+  // Active edit items
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingSubcategory, setEditingSubcategory] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
 
-  // Deletion state
+  // Deletion confirmation
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -117,7 +136,8 @@ export default function CategoriesPage() {
       setCategories([...categories, { 
         ...categoryData, 
         id: Math.random().toString(36).substr(2, 9), 
-        subcategories: []
+        subcategories: [],
+        products: []
       }]);
     }
     
@@ -161,6 +181,46 @@ export default function CategoriesPage() {
     setEditingSubcategory(null);
   };
 
+  const handleSaveProduct = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const productData = {
+      name: formData.get('productName'),
+      sku: formData.get('sku'),
+      price: parseFloat(formData.get('price') || '0'),
+    };
+
+    if (activeCategory) {
+      if (editingProduct) {
+        setCategories(categories.map(c => 
+          c.id === activeCategory.id 
+            ? { 
+                ...c, 
+                products: c.products.map(p => 
+                  p.id === editingProduct.id ? { ...p, ...productData } : p
+                ) 
+              } 
+            : c
+        ));
+      } else {
+        const newProd = {
+          ...productData,
+          id: Math.random().toString(36).substr(2, 9)
+        };
+        
+        setCategories(categories.map(c => 
+          c.id === activeCategory.id 
+            ? { ...c, products: [...c.products, newProd] } 
+            : c
+        ));
+      }
+    }
+    
+    setIsProductDialogOpen(false);
+    setActiveCategory(null);
+    setEditingProduct(null);
+  };
+
   const handleDelete = () => {
     if (!itemToDelete) return;
 
@@ -172,13 +232,19 @@ export default function CategoriesPage() {
           ? { ...c, subcategories: c.subcategories.filter(s => s.id !== itemToDelete.subcategoryId) }
           : c
       ));
+    } else if (itemToDelete.type === 'product') {
+      setCategories(categories.map(c => 
+        c.id === itemToDelete.categoryId
+          ? { ...c, products: c.products.filter(p => p.id !== itemToDelete.productId) }
+          : c
+      ));
     }
 
     setIsDeleteDialogOpen(false);
     setItemToDelete(null);
   };
 
-  const openEditDialog = (category) => {
+  const openEditCategoryDialog = (category) => {
     setEditingCategory(category);
     setIsCategoryDialogOpen(true);
   };
@@ -189,13 +255,16 @@ export default function CategoriesPage() {
     setIsSubcategoryDialogOpen(true);
   };
 
-  const triggerDeleteCategory = (categoryId) => {
-    setItemToDelete({ type: 'category', categoryId });
-    setIsDeleteDialogOpen(true);
+  const openProductDialog = (category, product = null) => {
+    setActiveCategory(category);
+    setEditingProduct(product);
+    setIsProductDialogOpen(true);
   };
 
-  const triggerDeleteSubcategory = (categoryId, subcategoryId) => {
-    setItemToDelete({ type: 'subcategory', categoryId, subcategoryId });
+  const triggerDelete = (type, categoryId, itemId = null) => {
+    if (type === 'category') setItemToDelete({ type, categoryId });
+    else if (type === 'subcategory') setItemToDelete({ type, categoryId, subcategoryId: itemId });
+    else if (type === 'product') setItemToDelete({ type, categoryId, productId: itemId });
     setIsDeleteDialogOpen(true);
   };
 
@@ -203,14 +272,14 @@ export default function CategoriesPage() {
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="Category Management" 
-        description="Organize clinical groupings and specialized subcategories."
+        description="Organize clinical groupings, subcategories, and associated product items."
       >
         <Dialog open={isCategoryDialogOpen} onOpenChange={(open) => {
           setIsCategoryDialogOpen(open);
           if (!open) setEditingCategory(null);
         }}>
           <DialogTrigger asChild>
-            <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Plus className="mr-2 h-4 w-4" /> Add Category
             </Button>
           </DialogTrigger>
@@ -245,7 +314,7 @@ export default function CategoriesPage() {
         </Dialog>
       </PageHeader>
 
-      {/* Add/Edit Subcategory Dialog */}
+      {/* Subcategory Dialog */}
       <Dialog open={isSubcategoryDialogOpen} onOpenChange={(open) => {
         setIsSubcategoryDialogOpen(open);
         if (!open) {
@@ -257,9 +326,6 @@ export default function CategoriesPage() {
           <form onSubmit={handleSaveSubcategory}>
             <DialogHeader>
               <DialogTitle>{editingSubcategory ? 'Edit Subcategory' : 'New Subcategory'} for {activeCategory?.name}</DialogTitle>
-              <DialogDescription>
-                {editingSubcategory ? 'Update the name of this specialized group.' : 'Add a specialized group under this category.'}
-              </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
@@ -274,14 +340,53 @@ export default function CategoriesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Product Dialog */}
+      <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
+        setIsProductDialogOpen(open);
+        if (!open) {
+          setEditingProduct(null);
+          setActiveCategory(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-[425px]">
+          <form onSubmit={handleSaveProduct}>
+            <DialogHeader>
+              <DialogTitle>{editingProduct ? 'Edit Product Item' : 'Add Product Item'} to {activeCategory?.name}</DialogTitle>
+              <DialogDescription>
+                Define a specific medical item belonging to this category.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="productName">Product Name</Label>
+                <Input id="productName" name="productName" defaultValue={editingProduct?.name} placeholder="e.g. UltraView Stethoscope" required />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="sku">SKU / Model</Label>
+                  <Input id="sku" name="sku" defaultValue={editingProduct?.sku} placeholder="e.g. ST-202" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="price">Price ($)</Label>
+                  <Input id="price" name="price" type="number" step="0.01" defaultValue={editingProduct?.price} placeholder="0.00" />
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">{editingProduct ? 'Save Changes' : 'Add Item'}</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the 
-              {itemToDelete?.type === 'category' ? ' category and all its related subcategories' : ' subcategory'}.
+              {itemToDelete?.type === 'category' ? ' category and all its related sub-items' : ` selected ${itemToDelete?.type}`}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -318,7 +423,7 @@ export default function CategoriesPage() {
                         <div className="flex items-center gap-2">
                           <h3 className="font-bold text-lg">{category.name}</h3>
                           <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 px-2 py-0">
-                            {category.subcategories.length} Subcategories
+                            {category.products.length} Items
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground line-clamp-1">{category.description}</p>
@@ -338,11 +443,14 @@ export default function CategoriesPage() {
                           <DropdownMenuItem onClick={() => openSubcategoryDialog(category)}>
                             <Plus className="mr-2 h-4 w-4 text-primary" /> Add Subcategory
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => openEditDialog(category)}>
-                            <Edit className="mr-2 h-4 w-4" /> Edit Category
+                          <DropdownMenuItem onClick={() => openProductDialog(category)}>
+                            <Package className="mr-2 h-4 w-4 text-accent" /> Add Product Item
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive" onClick={() => triggerDeleteCategory(category.id)}>
+                          <DropdownMenuItem onClick={() => openEditCategoryDialog(category)}>
+                            <Edit className="mr-2 h-4 w-4" /> Edit Category
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive" onClick={() => triggerDelete('category', category.id)}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -354,45 +462,120 @@ export default function CategoriesPage() {
                   </div>
 
                   <AccordionContent className="bg-muted/30 px-6 pb-6 pt-2">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Specialized Subcategories</h4>
-                        <Button variant="ghost" size="sm" onClick={() => openSubcategoryDialog(category)} className="h-7 text-xs px-2 text-primary">
-                          <Plus className="h-3 w-3 mr-1" /> New Sub
-                        </Button>
-                      </div>
-                      
-                      {category.subcategories.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                          {category.subcategories.map((sub) => (
-                            <div key={sub.id} className="flex items-center justify-between p-3 rounded-md bg-background border shadow-sm group/sub">
-                              <span className="text-sm font-semibold">{sub.name}</span>
-                              <div className="flex items-center gap-1 opacity-0 group-hover/sub:opacity-100 transition-opacity">
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-6 w-6" 
-                                  onClick={() => openSubcategoryDialog(category, sub)}
-                                >
-                                  <Edit className="h-3 w-3 text-muted-foreground" />
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-6 w-6 text-destructive hover:bg-destructive/10"
-                                  onClick={() => triggerDeleteSubcategory(category.id, sub.id)}
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
+                    <div className="space-y-8">
+                      {/* Subcategories Section */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Tag className="h-4 w-4 text-primary" />
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Subcategories</h4>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={() => openSubcategoryDialog(category)} className="h-7 text-xs px-2 text-primary">
+                            <Plus className="h-3 w-3 mr-1" /> New Sub
+                          </Button>
+                        </div>
+                        
+                        {category.subcategories.length > 0 ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            {category.subcategories.map((sub) => (
+                              <div key={sub.id} className="flex items-center justify-between p-3 rounded-md bg-background border shadow-sm group/sub">
+                                <span className="text-sm font-semibold">{sub.name}</span>
+                                <div className="flex items-center gap-1 opacity-0 group-hover/sub:opacity-100 transition-opacity">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-6 w-6" 
+                                    onClick={() => openSubcategoryDialog(category, sub)}
+                                  >
+                                    <Edit className="h-3 w-3 text-muted-foreground" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-6 w-6 text-destructive hover:bg-destructive/10"
+                                    onClick={() => triggerDelete('subcategory', category.id, sub.id)}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-4 border border-dashed rounded-lg text-muted-foreground bg-background/50">
+                            <p className="text-xs italic">No subcategories defined.</p>
+                          </div>
+                        )}
+                      </div>
+
+                      <Separator className="bg-border/50" />
+
+                      {/* Product Items Section */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Package className="h-4 w-4 text-accent" />
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Product Items</h4>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={() => openProductDialog(category)} className="h-7 text-xs px-2 text-accent">
+                            <Plus className="h-3 w-3 mr-1" /> New Item
+                          </Button>
                         </div>
-                      ) : (
-                        <div className="text-center py-6 border-2 border-dashed rounded-lg text-muted-foreground">
-                          <p className="text-xs italic">No subcategories defined for this section.</p>
-                        </div>
-                      )}
+
+                        {category.products.length > 0 ? (
+                          <Card className="border-none shadow-sm overflow-hidden">
+                            <Table>
+                              <TableHeader className="bg-muted/50">
+                                <TableRow>
+                                  <TableHead className="h-10 text-xs font-bold uppercase">Item Name</TableHead>
+                                  <TableHead className="h-10 text-xs font-bold uppercase">SKU</TableHead>
+                                  <TableHead className="h-10 text-xs font-bold uppercase">Price</TableHead>
+                                  <TableHead className="h-10 text-right text-xs font-bold uppercase">Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody className="bg-background">
+                                {category.products.map((product) => (
+                                  <TableRow key={product.id}>
+                                    <TableCell className="py-3 font-medium">{product.name}</TableCell>
+                                    <TableCell className="py-3 font-mono text-xs">{product.sku || 'N/A'}</TableCell>
+                                    <TableCell className="py-3">
+                                      <div className="flex items-center text-xs font-bold">
+                                        <DollarSign className="h-3 w-3 text-muted-foreground" />
+                                        {product.price.toFixed(2)}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="py-3 text-right">
+                                      <div className="flex items-center justify-end gap-1">
+                                        <Button 
+                                          variant="ghost" 
+                                          size="icon" 
+                                          className="h-7 w-7" 
+                                          onClick={() => openProductDialog(category, product)}
+                                        >
+                                          <Edit className="h-3.5 w-3.5 text-muted-foreground" />
+                                        </Button>
+                                        <Button 
+                                          variant="ghost" 
+                                          size="icon" 
+                                          className="h-7 w-7 text-destructive hover:bg-destructive/10"
+                                          onClick={() => triggerDelete('product', category.id, product.id)}
+                                        >
+                                          <Trash2 className="h-3.5 w-3.5" />
+                                        </Button>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </Card>
+                        ) : (
+                          <div className="text-center py-10 border border-dashed rounded-lg text-muted-foreground bg-background/50">
+                            <Package className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                            <p className="text-xs italic">No product items listed in this category.</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
