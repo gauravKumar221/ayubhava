@@ -7,6 +7,7 @@ import {
   User,
   Home,
   Package,
+  Tags,
 } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
@@ -14,6 +15,11 @@ import { usePathname } from 'next/navigation';
 
 const menuItems = [
   { href: '/', icon: <Home className="h-4 w-4" />, label: 'Dashboard' },
+  {
+    href: '/categories',
+    icon: <Tags className="h-4 w-4" />,
+    label: 'Categories',
+  },
   {
     href: '/products',
     icon: <Package className="h-4 w-4" />,
