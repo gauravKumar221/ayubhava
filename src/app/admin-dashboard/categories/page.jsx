@@ -12,7 +12,6 @@ import {
   Edit, 
   Trash2,
   ChevronDown,
-  PackagePlus,
   Layers,
   MoreHorizontal
 } from 'lucide-react';
@@ -57,34 +56,30 @@ const initialCategories = [
     id: '1', 
     name: 'Instruments', 
     description: 'Medical tools and machinery', 
-    productCount: 45,
     subcategories: [
-      { id: 's1', name: 'Surgical Tools', productCount: 25 },
-      { id: 's2', name: 'Diagnostic Scopes', productCount: 20 }
+      { id: 's1', name: 'Surgical Tools' },
+      { id: 's2', name: 'Diagnostic Scopes' }
     ]
   },
   { 
     id: '2', 
     name: 'Consumables', 
     description: 'Single-use items like masks and gloves', 
-    productCount: 120,
     subcategories: [
-      { id: 's3', name: 'Protective Gear', productCount: 80 },
-      { id: 's4', name: 'Sanitization', productCount: 40 }
+      { id: 's3', name: 'Protective Gear' },
+      { id: 's4', name: 'Sanitization' }
     ]
   },
   { 
     id: '3', 
     name: 'Diagnostics', 
     description: 'Equipment for testing and analysis', 
-    productCount: 8,
     subcategories: []
   },
   { 
     id: '4', 
     name: 'Mobility', 
     description: 'Aids for patient movement', 
-    productCount: 10,
     subcategories: []
   },
 ];
@@ -94,7 +89,6 @@ export default function CategoriesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [isSubcategoryDialogOpen, setIsSubcategoryDialogOpen] = useState(false);
-  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingSubcategory, setEditingSubcategory] = useState(null);
@@ -123,7 +117,6 @@ export default function CategoriesPage() {
       setCategories([...categories, { 
         ...categoryData, 
         id: Math.random().toString(36).substr(2, 9), 
-        productCount: 0,
         subcategories: []
       }]);
     }
@@ -152,8 +145,7 @@ export default function CategoriesPage() {
       } else {
         const newSub = {
           id: Math.random().toString(36).substr(2, 9),
-          name: subName,
-          productCount: 0
+          name: subName
         };
         
         setCategories(categories.map(c => 
@@ -167,19 +159,6 @@ export default function CategoriesPage() {
     setIsSubcategoryDialogOpen(false);
     setActiveCategory(null);
     setEditingSubcategory(null);
-  };
-
-  const handleAddProduct = (e) => {
-    e.preventDefault();
-    if (activeCategory) {
-      setCategories(categories.map(c => 
-        c.id === activeCategory.id 
-          ? { ...c, productCount: c.productCount + 1 } 
-          : c
-      ));
-    }
-    setIsProductDialogOpen(false);
-    setActiveCategory(null);
   };
 
   const handleDelete = () => {
@@ -210,11 +189,6 @@ export default function CategoriesPage() {
     setIsSubcategoryDialogOpen(true);
   };
 
-  const openAddProductDialog = (category) => {
-    setActiveCategory(category);
-    setIsProductDialogOpen(true);
-  };
-
   const triggerDeleteCategory = (categoryId) => {
     setItemToDelete({ type: 'category', categoryId });
     setIsDeleteDialogOpen(true);
@@ -229,7 +203,7 @@ export default function CategoriesPage() {
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="Category Management" 
-        description="Organize your products by clinical categories and subcategories."
+        description="Organize clinical groupings and specialized subcategories."
       >
         <Dialog open={isCategoryDialogOpen} onOpenChange={(open) => {
           setIsCategoryDialogOpen(open);
@@ -245,7 +219,7 @@ export default function CategoriesPage() {
               <DialogHeader>
                 <DialogTitle>{editingCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
                 <DialogDescription>
-                  Define a main category for your medical products.
+                  Define a main category for clinical organization.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -300,39 +274,6 @@ export default function CategoriesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Add Product Dialog */}
-      <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <form onSubmit={handleAddProduct}>
-            <DialogHeader>
-              <DialogTitle>Add Product to {activeCategory?.name}</DialogTitle>
-              <DialogDescription>
-                Quickly register a new item in this category.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="productName">Product Name</Label>
-                <Input id="productName" placeholder="e.g. Premium Stethoscope" required />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="price">Price ($)</Label>
-                  <Input id="price" type="number" step="0.01" placeholder="99.99" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="stock">Initial Stock</Label>
-                  <Input id="stock" type="number" placeholder="50" required />
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Add Product</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
@@ -340,7 +281,7 @@ export default function CategoriesPage() {
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the 
-              {itemToDelete?.type === 'category' ? ' category and all its related data' : ' subcategory'}.
+              {itemToDelete?.type === 'category' ? ' category and all its related subcategories' : ' subcategory'}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -377,7 +318,7 @@ export default function CategoriesPage() {
                         <div className="flex items-center gap-2">
                           <h3 className="font-bold text-lg">{category.name}</h3>
                           <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 px-2 py-0">
-                            {category.productCount} Products
+                            {category.subcategories.length} Subcategories
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground line-clamp-1">{category.description}</p>
@@ -394,9 +335,6 @@ export default function CategoriesPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Management</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => openAddProductDialog(category)}>
-                            <PackagePlus className="mr-2 h-4 w-4 text-accent" /> Quick Add Product
-                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => openSubcategoryDialog(category)}>
                             <Plus className="mr-2 h-4 w-4 text-primary" /> Add Subcategory
                           </DropdownMenuItem>
@@ -418,7 +356,7 @@ export default function CategoriesPage() {
                   <AccordionContent className="bg-muted/30 px-6 pb-6 pt-2">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Subcategories</h4>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Specialized Subcategories</h4>
                         <Button variant="ghost" size="sm" onClick={() => openSubcategoryDialog(category)} className="h-7 text-xs px-2 text-primary">
                           <Plus className="h-3 w-3 mr-1" /> New Sub
                         </Button>
@@ -428,10 +366,7 @@ export default function CategoriesPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                           {category.subcategories.map((sub) => (
                             <div key={sub.id} className="flex items-center justify-between p-3 rounded-md bg-background border shadow-sm group/sub">
-                              <div className="flex flex-col">
-                                <span className="text-sm font-semibold">{sub.name}</span>
-                                <span className="text-[10px] text-muted-foreground">{sub.productCount} items</span>
-                              </div>
+                              <span className="text-sm font-semibold">{sub.name}</span>
                               <div className="flex items-center gap-1 opacity-0 group-hover/sub:opacity-100 transition-opacity">
                                 <Button 
                                   variant="ghost" 

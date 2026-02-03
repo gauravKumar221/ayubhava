@@ -4,7 +4,6 @@ import {
   Building,
   CreditCard,
   Home,
-  Package,
   Tags,
   Newspaper,
   Users,
@@ -40,11 +39,6 @@ const menuItems = [
     href: '/admin-dashboard/categories',
     icon: <Tags className="h-4 w-4" />,
     label: 'Categories',
-  },
-  {
-    href: '/admin-dashboard/products',
-    icon: <Package className="h-4 w-4" />,
-    label: 'Products',
   },
   {
     href: '/admin-dashboard/newsletter',
