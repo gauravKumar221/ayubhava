@@ -18,7 +18,8 @@ import {
   Tag,
   ChevronRight,
   ListTree,
-  DollarSign
+  DollarSign,
+  Box
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -56,14 +57,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -83,8 +76,16 @@ const initialCategories = [
         name: 'Surgical Tools',
         products: [],
         subSubcategories: [
-          { id: 'ss1', name: 'Scalpels' },
-          { id: 'ss2', name: 'Forceps' }
+          { 
+            id: 'ss1', 
+            name: 'Scalpels',
+            products: []
+          },
+          { 
+            id: 'ss2', 
+            name: 'Forceps',
+            products: []
+          }
         ]
       }
     ],
@@ -112,6 +113,7 @@ export default function CategoriesPage() {
   
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeSubcategory, setActiveSubcategory] = useState(null);
+  const [activeSubSubcategory, setActiveSubSubcategory] = useState(null);
 
   // Deletion confirmation
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -123,7 +125,11 @@ export default function CategoriesPage() {
   const getUniqueProducts = (cats) => {
     const flattened = cats.flatMap(c => {
       const catProds = c.products || [];
-      const subProds = (c.subcategories || []).flatMap(s => s.products || []);
+      const subProds = (c.subcategories || []).flatMap(s => {
+        const sProds = s.products || [];
+        const ssProds = (s.subSubcategories || []).flatMap(ss => ss.products || []);
+        return [...sProds, ...ssProds];
+      });
       return [...catProds, ...subProds];
     });
     
@@ -237,7 +243,7 @@ export default function CategoriesPage() {
                 } else {
                   return {
                     ...s,
-                    subSubcategories: [...(s.subSubcategories || []), { id: Math.random().toString(36).substr(2, 9), name }]
+                    subSubcategories: [...(s.subSubcategories || []), { id: Math.random().toString(36).substr(2, 9), name, products: [] }]
                   };
                 }
               }
@@ -264,7 +270,30 @@ export default function CategoriesPage() {
 
     if (activeCategory) {
       let newCategories;
-      if (activeSubcategory) {
+      if (activeSubSubcategory) {
+        newCategories = categories.map(c => {
+          if (c.id === activeCategory.id) {
+            return {
+              ...c,
+              subcategories: (c.subcategories || []).map(s => {
+                if (s.id === activeSubcategory.id) {
+                  return {
+                    ...s,
+                    subSubcategories: (s.subSubcategories || []).map(ss => {
+                      if (ss.id === activeSubSubcategory.id) {
+                        return { ...ss, products: [...(ss.products || []), { ...productData, id: Math.random().toString(36).substr(2, 9) }] };
+                      }
+                      return ss;
+                    })
+                  };
+                }
+                return s;
+              })
+            };
+          }
+          return c;
+        });
+      } else if (activeSubcategory) {
         newCategories = categories.map(c => {
           if (c.id === activeCategory.id) {
             return {
@@ -293,6 +322,7 @@ export default function CategoriesPage() {
     setIsProductDialogOpen(false);
     setEditingProduct(null);
     setActiveSubcategory(null);
+    setActiveSubSubcategory(null);
   };
 
   const handleDelete = () => {
@@ -319,7 +349,30 @@ export default function CategoriesPage() {
         return c;
       });
     } else if (type === 'product') {
-      if (subcategoryId) {
+      if (subSubcategoryId) {
+        newCategories = categories.map(c => {
+          if (c.id === categoryId) {
+            return {
+              ...c,
+              subcategories: (c.subcategories || []).map(s => {
+                if (s.id === subcategoryId) {
+                  return {
+                    ...s,
+                    subSubcategories: (s.subSubcategories || []).map(ss => {
+                      if (ss.id === subSubcategoryId) {
+                        return { ...ss, products: (ss.products || []).filter(p => p.id !== productId) };
+                      }
+                      return ss;
+                    })
+                  };
+                }
+                return s;
+              })
+            };
+          }
+          return c;
+        });
+      } else if (subcategoryId) {
         newCategories = categories.map(c => {
           if (c.id === categoryId) {
             return {
@@ -356,7 +409,30 @@ export default function CategoriesPage() {
     const selected = allGlobalProducts.find(p => p.id === productId);
     if (selected && activeCategory) {
       let newCategories;
-      if (activeSubcategory) {
+      if (activeSubSubcategory) {
+        newCategories = categories.map(c => {
+          if (c.id === activeCategory.id) {
+            return {
+              ...c,
+              subcategories: (c.subcategories || []).map(s => {
+                if (s.id === activeSubcategory.id) {
+                  return {
+                    ...s,
+                    subSubcategories: (s.subSubcategories || []).map(ss => {
+                      if (ss.id === activeSubSubcategory.id) {
+                        return { ...ss, products: [...(ss.products || []), { ...selected, id: Math.random().toString(36).substr(2, 9) }] };
+                      }
+                      return ss;
+                    })
+                  };
+                }
+                return s;
+              })
+            };
+          }
+          return c;
+        });
+      } else if (activeSubcategory) {
         newCategories = categories.map(c => {
           if (c.id === activeCategory.id) {
             return {
@@ -382,6 +458,7 @@ export default function CategoriesPage() {
       persistCategories(newCategories);
       setIsProductDialogOpen(false);
       setActiveSubcategory(null);
+      setActiveSubSubcategory(null);
     }
   };
 
@@ -453,6 +530,7 @@ export default function CategoriesPage() {
         setIsProductDialogOpen(open);
         if (!open) {
           setActiveSubcategory(null);
+          setActiveSubSubcategory(null);
         }
       }}>
         <DialogContent className="sm:max-w-[425px]">
@@ -483,7 +561,7 @@ export default function CategoriesPage() {
               <DialogHeader>
                 <DialogTitle>{editingProduct ? 'Edit Product' : 'Create New Product'}</DialogTitle>
                 <DialogDescription className="text-xs">
-                  Adding to {activeSubcategory ? activeSubcategory.name : activeCategory?.name}
+                  Adding to {activeSubSubcategory ? activeSubSubcategory.name : activeSubcategory ? activeSubcategory.name : activeCategory?.name}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-2">
@@ -548,7 +626,7 @@ export default function CategoriesPage() {
                         <DropdownMenuItem onClick={() => { setActiveCategory(category); setIsSubcategoryDialogOpen(true); }}>
                           <Plus className="mr-2 h-4 w-4" /> Add Subcategory
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setActiveCategory(category); setActiveSubcategory(null); setIsProductDialogOpen(true); }}>
+                        <DropdownMenuItem onClick={() => { setActiveCategory(category); setActiveSubcategory(null); setActiveSubSubcategory(null); setIsProductDialogOpen(true); }}>
                           <Package className="mr-2 h-4 w-4" /> Add Product
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -580,7 +658,7 @@ export default function CategoriesPage() {
                                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openSubSubDialog(category, sub)} title="Add Sub-Subcategory">
                                   <Plus className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setEditingProduct(null); setIsProductDialogOpen(true); }} title="Add Product to Subcategory">
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setActiveSubSubcategory(null); setEditingProduct(null); setIsProductDialogOpen(true); }} title="Add Product to Subcategory">
                                   <Package className="h-4 w-4 text-accent" />
                                 </Button>
                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => { setItemToDelete({ type: 'subcategory', categoryId: category.id, subcategoryId: sub.id }); setIsDeleteDialogOpen(true); }}>
@@ -597,13 +675,41 @@ export default function CategoriesPage() {
                                 </p>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                   {sub.subSubcategories.map((ss) => (
-                                    <div key={ss.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/50 group/ss transition-colors hover:bg-muted/40">
-                                      <span className="text-xs font-semibold">{ss.name}</span>
-                                      <div className="flex items-center opacity-0 group-hover/ss:opacity-100 transition-opacity">
-                                        <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => { setItemToDelete({ type: 'subsubcategory', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id }); setIsDeleteDialogOpen(true); }}>
-                                          <Trash2 className="h-3.5 w-3.5" />
-                                        </Button>
+                                    <div key={ss.id} className="flex flex-col p-3 rounded-lg bg-muted/20 border border-border/50 group/ss transition-colors hover:bg-muted/40">
+                                      <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-semibold">{ss.name}</span>
+                                        <div className="flex items-center gap-1 opacity-0 group-hover/ss:opacity-100 transition-opacity">
+                                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setActiveSubSubcategory(ss); setIsProductDialogOpen(true); }} title="Add Product to Sub-Subcategory">
+                                            <Package className="h-3.5 w-3.5 text-accent" />
+                                          </Button>
+                                          <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => { setItemToDelete({ type: 'subsubcategory', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id }); setIsDeleteDialogOpen(true); }}>
+                                            <Trash2 className="h-3.5 w-3.5" />
+                                          </Button>
+                                        </div>
                                       </div>
+                                      
+                                      {/* Products in Sub-Subcategory section */}
+                                      {ss.products && ss.products.length > 0 && (
+                                        <div className="space-y-1.5 mt-2 pt-2 border-t border-border/40">
+                                          {ss.products.map(p => (
+                                            <div key={p.id} className="flex items-center justify-between text-[10px] group/ssp">
+                                              <div className="flex items-center gap-1 truncate max-w-[70%]">
+                                                <Box className="h-2.5 w-2.5 text-muted-foreground/60" />
+                                                <span className="font-medium truncate">{p.name}</span>
+                                              </div>
+                                              <div className="flex items-center gap-1.5">
+                                                <span className="font-bold text-primary">${p.price?.toFixed(2)}</span>
+                                                <button 
+                                                  onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id, productId: p.id }); setIsDeleteDialogOpen(true); }}
+                                                  className="text-destructive opacity-0 group-hover/ssp:opacity-100 transition-opacity"
+                                                >
+                                                  <Trash2 className="h-2.5 w-2.5" />
+                                                </button>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
