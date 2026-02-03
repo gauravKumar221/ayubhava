@@ -1,5 +1,6 @@
 'use client';
 import './globals.css';
+import { usePathname } from 'next/navigation';
 import { Toaster } from '@/components/ui/toaster.jsx';
 import { Menu, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -19,7 +20,21 @@ import { SidebarProvider, useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
 
 function AppLayout({ children }) {
+  const pathname = usePathname();
   const { isSidebarOpen } = useSidebar();
+
+  // Define routes that should not use the admin dashboard layout
+  const isPublicRoute = pathname === '/contact-us';
+
+  if (isPublicRoute) {
+    return (
+      <div className="min-h-screen w-full bg-background flex flex-col">
+        <main className="flex-1">
+          {children}
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -96,7 +111,6 @@ function SidebarToggleButton() {
 }
 
 export default function RootLayout({ children }) {
-  const userAvatar = getPlaceholderImage('user-avatar-1');
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
