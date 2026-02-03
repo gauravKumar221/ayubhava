@@ -10,7 +10,6 @@ import { Separator } from '@/components/ui/separator';
 import { 
   Plus, 
   Search, 
-  Edit, 
   Trash2,
   ChevronDown,
   Layers,
@@ -18,8 +17,7 @@ import {
   Package,
   Tag,
   ChevronRight,
-  ListTree,
-  Check
+  ListTree
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -485,9 +483,6 @@ export default function CategoriesPage() {
                           <Package className="mr-2 h-4 w-4" /> Add Product
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => { setEditingCategory(category); setIsCategoryDialogOpen(true); }}>
-                          <Edit className="mr-2 h-4 w-4" /> Edit
-                        </DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive" onClick={() => { setItemToDelete({ type: 'category', categoryId: category.id }); setIsDeleteDialogOpen(true); }}>
                           <Trash2 className="mr-2 h-4 w-4" /> Delete
                         </DropdownMenuItem>
@@ -516,9 +511,6 @@ export default function CategoriesPage() {
                                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openSubSubDialog(category, sub)}>
                                   <Plus className="h-3.5 w-3.5" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setActiveCategory(category); setEditingSubcategory(sub); setIsSubcategoryDialogOpen(true); }}>
-                                  <Edit className="h-3.5 w-3.5" />
-                                </Button>
                                 <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setItemToDelete({ type: 'subcategory', categoryId: category.id, subcategoryId: sub.id }); setIsDeleteDialogOpen(true); }}>
                                   <Trash2 className="h-3.5 w-3.5" />
                                 </Button>
@@ -535,9 +527,6 @@ export default function CategoriesPage() {
                                     <div key={ss.id} className="flex items-center justify-between p-2 rounded bg-muted/50 border border-border/50 group/ss">
                                       <span className="text-xs font-medium">{ss.name}</span>
                                       <div className="flex items-center opacity-0 group-hover/ss:opacity-100 transition-opacity">
-                                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => openSubSubDialog(category, sub, ss)}>
-                                          <Edit className="h-3 w-3" />
-                                        </Button>
                                         <Button variant="ghost" size="icon" className="h-5 w-5 text-destructive" onClick={() => { setItemToDelete({ type: 'subsubcategory', categoryId: category.id, subcategoryId: sub.id, subSubcategoryId: ss.id }); setIsDeleteDialogOpen(true); }}>
                                           <Trash2 className="h-3 w-3" />
                                         </Button>
@@ -581,9 +570,6 @@ export default function CategoriesPage() {
                                   <TableCell className="py-3 font-mono text-xs">{product.sku || 'N/A'}</TableCell>
                                   <TableCell className="py-3 font-bold text-xs">${product.price.toFixed(2)}</TableCell>
                                   <TableCell className="py-3 text-right">
-                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setActiveCategory(category); setEditingProduct(product); setIsProductDialogOpen(true); }}>
-                                      <Edit className="h-3.5 w-3.5" />
-                                    </Button>
                                     <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { setItemToDelete({ type: 'product', categoryId: category.id, productId: product.id }); setIsDeleteDialogOpen(true); }}>
                                       <Trash2 className="h-3.5 w-3.5" />
                                     </Button>
