@@ -29,7 +29,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-const menuItems = [
+export const menuItems = [
   { href: '/admin-dashboard', icon: <Home className="h-4 w-4" />, label: 'Dashboard' },
   {
     href: '/admin-dashboard/orders',
@@ -79,7 +79,7 @@ const menuItems = [
   { href: '/admin-dashboard/profile', icon: <User className="h-4 w-4" />, label: 'Profile' },
 ];
 
-const promos = [
+export const promos = [
   { title: 'Buy 2 Get 1', tag: 'Via Barcode Code' },
   { title: 'Discount 15%', tag: 'Via Credit Card' },
   { title: 'Discount 20%', tag: 'Special Offer' },

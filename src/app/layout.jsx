@@ -2,7 +2,7 @@
 import './globals.css';
 import { usePathname } from 'next/navigation';
 import { Toaster } from '@/components/ui/toaster.jsx';
-import { Menu, Search, Bell } from 'lucide-react';
+import { Menu, Search, Bell, Building } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -15,9 +15,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
-import { Sidebar } from '@/components/layout/sidebar';
+import { Sidebar, menuItems } from '@/components/layout/sidebar';
 import { SidebarProvider, useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import Link from 'next/link';
 
 function AppLayout({ children }) {
   const pathname = usePathname();
@@ -107,16 +109,61 @@ function AppLayout({ children }) {
 
 function SidebarToggleButton() {
   const { toggleSidebar } = useSidebar();
+  const pathname = usePathname();
+
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      className="shrink-0"
-      onClick={toggleSidebar}
-    >
-      <Menu className="h-5 w-5" />
-      <span className="sr-only">Toggle navigation menu</span>
-    </Button>
+    <>
+      {/* Mobile Menu Button & Sheet */}
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="shrink-0 md:hidden"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle navigation menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="flex flex-col p-0 w-[280px]">
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 shrink-0">
+            <Link
+              href="/admin-dashboard"
+              className="flex items-center gap-2 font-semibold text-primary"
+            >
+              <Building className="h-6 w-6" />
+              <span>Bit Max</span>
+            </Link>
+          </div>
+          <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-1 py-4">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50',
+                  pathname === item.href && 'bg-muted text-primary'
+                )}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </nav>
+        </SheetContent>
+      </Sheet>
+
+      {/* Desktop Toggle Button */}
+      <Button
+        variant="outline"
+        size="icon"
+        className="shrink-0 hidden md:flex"
+        onClick={toggleSidebar}
+      >
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">Toggle navigation menu</span>
+      </Button>
+    </>
   );
 }
 
