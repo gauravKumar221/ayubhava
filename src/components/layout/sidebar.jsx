@@ -77,11 +77,6 @@ const menuItems = [
     icon: <CreditCard className="h-4 w-4" />,
     label: 'Payments',
   },
-  {
-    href: '/admin-dashboard/schedule',
-    icon: <Calendar className="h-4 w-4" />,
-    label: 'Schedule',
-  },
   { href: '/admin-dashboard/profile', icon: <User className="h-4 w-4" />, label: 'Profile' },
 ];
 
