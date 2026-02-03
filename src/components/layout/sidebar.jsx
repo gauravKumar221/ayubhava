@@ -15,6 +15,11 @@ import {
 import { useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from '@/components/ui/carousel';
 
 const menuItems = [
   { href: '/', icon: <Home className="h-4 w-4" />, label: 'Dashboard' },
@@ -56,6 +61,12 @@ const menuItems = [
   { href: '/profile', icon: <User className="h-4 w-4" />, label: 'Profile' },
 ];
 
+const promos = [
+  { title: 'Buy 2 Get 1', tag: 'Via Barcode Code' },
+  { title: 'Discount 15%', tag: 'Via Credit Card' },
+  { title: 'Discount 20%', tag: 'Special Offer' },
+];
+
 export function Sidebar() {
   const { isSidebarOpen } = useSidebar();
   const pathname = usePathname();
@@ -77,7 +88,7 @@ export function Sidebar() {
             <span className={cn(!isSidebarOpen && 'hidden')}>Bit Max</span>
           </Link>
         </div>
-        <div className="flex-1">
+        <div className="flex-1 overflow-y-auto">
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
             {menuItems.map((item) => (
               <Link
@@ -96,6 +107,30 @@ export function Sidebar() {
               </Link>
             ))}
           </nav>
+
+          {isSidebarOpen && (
+            <div className="mt-8 px-4">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Active Promos
+              </p>
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {promos.map((promo, index) => (
+                    <CarouselItem key={index}>
+                      <div className="flex h-24 flex-col justify-between rounded-xl bg-primary p-3 text-primary-foreground shadow-sm">
+                        <span className="w-fit rounded-full bg-white/20 px-2 py-0.5 text-[10px] backdrop-blur-sm">
+                          {promo.tag}
+                        </span>
+                        <p className="text-lg font-bold leading-tight">
+                          {promo.title}
+                        </p>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            </div>
+          )}
         </div>
       </div>
     </div>
