@@ -109,7 +109,6 @@ export default function CategoriesPage() {
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingSubcategory, setEditingSubcategory] = useState(null);
   const [editingSubSubcategory, setEditingSubSubcategory] = useState(null);
-  const [editingProduct, setEditingProduct] = useState(null);
   
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeSubcategory, setActiveSubcategory] = useState(null);
@@ -257,72 +256,6 @@ export default function CategoriesPage() {
     }
     setIsSubSubcategoryDialogOpen(false);
     setEditingSubSubcategory(null);
-  };
-
-  const handleSaveProduct = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const productData = {
-      name: formData.get('productName'),
-      sku: formData.get('sku'),
-      price: parseFloat(formData.get('price') || '0'),
-    };
-
-    if (activeCategory) {
-      let newCategories;
-      if (activeSubSubcategory) {
-        newCategories = categories.map(c => {
-          if (c.id === activeCategory.id) {
-            return {
-              ...c,
-              subcategories: (c.subcategories || []).map(s => {
-                if (s.id === activeSubcategory.id) {
-                  return {
-                    ...s,
-                    subSubcategories: (s.subSubcategories || []).map(ss => {
-                      if (ss.id === activeSubSubcategory.id) {
-                        return { ...ss, products: [...(ss.products || []), { ...productData, id: Math.random().toString(36).substr(2, 9) }] };
-                      }
-                      return ss;
-                    })
-                  };
-                }
-                return s;
-              })
-            };
-          }
-          return c;
-        });
-      } else if (activeSubcategory) {
-        newCategories = categories.map(c => {
-          if (c.id === activeCategory.id) {
-            return {
-              ...c,
-              subcategories: (c.subcategories || []).map(s => {
-                if (s.id === activeSubcategory.id) {
-                  const newProd = { ...productData, id: Math.random().toString(36).substr(2, 9) };
-                  return { ...s, products: [...(s.products || []), newProd] };
-                }
-                return s;
-              })
-            };
-          }
-          return c;
-        });
-      } else {
-        const newProd = { ...productData, id: Math.random().toString(36).substr(2, 9) };
-        newCategories = categories.map(c => 
-          c.id === activeCategory.id 
-            ? { ...c, products: [...(c.products || []), newProd] } 
-            : c
-        );
-      }
-      persistCategories(newCategories);
-    }
-    setIsProductDialogOpen(false);
-    setEditingProduct(null);
-    setActiveSubcategory(null);
-    setActiveSubSubcategory(null);
   };
 
   const handleDelete = () => {
@@ -534,12 +467,18 @@ export default function CategoriesPage() {
         }
       }}>
         <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Assign Product</DialogTitle>
+            <DialogDescription className="text-xs">
+              Select a product from your collection to add to <strong>{activeSubSubcategory ? activeSubSubcategory.name : activeSubcategory ? activeSubcategory.name : activeCategory?.name}</strong>
+            </DialogDescription>
+          </DialogHeader>
           <div className="grid gap-6 py-4">
             <div>
-              <Label className="mb-2 block">Quick Select Existing Product</Label>
+              <Label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Search Collection</Label>
               <Select onValueChange={handleSelectExistingProduct}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select from collection..." />
+                  <SelectValue placeholder="Search clinical items..." />
                 </SelectTrigger>
                 <SelectContent>
                   {allGlobalProducts.length > 0 ? (
@@ -554,32 +493,6 @@ export default function CategoriesPage() {
                 </SelectContent>
               </Select>
             </div>
-
-            <Separator />
-
-            <form onSubmit={handleSaveProduct} className="grid gap-4">
-              <DialogHeader>
-                <DialogTitle>{editingProduct ? 'Edit Product' : 'Create New Product'}</DialogTitle>
-                <DialogDescription className="text-xs">
-                  Adding to {activeSubSubcategory ? activeSubSubcategory.name : activeSubcategory ? activeSubcategory.name : activeCategory?.name}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-2">
-                <Label>Product Name</Label>
-                <Input name="productName" placeholder="e.g. Stethoscope" defaultValue={editingProduct?.name} required />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>SKU</Label>
-                  <Input name="sku" placeholder="SKU-123" defaultValue={editingProduct?.sku} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Price ($)</Label>
-                  <Input name="price" type="number" step="0.01" placeholder="0.00" defaultValue={editingProduct?.price} />
-                </div>
-              </div>
-              <DialogFooter><Button type="submit" className="w-full">Add Product</Button></DialogFooter>
-            </form>
           </div>
         </DialogContent>
       </Dialog>
@@ -658,7 +571,7 @@ export default function CategoriesPage() {
                                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openSubSubDialog(category, sub)} title="Add Sub-Subcategory">
                                   <Plus className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setActiveSubSubcategory(null); setEditingProduct(null); setIsProductDialogOpen(true); }} title="Add Product to Subcategory">
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setActiveCategory(category); setActiveSubcategory(sub); setActiveSubSubcategory(null); setIsProductDialogOpen(true); }} title="Add Product to Subcategory">
                                   <Package className="h-4 w-4 text-accent" />
                                 </Button>
                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => { setItemToDelete({ type: 'subcategory', categoryId: category.id, subcategoryId: sub.id }); setIsDeleteDialogOpen(true); }}>
