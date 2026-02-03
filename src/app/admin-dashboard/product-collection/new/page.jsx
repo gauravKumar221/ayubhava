@@ -37,6 +37,14 @@ import Image from 'next/image';
 const RichTextEditor = ({ value, onChange, placeholder }) => {
   const editorRef = useRef(null);
 
+  // Synchronize internal editor HTML with the value prop only when it differs.
+  // This prevents the cursor from jumping to the start/left on every keystroke.
+  useEffect(() => {
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value || '';
+    }
+  }, [value]);
+
   const execCommand = (command, val = null) => {
     document.execCommand(command, false, val);
     if (editorRef.current) {
@@ -45,22 +53,21 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
   };
 
   return (
-    <div className="flex flex-col rounded-md border border-input bg-background">
+    <div className="flex flex-col rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
       <div className="flex items-center gap-1 border-b bg-muted/20 p-1.5 flex-wrap">
-        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('bold')} className="h-8 w-8 p-0"><Bold className="h-4 w-4" /></Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('italic')} className="h-8 w-8 p-0"><Italic className="h-4 w-4" /></Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('underline')} className="h-8 w-8 p-0"><Underline className="h-4 w-4" /></Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('bold')} className="h-8 w-8 p-0" title="Bold"><Bold className="h-4 w-4" /></Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('italic')} className="h-8 w-8 p-0" title="Italic"><Italic className="h-4 w-4" /></Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('underline')} className="h-8 w-8 p-0" title="Underline"><Underline className="h-4 w-4" /></Button>
         <Separator orientation="vertical" className="mx-1 h-4" />
-        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('insertUnorderedList')} className="h-8 w-8 p-0"><List className="h-4 w-4" /></Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('insertOrderedList')} className="h-8 w-8 p-0"><ListOrdered className="h-4 w-4" /></Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('insertUnorderedList')} className="h-8 w-8 p-0" title="Bullet List"><List className="h-4 w-4" /></Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => execCommand('insertOrderedList')} className="h-8 w-8 p-0" title="Numbered List"><ListOrdered className="h-4 w-4" /></Button>
       </div>
       <div
         ref={editorRef}
         contentEditable
         onInput={(e) => onChange(e.currentTarget.innerHTML)}
-        className="min-h-[150px] p-4 outline-none prose prose-sm max-w-none dark:prose-invert"
-        placeholder={placeholder}
-        dangerouslySetInnerHTML={{ __html: value }}
+        className="min-h-[150px] p-4 outline-none prose prose-sm max-w-none dark:prose-invert overflow-y-auto"
+        data-placeholder={placeholder}
       />
     </div>
   );
@@ -194,7 +201,7 @@ export default function NewProductPage() {
               </div>
               <div className="grid gap-2">
                 <Label>Description</Label>
-                <RichTextEditor value={description} onChange={setDescription} />
+                <RichTextEditor value={description} onChange={setDescription} placeholder="Write detailed product description..." />
               </div>
             </CardContent>
           </Card>

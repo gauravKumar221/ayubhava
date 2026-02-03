@@ -50,6 +50,13 @@ import { format } from 'date-fns';
 const RichTextEditor = ({ value, onChange, placeholder }) => {
   const editorRef = useRef(null);
 
+  // Sync internal editor HTML with the value prop only when it differs.
+  useEffect(() => {
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value || '';
+    }
+  }, [value]);
+
   const execCommand = (command, val = null) => {
     document.execCommand(command, false, val);
     if (editorRef.current) {
@@ -141,7 +148,6 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
         contentEditable
         onInput={(e) => onChange(e.currentTarget.innerHTML)}
         className="min-h-[250px] p-4 outline-none prose prose-sm max-w-none dark:prose-invert overflow-y-auto"
-        dangerouslySetInnerHTML={{ __html: value }}
       />
     </div>
   );
