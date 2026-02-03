@@ -57,9 +57,13 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
     }
   };
 
+  const handleHeadingChange = (val) => {
+    execCommand('formatBlock', val);
+  };
+
   return (
     <div className="flex flex-col rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-      <div className="flex items-center gap-1 border-b bg-muted/30 p-1.5">
+      <div className="flex items-center gap-1 border-b bg-muted/30 p-1.5 flex-wrap">
         <Button 
           type="button" 
           variant="ghost" 
@@ -91,6 +95,26 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
           <Underline className="h-4 w-4" />
         </Button>
         <Separator orientation="vertical" className="mx-1 h-4" />
+        
+        <Select onValueChange={handleHeadingChange}>
+          <SelectTrigger className="h-8 w-[120px] text-xs bg-transparent border-none hover:bg-muted focus:ring-0">
+            <div className="flex items-center gap-2">
+              <Type className="h-3.5 w-3.5" />
+              <SelectValue placeholder="Heading" />
+            </div>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="p">Paragraph</SelectItem>
+            <SelectItem value="h1">Heading 1</SelectItem>
+            <SelectItem value="h2">Heading 2</SelectItem>
+            <SelectItem value="h3">Heading 3</SelectItem>
+            <SelectItem value="h4">Heading 4</SelectItem>
+            <SelectItem value="h5">Heading 5</SelectItem>
+            <SelectItem value="h6">Heading 6</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Separator orientation="vertical" className="mx-1 h-4" />
         <Button 
           type="button" 
           variant="ghost" 
@@ -110,17 +134,6 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
           title="Numbered List"
         >
           <ListOrdered className="h-4 w-4" />
-        </Button>
-        <Separator orientation="vertical" className="mx-1 h-4" />
-        <Button 
-          type="button" 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => execCommand('formatBlock', 'h2')}
-          className="h-8 w-8 p-0 hover:bg-muted"
-          title="Heading"
-        >
-          <Type className="h-4 w-4" />
         </Button>
       </div>
       <div
