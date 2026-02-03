@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,9 @@ import {
   Clock,
   Calendar,
   Zap,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Upload,
+  X
 } from 'lucide-react';
 import {
   Dialog,
@@ -38,14 +40,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import Image from 'next/image';
@@ -117,6 +111,8 @@ export default function CouponsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [currentTime, setCurrentTime] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -141,6 +137,17 @@ export default function CouponsPage() {
     return matchesSearch && matchesFilter;
   });
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSaveCoupon = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -157,7 +164,8 @@ export default function CouponsPage() {
       status: isExpired ? 'Expired' : (formData.get('status') || 'Public'),
       tag: isFlashSale ? 'Flash Sale Promo' : (editingCoupon ? editingCoupon.tag : 'New Promotion'),
       isFlashSale,
-      avatarId: isFlashSale ? 'flash-sale-1' : null
+      customImage: selectedImage,
+      avatarId: isFlashSale && !selectedImage ? 'flash-sale-1' : (editingCoupon?.avatarId || null)
     };
 
     if (editingCoupon) {
@@ -168,6 +176,7 @@ export default function CouponsPage() {
     
     setIsDialogOpen(false);
     setEditingCoupon(null);
+    setSelectedImage(null);
   };
 
   const handleDeleteCoupon = (id) => {
@@ -176,6 +185,7 @@ export default function CouponsPage() {
 
   const openEditDialog = (coupon) => {
     setEditingCoupon(coupon);
+    setSelectedImage(coupon.customImage || null);
     setIsDialogOpen(true);
   };
 
@@ -201,14 +211,17 @@ export default function CouponsPage() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
-          if (!open) setEditingCoupon(null);
+          if (!open) {
+            setEditingCoupon(null);
+            setSelectedImage(null);
+          }
         }}>
           <DialogTrigger asChild>
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Plus className="mr-2 h-4 w-4" /> Create Coupon
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[450px]">
             <form onSubmit={handleSaveCoupon}>
               <DialogHeader>
                 <DialogTitle>{editingCoupon ? 'Edit Coupon' : 'New Coupon'}</DialogTitle>
@@ -217,6 +230,46 @@ export default function CouponsPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>Promotion Image</Label>
+                  <div 
+                    className="relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 transition-colors hover:bg-muted/80 overflow-hidden"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {selectedImage ? (
+                      <>
+                        <Image 
+                          src={selectedImage} 
+                          alt="Preview" 
+                          fill 
+                          className="object-cover"
+                        />
+                        <button 
+                          type="button"
+                          className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedImage(null);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <Upload className="h-8 w-8" />
+                        <span className="text-xs font-medium">Click to upload image</span>
+                      </div>
+                    )}
+                  </div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/*" 
+                    onChange={handleImageChange}
+                  />
+                </div>
                 <div className="grid gap-2">
                   <Label htmlFor="code">Coupon Code</Label>
                   <Input id="code" name="code" defaultValue={editingCoupon?.code} placeholder="e.g. SUMMER2024" required className="uppercase" />
@@ -253,33 +306,35 @@ export default function CouponsPage() {
                     <Clock className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="isFlashSale">Campaign Type</Label>
-                  <Select name="isFlashSale" defaultValue={editingCoupon?.isFlashSale?.toString() || 'false'}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="false">Standard Promo</SelectItem>
-                      <SelectItem value="true">Flash Sale (Featured)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="status">Privacy Status</Label>
-                  <Select name="status" defaultValue={editingCoupon?.status || 'Public'}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Visibility" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Public">Public (Global)</SelectItem>
-                      <SelectItem value="Private">Private (Exclusive)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="isFlashSale">Campaign Type</Label>
+                    <Select name="isFlashSale" defaultValue={editingCoupon?.isFlashSale?.toString() || 'false'}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="false">Standard Promo</SelectItem>
+                        <SelectItem value="true">Flash Sale (Featured)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="status">Privacy Status</Label>
+                    <Select name="status" defaultValue={editingCoupon?.status || 'Public'}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Visibility" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Public">Public (Global)</SelectItem>
+                        <SelectItem value="Private">Private (Exclusive)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">{editingCoupon ? 'Save Changes' : 'Create Coupon'}</Button>
+                <Button type="submit" className="w-full">{editingCoupon ? 'Save Changes' : 'Create Coupon'}</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -320,7 +375,7 @@ export default function CouponsPage() {
             const displayDate = coupon.expiryDate 
               ? format(new Date(coupon.expiryDate), 'MM/dd/yyyy hh:mm a') 
               : 'No date';
-            const promoImage = coupon.avatarId ? getPlaceholderImage(coupon.avatarId) : null;
+            const promoImage = coupon.customImage ? { imageUrl: coupon.customImage } : (coupon.avatarId ? getPlaceholderImage(coupon.avatarId) : null);
 
             return (
               <Card 
