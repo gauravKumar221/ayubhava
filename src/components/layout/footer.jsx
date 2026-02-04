@@ -75,7 +75,7 @@ export function Footer() {
               <Link href="#" className="hover:text-white transition-colors">Our Philosophy</Link>
               <Link href="#" className="hover:text-white transition-colors">Science Board</Link>
               <Link href="#" className="hover:text-white transition-colors">Sustainability</Link>
-              <Link href="#" className="hover:text-white transition-colors">Clean Label Project</Link>
+              <Link href="/certificates" className="hover:text-white transition-colors">Certificates</Link>
               <Link href="#" className="hover:text-white transition-colors">Store Locator</Link>
             </nav>
           </div>
@@ -87,8 +87,11 @@ export function Footer() {
               <Link href="/contact-us" className="hover:text-white transition-colors">Contact Us</Link>
               <Link href="/wishlist" className="hover:text-white transition-colors">My Wishlist</Link>
               <Link href="/blog" className="hover:text-white transition-colors">Wellness Blog</Link>
-              <Link href="#" className="hover:text-white transition-colors">Track Order</Link>
-              <Link href="#" className="hover:text-white transition-colors">FAQs</Link>
+              <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms-and-conditions" className="hover:text-white transition-colors">Terms & Conditions</Link>
+              <Link href="/orders-shipping" className="hover:text-white transition-colors">Orders & Shipping</Link>
+              <Link href="/refunds-cancellation" className="hover:text-white transition-colors">Refunds & Cancellation</Link>
+              <Link href="/referral-program" className="hover:text-white transition-colors">Referral Policies</Link>
             </nav>
           </div>
 
@@ -109,9 +112,9 @@ export function Footer() {
               © 2024 AYUBHYAVA Wellbeing Nutrition. All rights reserved.
             </p>
             <div className="flex gap-4 text-[8px] font-black uppercase tracking-[0.2em] text-white/10">
-              <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-              <Link href="#" className="hover:text-white transition-colors">Refund Policy</Link>
+              <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms-and-conditions" className="hover:text-white transition-colors">Terms of Service</Link>
+              <Link href="/refunds-cancellation" className="hover:text-white transition-colors">Refund Policy</Link>
             </div>
           </div>
         </div>
