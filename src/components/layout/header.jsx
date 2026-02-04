@@ -137,8 +137,10 @@ export function Header() {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Info className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Our Philosophy
+              <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
+                <Link href="/our-story" className="flex items-center">
+                  <Info className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Our Story
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
                 <ShieldCheck className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Scientific Advisory Board

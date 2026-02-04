@@ -79,7 +79,7 @@ export function Footer() {
           <div className="space-y-6">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">About Us</h3>
             <nav className="flex flex-col gap-4 text-[11px] font-bold uppercase tracking-wider text-white/60">
-              <Link href="#" className="hover:text-white transition-colors">Our Philosophy</Link>
+              <Link href="/our-story" className="hover:text-white transition-colors">Our Story</Link>
               <Link href="#" className="hover:text-white transition-colors">Science Board</Link>
               <Link href="#" className="hover:text-white transition-colors">Sustainability</Link>
               <Link href="/certificates" className="hover:text-white transition-colors">Certificates</Link>
@@ -116,7 +116,7 @@ export function Footer() {
           
           <div className="flex flex-col items-center md:items-end gap-2 text-center md:text-right">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">
-              © {mounted ? new Date().getFullYear() : '2024'} AYUBHYAVA Wellbeing AYUBHAVA. All rights reserved.
+              © {mounted ? new Date().getFullYear() : '2024'} AYUBHAVA Wellbeing. All rights reserved.
             </p>
             <div className="flex gap-4 text-[8px] font-black uppercase tracking-[0.2em] text-white/10">
               <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
