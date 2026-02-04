@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,8 @@ import {
   Clock, 
   Trash2, 
   MoreVertical,
-  Circle
+  Circle,
+  ChevronRight
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -25,33 +27,37 @@ import { formatDistanceToNow } from 'date-fns';
 const initialNotifications = [
   {
     id: '1',
+    orderId: 'ORD-7721',
     title: 'New Order Received',
     message: 'Sarah Johnson placed a new order for 3 clinical items (ORD-7721).',
-    time: '2024-07-28T14:35:00Z',
+    time: new Date().toISOString(),
     type: 'order',
     read: false,
   },
   {
     id: '2',
+    orderId: 'ORD-7722',
     title: 'Order Completed',
     message: 'Order ORD-7722 for Michael Smith has been marked as completed.',
-    time: '2024-07-28T15:50:00Z',
+    time: new Date(Date.now() - 3600000).toISOString(),
     type: 'order',
     read: false,
   },
   {
     id: '3',
+    orderId: 'ORD-7723',
     title: 'Payment Confirmed',
     message: 'Payment for order ORD-7723 from Emily Davis has been confirmed.',
-    time: '2024-07-27T10:20:00Z',
+    time: new Date(Date.now() - 86400000).toISOString(),
     type: 'payment',
     read: true,
   },
   {
     id: '4',
+    orderId: 'ORD-7724',
     title: 'Order Cancelled',
     message: 'David Wilson cancelled their order (ORD-7724).',
-    time: '2024-07-26T09:05:00Z',
+    time: new Date(Date.now() - 172800000).toISOString(),
     type: 'order',
     read: true,
   },
@@ -89,34 +95,42 @@ export default function NotificationsPage() {
         {notifications.length > 0 ? (
           notifications.map((notification) => (
             <Card key={notification.id} className={cn(
-              "transition-all border-none shadow-sm",
+              "transition-all border-none shadow-sm hover:bg-muted/50 relative overflow-hidden group",
               !notification.read ? "bg-primary/5 ring-1 ring-primary/10" : "bg-card"
             )}>
-              <CardContent className="p-4 flex gap-4">
-                <div className={cn(
-                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-                  notification.type === 'order' ? "bg-blue-100 text-blue-600" : "bg-green-100 text-green-600"
-                )}>
-                  {notification.type === 'order' ? <ShoppingCart className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
-                </div>
-                
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-bold text-sm">{notification.title}</h4>
-                      {!notification.read && <Circle className="h-2 w-2 fill-primary text-primary" />}
-                    </div>
-                    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {formatDistanceToNow(new Date(notification.time), { addSuffix: true })}
-                    </span>
+              <div className="flex">
+                <Link 
+                  href={`/admin-dashboard/orders/${notification.orderId}`}
+                  className="flex-1 p-4 flex gap-4 no-underline text-inherit"
+                >
+                  <div className={cn(
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                    notification.type === 'order' ? "bg-blue-100 text-blue-600" : "bg-green-100 text-green-600"
+                  )}>
+                    {notification.type === 'order' ? <ShoppingCart className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {notification.message}
-                  </p>
-                </div>
+                  
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-sm">{notification.title}</h4>
+                        {!notification.read && <Circle className="h-2 w-2 fill-primary text-primary" />}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {formatDistanceToNow(new Date(notification.time), { addSuffix: true })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {notification.message}
+                    </p>
+                  </div>
+                  <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </Link>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center p-4 pr-6">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -133,7 +147,7 @@ export default function NotificationsPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-              </CardContent>
+              </div>
             </Card>
           ))
         ) : (

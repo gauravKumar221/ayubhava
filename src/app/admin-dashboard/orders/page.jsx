@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -164,8 +165,10 @@ export default function OrdersPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Order Options</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          <Eye className="mr-2 h-4 w-4" /> View Details
+                        <DropdownMenuItem asChild>
+                          <Link href={`/admin-dashboard/orders/${order.id}`} className="flex items-center">
+                            <Eye className="mr-2 h-4 w-4" /> View Details
+                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => updateStatus(order.id, 'Processing')}>
