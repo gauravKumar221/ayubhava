@@ -4,6 +4,8 @@ import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
 import { ChevronLeft, Star, Heart, Share2, ShoppingBag, CheckCircle2, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,7 +18,6 @@ import { LazyImage } from '@/components/shared/lazy-image';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Skeleton } from "@/components/ui/skeleton";
-import { Footer } from '@/components/layout/footer';
 import {
   Carousel,
   CarouselContent,
@@ -119,30 +120,12 @@ export default function ProductDetailsPage({ params }) {
     });
   }, [api]);
 
-  const ratingStats = [
-    { stars: 5, count: 28, value: 85 },
-    { stars: 4, count: 5, value: 15 },
-    { stars: 3, count: 2, value: 8 },
-    { stars: 2, count: 5, value: 15 },
-    { stars: 1, count: 1, value: 3 },
-  ];
-
   if (isLoading) {
     return (
       <div className="flex flex-col min-h-screen bg-white font-body">
-        <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur px-4">
-          <div className="container mx-auto flex h-16 items-center justify-between">
-            <Skeleton className="h-4 w-32" />
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-5 w-5 rounded-full" />
-              <Skeleton className="h-5 w-5 rounded-full" />
-            </div>
-          </div>
-        </header>
-
+        <Header />
         <main className="flex-1 container mx-auto px-4 py-8 lg:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-            {/* Gallery Skeleton */}
             <div className="space-y-6">
               <Skeleton className="aspect-square w-full rounded-3xl" />
               <div className="grid grid-cols-4 gap-4">
@@ -151,8 +134,6 @@ export default function ProductDetailsPage({ params }) {
                 ))}
               </div>
             </div>
-
-            {/* Info Skeleton */}
             <div className="flex flex-col gap-6">
               <div className="space-y-4">
                 <Skeleton className="h-4 w-24" />
@@ -160,16 +141,6 @@ export default function ProductDetailsPage({ params }) {
                 <div className="flex items-center gap-4 pt-2">
                   <Skeleton className="h-6 w-16" />
                   <Skeleton className="h-4 w-24" />
-                </div>
-                <div className="flex flex-wrap gap-2 pt-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <Skeleton key={i} className="h-6 w-24" />
-                  ))}
-                </div>
-                <div className="pt-4 space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
                 </div>
               </div>
               <Skeleton className="h-10 w-32" />
@@ -191,21 +162,16 @@ export default function ProductDetailsPage({ params }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-white font-body">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur px-4">
-        <div className="container mx-auto flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors">
-            <ChevronLeft className="h-4 w-4" />
-            Back to Shop
-          </Link>
-          <div className="flex items-center gap-4">
-            <Share2 className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
-            <Heart className="h-5 w-5 cursor-pointer hover:text-red-500 transition-colors" />
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1 container mx-auto px-4 py-8 lg:py-12">
+        <div className="mb-8">
+          <Link href="/products" className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors">
+            <ChevronLeft className="h-4 w-4" />
+            Back to Rituals
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Left: Image Gallery Slider */}
           <div className="space-y-6">
@@ -273,7 +239,6 @@ export default function ProductDetailsPage({ params }) {
                 </span>
               </div>
 
-              {/* Tags Section */}
               {product.tags && product.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 pt-4">
                   {product.tags.map((tag) => (
@@ -285,7 +250,6 @@ export default function ProductDetailsPage({ params }) {
                 </div>
               )}
 
-              {/* Short Summary Description */}
               <div className="pt-4">
                 <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 italic">
                   {product.description}
@@ -341,7 +305,6 @@ export default function ProductDetailsPage({ params }) {
           </div>
         </div>
 
-        {/* Detail Tabs */}
         <div className="mt-24 grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2">
             <Tabs defaultValue="details" className="w-full">
