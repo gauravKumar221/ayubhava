@@ -107,9 +107,6 @@ export default function ProfilePage() {
                   <Badge className="bg-accent text-accent-foreground border-none">Active</Badge>
                 </div>
               </div>
-              <Button variant="destructive" className="w-full bg-accent text-accent-foreground hover:bg-accent/90 border-none font-bold mt-4">
-                <Trash2 className="mr-2 h-4 w-4" /> Delete Account
-              </Button>
             </CardContent>
           </Card>
 
