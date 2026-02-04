@@ -1,7 +1,7 @@
 
 'use client';
 
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, Star, Heart, Share2, ShoppingBag, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 // Mock product database
 const allProducts = [
@@ -64,6 +72,23 @@ export default function ProductDetailsPage({ params }) {
   const { toast } = useToast();
   const product = allProducts.find(p => p.id === id) || allProducts[0];
   const media = getPlaceholderImage(product.imageId);
+  
+  // Carousel State
+  const [api, setApi] = useState(null);
+  const [current, setCurrent] = useState(0);
+
+  const handleThumbnailClick = (index) => {
+    if (api) {
+      api.scrollTo(index);
+    }
+  };
+
+  useEffect(() => {
+    if (!api) return;
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   const ratingStats = [
     { stars: 5, count: 28, value: 85 },
@@ -91,21 +116,48 @@ export default function ProductDetailsPage({ params }) {
 
       <main className="flex-1 container mx-auto px-4 py-8 lg:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          {/* Left: Image Gallery */}
+          {/* Left: Image Gallery Slider */}
           <div className="space-y-6">
-            <div className="relative aspect-square bg-[#f9f9f9] rounded-3xl overflow-hidden shadow-sm">
-              <LazyImage 
-                src={media?.imageUrl} 
-                alt={product.title} 
-                fill 
-                className="object-contain p-12"
-                dataAiHint={media?.imageHint}
-              />
+            <div className="relative group">
+              <Carousel setApi={setApi} className="w-full">
+                <CarouselContent>
+                  {[1, 2, 3, 4].map((i) => (
+                    <CarouselItem key={i}>
+                      <div className="relative aspect-square bg-[#f9f9f9] rounded-3xl overflow-hidden shadow-sm">
+                        <LazyImage 
+                          src={media?.imageUrl} 
+                          alt={`${product.title} view ${i}`} 
+                          fill 
+                          className="object-contain p-12"
+                          dataAiHint={media?.imageHint}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <div className="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <CarouselPrevious className="static pointer-events-auto h-10 w-10 bg-white shadow-md border-none rounded-full" />
+                  <CarouselNext className="static pointer-events-auto h-10 w-10 bg-white shadow-md border-none rounded-full" />
+                </div>
+              </Carousel>
             </div>
+            
             <div className="grid grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="relative aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-black cursor-pointer bg-muted/30">
-                  <LazyImage src={media?.imageUrl} alt="thumbnail" fill className="object-cover opacity-60" />
+              {[0, 1, 2, 3].map((index) => (
+                <div 
+                  key={index} 
+                  onClick={() => handleThumbnailClick(index)}
+                  className={cn(
+                    "relative aspect-square rounded-xl overflow-hidden border-2 cursor-pointer transition-all bg-muted/30",
+                    current === index ? "border-black" : "border-transparent"
+                  )}
+                >
+                  <LazyImage 
+                    src={media?.imageUrl} 
+                    alt="thumbnail" 
+                    fill 
+                    className={cn("object-cover transition-opacity", current === index ? "opacity-100" : "opacity-60")} 
+                  />
                 </div>
               ))}
             </div>
@@ -173,7 +225,7 @@ export default function ProductDetailsPage({ params }) {
           </div>
         </div>
 
-        {/* High Fidelity Detail Section (Matches Reference Image) */}
+        {/* High Fidelity Detail Section */}
         <div className="mt-24 grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Left: Detail Tabs */}
           <div className="lg:col-span-2">
@@ -302,10 +354,67 @@ export default function ProductDetailsPage({ params }) {
             </div>
           </div>
         </div>
+
+        {/* You May Also Like Slider */}
+        <section className="mt-32">
+          <div className="flex items-center justify-between mb-10">
+            <h2 className="text-3xl font-black tracking-tight text-foreground">
+              You May Also Like
+            </h2>
+          </div>
+          
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4">
+              {allProducts.map((p) => {
+                const pMedia = getPlaceholderImage(p.imageId);
+                return (
+                  <CarouselItem key={p.id} className="pl-4 basis-full sm:basis-1/2 lg:basis-1/4">
+                    <Link href={`/products/${p.id}`} className="group block space-y-5">
+                      <div className="relative aspect-square bg-[#f9f9f9] rounded-3xl overflow-hidden border border-transparent group-hover:border-black/5 transition-all">
+                        <LazyImage 
+                          src={pMedia?.imageUrl} 
+                          alt={p.title} 
+                          fill 
+                          className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
+                          dataAiHint={pMedia?.imageHint}
+                        />
+                      </div>
+                      <div className="space-y-2 px-1">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star key={star} className="h-2.5 w-2.5 fill-black" />
+                          ))}
+                          <span className="text-[10px] font-black ml-1">4.5</span>
+                        </div>
+                        <h3 className="text-base font-black line-clamp-1 group-hover:text-primary transition-colors tracking-tight">
+                          {p.title}
+                        </h3>
+                        <p className="text-lg font-black">₹{p.price}</p>
+                        <Button variant="outline" className="w-full h-11 rounded-none border-2 border-black font-black uppercase text-[10px] tracking-widest mt-2 group-hover:bg-black group-hover:text-white transition-all">
+                          Quick Add
+                        </Button>
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            <div className="flex justify-center gap-3 mt-12">
+              <CarouselPrevious className="static translate-y-0 h-12 w-12 rounded-full border-2 border-black/10 hover:bg-black hover:text-white hover:border-black shadow-none" />
+              <CarouselNext className="static translate-y-0 h-12 w-12 rounded-full border-2 border-black/10 hover:bg-black hover:text-white hover:border-black shadow-none" />
+            </div>
+          </Carousel>
+        </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-white py-12 border-t mt-20">
+      <footer className="bg-white py-12 border-t mt-24">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 font-black text-foreground text-xl mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-foreground font-bold text-xs">W</div>
