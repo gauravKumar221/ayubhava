@@ -167,6 +167,24 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Brand Marquee Section */}
+        <section className="bg-black py-10 overflow-hidden relative border-y border-white/5">
+          <div className="flex whitespace-nowrap animate-marquee">
+            {[...Array(10)].map((_, i) => (
+              <span key={i} className="text-6xl md:text-8xl font-black text-white/10 uppercase tracking-tighter mx-12 select-none">
+                AYUBHAVA
+              </span>
+            ))}
+          </div>
+          <div className="absolute top-10 flex whitespace-nowrap animate-marquee2">
+            {[...Array(10)].map((_, i) => (
+              <span key={i} className="text-6xl md:text-8xl font-black text-white/10 uppercase tracking-tighter mx-12 select-none">
+                AYUBHAVA
+              </span>
+            ))}
+          </div>
+        </section>
+
         {/* Shop by Wellness Goal Section */}
         <section className="py-24 bg-white">
           <div className="container mx-auto px-4 lg:px-8">
