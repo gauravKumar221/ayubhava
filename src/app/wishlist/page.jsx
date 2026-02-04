@@ -10,7 +10,6 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { LazyImage } from '@/components/shared/lazy-image';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 
 export default function WishlistPage() {
@@ -33,10 +32,12 @@ export default function WishlistPage() {
   };
 
   const addToBag = (item) => {
+    const price = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^\d.-]/g, '')) : item.price;
+    
     dispatch(cartActions.addItem({
       id: item.id,
       title: item.title,
-      price: item.price,
+      price: price || 0,
       image: item.image
     }));
 
@@ -79,13 +80,15 @@ export default function WishlistPage() {
                   <div key={item.id} className="relative animate-in fade-in slide-in-from-right-4 duration-500">
                     <div className="flex py-10 sm:py-12 gap-8 group hover:bg-muted/5 transition-colors">
                       <Link href={`/products/${item.id}`} className="relative aspect-square w-32 sm:w-48 shrink-0 overflow-hidden bg-[#f9f9f9] rounded-3xl border border-black/5 shadow-sm transition-transform hover:scale-[1.02]">
-                        <LazyImage 
-                          src={item.image} 
-                          alt={item.title} 
-                          fill 
-                          className="object-contain p-6"
-                          dataAiHint={item.imageHint}
-                        />
+                        {item.image && (
+                          <LazyImage 
+                            src={item.image} 
+                            alt={item.title} 
+                            fill 
+                            className="object-contain p-6"
+                            dataAiHint={item.imageHint}
+                          />
+                        )}
                       </Link>
 
                       <div className="flex flex-1 flex-col justify-between py-2">
