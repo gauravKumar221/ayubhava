@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useDispatch } from 'react-redux';
+import { cartActions } from '@/store/cart-slice';
 import { ChevronLeft, Trash2 } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -13,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 const initialWishlist = [
   {
     id: 'sleep-1',
-    title: 'Restful Sleep Melts (10mg)',
+    title: 'Deep Sleep Ritual - Restful Melts',
     category: 'Sleep & Stress',
     price: 599,
     image: 'https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?q=80&w=800&auto=format&fit=crop',
@@ -21,7 +23,7 @@ const initialWishlist = [
   },
   {
     id: 'best-1',
-    title: 'Premium Collagen Peptides',
+    title: 'Glow Ritual - Marine Collagen',
     category: 'Best Sellers',
     price: 1899,
     image: 'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?q=80&w=800&auto=format&fit=crop',
@@ -33,6 +35,7 @@ export default function WishlistPage() {
   const [items, setItems] = useState([]);
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setMounted(true);
@@ -61,8 +64,18 @@ export default function WishlistPage() {
   };
 
   const addToBag = (item) => {
+    // Add to Redux Cart
+    dispatch(cartActions.addItem({
+      ...item,
+      title: item.title,
+      price: item.price,
+      image: item.image
+    }));
+
+    // Remove from Wishlist
     const updated = items.filter(i => i.id !== item.id);
     saveToStorage(updated);
+
     toast({
       title: "Added to Bag!",
       description: `${item.title} is ready for checkout.`,
