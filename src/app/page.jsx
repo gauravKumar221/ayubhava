@@ -167,19 +167,19 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Brand Marquee Section */}
-        <section className="bg-black py-10 overflow-hidden relative border-y border-white/5">
+        {/* New Style Marquee Section */}
+        <section className="bg-primary py-4 overflow-hidden relative">
           <div className="flex whitespace-nowrap animate-marquee">
             {[...Array(10)].map((_, i) => (
-              <span key={i} className="text-6xl md:text-8xl font-black text-white/10 uppercase tracking-tighter mx-12 select-none">
-                AYUBHAVA
+              <span key={i} className="text-sm md:text-base font-bold text-white uppercase tracking-[0.2em] mx-12 select-none flex items-center gap-4">
+                We make things that work better and last longer. <div className="h-1 w-1 bg-white rounded-full" />
               </span>
             ))}
           </div>
-          <div className="absolute top-10 flex whitespace-nowrap animate-marquee2">
+          <div className="absolute top-4 flex whitespace-nowrap animate-marquee2">
             {[...Array(10)].map((_, i) => (
-              <span key={i} className="text-6xl md:text-8xl font-black text-white/10 uppercase tracking-tighter mx-12 select-none">
-                AYUBHAVA
+              <span key={i} className="text-sm md:text-base font-bold text-white uppercase tracking-[0.2em] mx-12 select-none flex items-center gap-4">
+                We make things that work better and last longer. <div className="h-1 w-1 bg-white rounded-full" />
               </span>
             ))}
           </div>
