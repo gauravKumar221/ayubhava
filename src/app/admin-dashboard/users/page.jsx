@@ -45,7 +45,6 @@ import {
   Mail, 
   Shield, 
   Calendar,
-  Edit,
   Trash2,
   CheckCircle2,
   XCircle,
@@ -60,8 +59,6 @@ import { getPlaceholderImage } from '@/lib/placeholder-images';
 export default function UsersPage() {
   const [users, setUsers] = useState(initialUsers);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   
   const filteredUsers = users.filter(user => 
@@ -71,20 +68,6 @@ export default function UsersPage() {
 
   const handleDeleteUser = (id) => {
     setUsers(users.filter(u => u.id !== id));
-  };
-
-  const handleUpdateUser = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const updatedData = {
-      name: formData.get('name'),
-      email: formData.get('email'),
-      status: formData.get('status'),
-    };
-
-    setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...updatedData } : u));
-    setIsEditDialogOpen(false);
-    setEditingUser(null);
   };
 
   const handleAddUser = (e) => {
@@ -199,15 +182,6 @@ export default function UsersPage() {
                             <DropdownMenuLabel className="font-bold">User Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 
-                              className="cursor-pointer"
-                              onClick={() => {
-                                setEditingUser(user);
-                                setIsEditDialogOpen(true);
-                              }}
-                            >
-                              <Edit className="mr-2 h-4 w-4" /> Edit Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
                               className="bg-accent text-accent-foreground hover:bg-accent/90 cursor-pointer mt-1 font-medium"
                               onClick={() => handleDeleteUser(user.id)}
                             >
@@ -234,46 +208,6 @@ export default function UsersPage() {
           </Table>
         </CardContent>
       </Card>
-
-      {/* Edit User Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <form onSubmit={handleUpdateUser}>
-            <DialogHeader>
-              <DialogTitle>Edit User Details</DialogTitle>
-              <DialogDescription>
-                Update the account information for clinical staff or patients.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" name="name" defaultValue={editingUser?.name} required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" defaultValue={editingUser?.email} required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="status">Status</Label>
-                <Select name="status" defaultValue={editingUser?.status || 'Active'}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Save Changes</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       {/* Add User Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

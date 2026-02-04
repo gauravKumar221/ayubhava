@@ -18,7 +18,6 @@ import {
   Clock,
   Phone,
   Trash2,
-  Edit,
   History,
   Lock,
   Smartphone,
@@ -72,14 +71,11 @@ export default function UserProfileDetailPage({ params }) {
             </div>
             <p className="text-muted-foreground text-sm flex items-center gap-2 mt-1">
               <Shield className="h-3.5 w-3.5 text-primary" />
-              System {user.role} Account • Joined {user.joinedDate}
+              System Account • Joined {user.joinedDate}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Edit className="mr-2 h-4 w-4" /> Edit Account
-          </Button>
           <Button variant="destructive" size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
             <Trash2 className="mr-2 h-4 w-4" /> Delete Account
           </Button>
@@ -103,9 +99,6 @@ export default function UserProfileDetailPage({ params }) {
                   <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
                     <Badge variant="secondary" className="bg-white/50 text-[10px] font-bold uppercase tracking-wider">
                       ID: {user.accountId || 'N/A'}
-                    </Badge>
-                    <Badge variant="secondary" className="bg-white/50 text-[10px] font-bold uppercase tracking-wider">
-                      Role: {user.role}
                     </Badge>
                   </div>
                 </div>
@@ -166,7 +159,7 @@ export default function UserProfileDetailPage({ params }) {
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { action: 'Profile updated', time: '2 hours ago', icon: <Edit className="h-4 w-4" /> },
+                  { action: 'Profile updated', time: '2 hours ago', icon: <Clock className="h-4 w-4" /> },
                   { action: 'Logged in successfully', time: '5 hours ago', icon: <Lock className="h-4 w-4" /> },
                   { action: 'Password changed', time: '3 days ago', icon: <Shield className="h-4 w-4" /> },
                 ].map((log, i) => (
