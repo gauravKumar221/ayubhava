@@ -175,6 +175,21 @@ export default function BlogDetailPage({ params }) {
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
 
+                {/* Bottom Article Image */}
+                <div className="mt-12 relative aspect-[21/9] w-full rounded-[2.5rem] overflow-hidden shadow-2xl group border border-border/50">
+                  <LazyImage 
+                    src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1600&auto=format&fit=crop" 
+                    alt="Vitality lifestyle" 
+                    fill 
+                    className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                    dataAiHint="yoga stretch"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60" />
+                  <div className="absolute bottom-8 left-8">
+                    <p className="text-white text-[10px] font-black uppercase tracking-[0.3em]">Elevating Daily Rituals</p>
+                  </div>
+                </div>
+
                 {/* Article Footer Tags */}
                 <div className="mt-16 pt-12 border-t border-muted/50 flex flex-wrap gap-2">
                   {["Digital Health", "AI", "Vitality", "Research", "Wellness"].map((tag) => (
