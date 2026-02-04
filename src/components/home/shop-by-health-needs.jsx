@@ -10,7 +10,7 @@ import { LazyImage } from '@/components/shared/lazy-image';
 import { cn } from '@/lib/utils';
 
 const categories = [
-  "Best Sellers", "Immunity", "Sleep & Stress", "Gut", "Weight", "Detox", "Beauty", "Essentials", "Energy & Me"
+  "All", "Best Sellers", "Immunity", "Sleep & Stress", "Gut", "Weight", "Detox", "Beauty", "Essentials", "Energy & Me"
 ];
 
 const allProducts = [
@@ -83,12 +83,13 @@ const allProducts = [
 ];
 
 export function ShopByHealthNeeds() {
-  const [activeCategory, setActiveCategory] = useState("Sleep & Stress");
+  const [activeCategory, setActiveCategory] = useState("All");
 
   // Filter products based on active category
-  // If no products match, we show "Best Sellers" as fallback for demo purposes
-  const filteredProducts = allProducts.filter(p => p.category === activeCategory);
-  const displayProducts = filteredProducts.length > 0 ? filteredProducts : allProducts.filter(p => p.category === "Sleep & Stress");
+  // If "All" is selected, show everything. Otherwise filter.
+  const displayProducts = activeCategory === "All" 
+    ? allProducts 
+    : allProducts.filter(p => p.category === activeCategory);
 
   return (
     <section className="py-24 bg-white">
@@ -194,6 +195,12 @@ export function ShopByHealthNeeds() {
               </div>
             );
           })}
+          {displayProducts.length === 0 && (
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-center opacity-50">
+              <p className="text-lg font-bold">No products found in this category.</p>
+              <Button variant="link" onClick={() => setActiveCategory("All")}>Show all products</Button>
+            </div>
+          )}
         </div>
       </div>
     </section>
