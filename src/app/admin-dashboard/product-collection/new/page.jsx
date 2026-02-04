@@ -286,9 +286,7 @@ function ProductForm() {
 
   const seoDescription = stripHtml(description).trim() || 'Add a title and description to see how this product might appear in a search engine listing.';
 
-  const selectedCategoryNames = categories
-    .filter(c => selectedCategories.includes(c.id))
-    .map(c => c.name);
+  const selectedCategoryObjects = categories.filter(c => selectedCategories.includes(c.id));
 
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto pb-20">
@@ -545,10 +543,20 @@ function ProductForm() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="w-full justify-between h-auto min-h-10 text-left font-normal py-2 px-3">
                       <div className="flex flex-wrap gap-1">
-                        {selectedCategoryNames.length > 0 ? (
-                          selectedCategoryNames.map((name, i) => (
-                            <span key={i} className="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1">
-                              {name}
+                        {selectedCategoryObjects.length > 0 ? (
+                          selectedCategoryObjects.map((cat) => (
+                            <span key={cat.id} className="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 group/tag">
+                              {cat.name}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleCategory(cat.id);
+                                }}
+                                className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                              >
+                                <X className="h-2 w-2" />
+                              </button>
                             </span>
                           ))
                         ) : (
