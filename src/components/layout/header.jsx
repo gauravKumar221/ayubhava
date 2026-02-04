@@ -168,10 +168,6 @@ export function Header() {
               <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
                 <Star className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Limited Edition Drops
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="my-2" />
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-black text-[11px] uppercase tracking-wider text-primary bg-primary/5 focus:bg-primary focus:text-white">
-                <Zap className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Pre-Order Now
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
