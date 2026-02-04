@@ -13,19 +13,18 @@ import {
   Sparkles,
   Square,
   Scale,
-  Smile,
-  ShieldCheck,
   Waves,
-  Apple,
   Pill,
-  Activity,
   Info,
   Award,
-  Calendar,
-  Star,
-  Leaf,
   Menu,
-  X
+  X,
+  Instagram,
+  Facebook,
+  Youtube,
+  Twitter,
+  Linkedin,
+  MapPin
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -45,6 +44,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from '@/components/ui/button';
 import { CartDrawer } from '@/components/cart/cart-drawer';
 import { LoginModal } from '@/components/auth/login-modal';
@@ -67,52 +72,141 @@ export function Header() {
                 <span className="sr-only">Open Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto px-6 border-r-0 shadow-2xl">
-              <SheetHeader className="text-left mb-10 pt-4">
-                <SheetTitle>
-                  <Link href="/" className="flex items-center gap-2 font-black text-foreground text-2xl tracking-tighter">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-foreground font-bold text-lg">W</div>
-                    <div className="flex flex-col leading-none">
-                      <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60 text-left">Wellbeing</span>
-                      <span className="text-lg uppercase font-black">AYUBHAVA</span>
-                    </div>
-                  </Link>
-                </SheetTitle>
+            <SheetContent side="left" className="w-[320px] sm:w-[400px] overflow-y-auto p-0 border-r-0 shadow-2xl bg-white flex flex-col gap-0">
+              <SheetHeader className="px-6 py-5 border-b sticky top-0 bg-white z-10">
+                <div className="flex items-center justify-between">
+                  <SheetTitle>
+                    <Link href="/" className="flex items-center gap-2 font-black text-foreground text-xl tracking-tighter">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-foreground font-bold text-sm">W</div>
+                      <div className="flex flex-col leading-none">
+                        <span className="text-[8px] uppercase tracking-[0.2em] font-bold opacity-60 text-left">Wellbeing</span>
+                        <span className="text-sm uppercase font-black">AYUBHAVA</span>
+                      </div>
+                    </Link>
+                  </SheetTitle>
+                </div>
               </SheetHeader>
               
-              <nav className="flex flex-col gap-8 text-sm font-black uppercase tracking-widest pb-12">
-                <Link href="/products" className="hover:text-primary transition-colors py-1 border-b border-muted">Shop All Rituals</Link>
-                
-                <div className="space-y-5">
-                  <p className="text-[9px] text-primary tracking-[0.3em] font-black uppercase">Wellness Benefits</p>
-                  <div className="flex flex-col gap-4 pl-2">
-                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Sparkles className="h-4 w-4 text-primary" /> Skin Glow & Hair</Link>
-                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Square className="h-4 w-4 text-primary" /> Deep Sleep & Stress</Link>
-                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Scale className="h-4 w-4 text-primary" /> Weight & Metabolism</Link>
-                  </div>
-                </div>
+              <div className="flex-1 overflow-y-auto py-2">
+                <nav className="flex flex-col">
+                  {/* Single Links */}
+                  <Link href="/products" className="px-6 py-4 text-sm font-bold border-b border-muted/50 hover:bg-muted/30 transition-colors">
+                    Shop All
+                  </Link>
 
-                <div className="space-y-5">
-                  <p className="text-[9px] text-primary tracking-[0.3em] font-black uppercase">Product Lines</p>
-                  <div className="flex flex-col gap-4 pl-2">
-                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Waves className="h-4 w-4 text-primary" /> Marine Collagen</Link>
-                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Pill className="h-4 w-4 text-primary" /> Melts Oral Strips</Link>
-                  </div>
-                </div>
+                  {/* Collapsible Sections (Accordions) */}
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="benefits" className="border-b border-muted/50">
+                      <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/30 text-sm font-bold">
+                        Shop by Benefits
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-muted/10 pb-2">
+                        <div className="flex flex-col">
+                          <Link href="/products" className="px-10 py-3 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-3">
+                            <Sparkles className="h-3.5 w-3.5" /> Skin Glow & Hair
+                          </Link>
+                          <Link href="/products" className="px-10 py-3 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-3">
+                            <Square className="h-3.5 w-3.5" /> Deep Sleep & Stress
+                          </Link>
+                          <Link href="/products" className="px-10 py-3 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-3">
+                            <Scale className="h-3.5 w-3.5" /> Weight & Metabolism
+                          </Link>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
 
-                <div className="space-y-5">
-                  <p className="text-[9px] text-primary tracking-[0.3em] font-black uppercase">World of Wellbeing</p>
-                  <div className="flex flex-col gap-4 pl-2">
-                    <Link href="/our-story" className="flex items-center gap-3 hover:text-primary transition-all"><Info className="h-4 w-4 text-primary" /> Our Story</Link>
-                    <Link href="/certificates" className="flex items-center gap-3 hover:text-primary transition-all"><Award className="h-4 w-4 text-primary" /> Certificates</Link>
-                  </div>
-                </div>
+                    <AccordionItem value="categories" className="border-b border-muted/50">
+                      <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/30 text-sm font-bold">
+                        Shop by Categories
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-muted/10 pb-2">
+                        <div className="flex flex-col">
+                          <Link href="/products" className="px-10 py-3 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-3">
+                            <Waves className="h-3.5 w-3.5" /> Marine Collagen
+                          </Link>
+                          <Link href="/products" className="px-10 py-3 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-3">
+                            <Pill className="h-3.5 w-3.5" /> Melts Oral Strips
+                          </Link>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
 
-                <div className="flex flex-col gap-4 pt-4 border-t border-muted">
-                  <Link href="/blog" className="hover:text-primary transition-colors">Blog & Insights</Link>
-                  <Link href="/contact-us" className="text-primary hover:underline transition-colors">FREE Consultation</Link>
-                </div>
-              </nav>
+                    <AccordionItem value="wellbeing" className="border-b border-muted/50">
+                      <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/30 text-sm font-bold">
+                        World of Wellbeing
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-muted/10 pb-2">
+                        <div className="flex flex-col">
+                          <Link href="/our-story" className="px-10 py-3 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-3">
+                            <Info className="h-3.5 w-3.5" /> Our Story
+                          </Link>
+                          <Link href="/certificates" className="px-10 py-3 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-3">
+                            <Award className="h-3.5 w-3.5" /> Certificates
+                          </Link>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+                  <Link href="/blog" className="px-6 py-4 text-sm font-bold border-b border-muted/50 hover:bg-muted/30 transition-colors">
+                    Blog
+                  </Link>
+                  <Link href="/contact-us" className="px-6 py-4 text-sm font-bold border-b border-muted/50 hover:bg-muted/30 transition-colors text-primary">
+                    FREE Consultation
+                  </Link>
+
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="new" className="border-b border-muted/50">
+                      <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/30 text-sm font-bold">
+                        New Launches
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-muted/10">
+                        <Link href="/products" className="px-10 py-3 text-xs font-semibold text-muted-foreground block">Latest Rituals</Link>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+                  <div className="px-6 py-4 border-b border-muted/50 flex items-center justify-between text-sm font-bold">
+                    <span>Kids</span>
+                    <span className="bg-black text-white text-[10px] px-2 py-0.5 rounded-sm uppercase tracking-wider">New</span>
+                  </div>
+
+                  {/* Account Section */}
+                  <div className="mt-6 px-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4">Account</h4>
+                    <div className="grid grid-cols-3 border border-muted/50 rounded-lg overflow-hidden">
+                      <button onClick={() => setIsLoginOpen(true)} className="p-4 flex flex-col items-center justify-center hover:bg-muted/30 transition-colors border-r border-muted/50">
+                        <Instagram className="h-5 w-5 mb-1" />
+                      </button>
+                      <button className="p-4 flex flex-col items-center justify-center hover:bg-muted/30 transition-colors border-r border-muted/50">
+                        <Facebook className="h-5 w-5 mb-1" />
+                      </button>
+                      <button className="p-4 flex flex-col items-center justify-center hover:bg-muted/30 transition-colors">
+                        <Youtube className="h-5 w-5 mb-1" />
+                      </button>
+                      <button className="p-4 flex flex-col items-center justify-center hover:bg-muted/30 transition-colors border-t border-r border-muted/50">
+                        <Twitter className="h-5 w-5 mb-1" />
+                      </button>
+                      <button className="p-4 flex flex-col items-center justify-center hover:bg-muted/30 transition-colors border-t border-r border-muted/50">
+                        <div className="font-bold text-xl leading-none">P</div>
+                      </button>
+                      <button className="p-4 flex flex-col items-center justify-center hover:bg-muted/30 transition-colors border-t border-muted/50">
+                        <Linkedin className="h-5 w-5 mb-1" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* App Buttons */}
+                  <div className="mt-8 px-6 pb-12 flex flex-col gap-3">
+                    <Link href="#" className="w-full">
+                      <img src="https://placehold.co/200x60/000000/ffffff?text=GET+IT+ON+Google+Play" alt="Google Play" className="w-full rounded-lg shadow-sm" />
+                    </Link>
+                    <Link href="#" className="w-full">
+                      <img src="https://placehold.co/200x60/000000/ffffff?text=Download+on+App+Store" alt="App Store" className="w-full rounded-lg shadow-sm" />
+                    </Link>
+                  </div>
+                </nav>
+              </div>
             </SheetContent>
           </Sheet>
 
