@@ -23,13 +23,20 @@ import {
   Zap as ZapIcon,
   Smile,
   ShieldCheck,
-  Scale
+  Scale,
+  Activity,
+  Apple,
+  Info,
+  Calendar,
+  Star
 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
@@ -108,28 +115,29 @@ export default function HomePage() {
             {/* Shop by Benefits Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none">
+                <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none py-2">
                   Shop by Benefits <ChevronDown className="h-3 w-3" />
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 p-2 rounded-2xl shadow-xl border-none mt-2">
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">
-                  <Sparkles className="mr-2 h-4 w-4 text-primary" /> Skin Glow
+              <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
+                <DropdownMenuLabel className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 px-2">Health Goals</DropdownMenuLabel>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Sparkles className="mr-3 h-4 w-4 text-primary" /> Skin Glow & Hair
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">
-                  <Square className="mr-2 h-4 w-4 text-primary" /> Deep Sleep
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Square className="mr-3 h-4 w-4 text-primary" /> Deep Sleep & Stress
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">
-                  <Scale className="mr-2 h-4 w-4 text-primary" /> Weight Management
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Scale className="mr-3 h-4 w-4 text-primary" /> Weight & Metabolism
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">
-                  <Smile className="mr-2 h-4 w-4 text-primary" /> Gut Health
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Smile className="mr-3 h-4 w-4 text-primary" /> Gut Health & Detox
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">
-                  <ShieldCheck className="mr-2 h-4 w-4 text-primary" /> Immunity
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <ShieldCheck className="mr-3 h-4 w-4 text-primary" /> Immunity & Defense
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">
-                  <ZapIcon className="mr-2 h-4 w-4 text-primary" /> High Energy
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <ZapIcon className="mr-3 h-4 w-4 text-primary" /> Energy & Performance
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -137,31 +145,50 @@ export default function HomePage() {
             {/* Shop by Categories Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none">
+                <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none py-2">
                   Shop by Categories <ChevronDown className="h-3 w-3" />
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 p-2 rounded-2xl shadow-xl border-none mt-2">
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Effervescents</DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Melts Strips</DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Marine Collagen</DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Vegan Protein</DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Wholefood Multivitamins</DropdownMenuItem>
+              <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
+                <DropdownMenuLabel className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 px-2">Product Lines</DropdownMenuLabel>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Waves className="mr-3 h-4 w-4 text-primary" /> Marine Collagen
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Apple className="mr-3 h-4 w-4 text-primary" /> Effervescent Tablets
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Pill className="mr-3 h-4 w-4 text-primary" /> Melts Oral Strips
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Activity className="mr-3 h-4 w-4 text-primary" /> Vegan Protein Isolate
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Leaf className="mr-3 h-4 w-4 text-primary" /> Wholefood Multivitamins
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             {/* World of Wellbeing Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none">
+                <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none py-2">
                   World of Wellbeing <ChevronDown className="h-3 w-3" />
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 p-2 rounded-2xl shadow-xl border-none mt-2">
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Our Philosophy</DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Scientific Advisory Board</DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Sustainability</DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Clean Label Project</DropdownMenuItem>
+              <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Info className="mr-3 h-4 w-4 text-primary" /> Our Philosophy
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <ShieldCheck className="mr-3 h-4 w-4 text-primary" /> Scientific Advisory Board
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Leaf className="mr-3 h-4 w-4 text-primary" /> Sustainability Goals
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Award className="mr-3 h-4 w-4 text-primary" /> Clean Label Project
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -171,30 +198,37 @@ export default function HomePage() {
             {/* New Launches Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none">
+                <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none py-2">
                   New Launches <ChevronDown className="h-3 w-3" />
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 p-2 rounded-2xl shadow-xl border-none mt-2">
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Latest This Month</DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider">Limited Editions</DropdownMenuItem>
-                <DropdownMenuItem className="rounded-xl py-2 cursor-pointer font-bold text-[11px] uppercase tracking-wider text-primary">Pre-Order Now</DropdownMenuItem>
+              <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Calendar className="mr-3 h-4 w-4 text-primary" /> Latest This Month
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                  <Star className="mr-3 h-4 w-4 text-primary" /> Limited Edition Drops
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="my-2" />
+                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-black text-[11px] uppercase tracking-wider text-primary bg-primary/5">
+                  <Zap className="mr-3 h-4 w-4" /> Pre-Order Now
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             <div className="relative group">
               <Link href="#" className="hover:text-primary transition-colors">Kids</Link>
-              <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-black text-[8px] text-white px-1.5 py-0.5 rounded font-black animate-pulse">NEW</span>
+              <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-black text-[8px] text-white px-1.5 py-0.5 rounded font-black animate-pulse shadow-md">NEW</span>
             </div>
           </nav>
 
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-4 text-foreground/70">
-              <Zap className="h-5 w-5 cursor-pointer hover:text-primary" />
+              <Zap className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
               <Link href="/wishlist">
-                <Heart className="h-5 w-5 cursor-pointer hover:text-primary" />
+                <Heart className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
               </Link>
-              <Search className="h-5 w-5 cursor-pointer hover:text-primary" />
+              <Search className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
               <CartDrawer>
                 <div className="relative cursor-pointer hover:text-primary transition-colors">
                   <ShoppingBag className="h-5 w-5" />
