@@ -124,14 +124,13 @@ export default function UsersPage() {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>User Actions</DropdownMenuLabel>
+                        <DropdownMenuContent align="end" className="w-[180px]">
+                          <DropdownMenuLabel className="font-bold">User Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer">
                             <Edit className="mr-2 h-4 w-4" /> Edit Profile
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem className="bg-accent text-accent-foreground hover:bg-accent/90 cursor-pointer mt-1 font-medium">
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Account
                           </DropdownMenuItem>
                         </DropdownMenuContent>

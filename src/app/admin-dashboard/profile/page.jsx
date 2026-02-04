@@ -1,3 +1,5 @@
+'use client';
+
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,14 +13,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Mail, Phone, Trash2, Edit } from 'lucide-react';
 
 export default function ProfilePage() {
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader title="Profile" description="Manage your account settings." />
+      <PageHeader title="Profile" description="Manage your account settings and view complete details." />
 
       <div className="grid gap-8 md:grid-cols-3">
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 space-y-8">
           <Card>
             <CardHeader>
               <CardTitle>Personal Information</CardTitle>
@@ -36,12 +40,15 @@ export default function ProfilePage() {
                 <Input id="email" type="email" defaultValue="admin@bitmax.com" />
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex justify-between">
               <Button>Save Changes</Button>
+              <Button variant="outline" className="text-accent border-accent hover:bg-accent hover:text-accent-foreground">
+                <Edit className="mr-2 h-4 w-4" /> Edit Detailed Profile
+              </Button>
             </CardFooter>
           </Card>
 
-          <Card className="mt-8">
+          <Card>
             <CardHeader>
               <CardTitle>Change Password</CardTitle>
               <CardDescription>
@@ -69,12 +76,48 @@ export default function ProfilePage() {
           </Card>
         </div>
 
-        <div>
+        <div className="space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Account Details</CardTitle>
+              <CardDescription>
+                Login method and security information.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-1">
+                <Label className="text-[10px] uppercase font-bold text-muted-foreground">Login Method</Label>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary border-none">
+                    <Mail className="mr-1.5 h-3 w-3" /> Email & Password
+                  </Badge>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px] uppercase font-bold text-muted-foreground">Alternate Login</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground italic flex items-center gap-1">
+                    <Phone className="h-3 w-3" /> Phone not linked
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-1 pt-2 border-t">
+                <Label className="text-[10px] uppercase font-bold text-muted-foreground">Account Status</Label>
+                <div>
+                  <Badge className="bg-accent text-accent-foreground border-none">Active</Badge>
+                </div>
+              </div>
+              <Button variant="destructive" className="w-full bg-accent text-accent-foreground hover:bg-accent/90 border-none font-bold mt-4">
+                <Trash2 className="mr-2 h-4 w-4" /> Delete Account
+              </Button>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Notifications</CardTitle>
               <CardDescription>
-                Manage your notification preferences.
+                Manage your preferences.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
