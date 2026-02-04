@@ -43,22 +43,8 @@ export default function UsersPage() {
   
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.role.toLowerCase().includes(searchTerm.toLowerCase())
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const getRoleBadge = (role) => {
-    switch (role) {
-      case 'Admin':
-        return <Badge className="bg-purple-100 text-purple-700 border-purple-200"><Shield className="w-3 h-3 mr-1" /> {role}</Badge>;
-      case 'Doctor':
-        return <Badge className="bg-blue-100 text-blue-700 border-blue-200">{role}</Badge>;
-      case 'Staff':
-        return <Badge className="bg-green-100 text-green-700 border-green-200">{role}</Badge>;
-      default:
-        return <Badge variant="outline">{role}</Badge>;
-    }
-  };
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -77,13 +63,13 @@ export default function UsersPage() {
     <div className="flex flex-col gap-8">
       <PageHeader 
         title="User Management" 
-        description="Manage system access, roles, and account statuses for clinical staff and patients."
+        description="Manage system access and account statuses for clinical staff and patients."
       />
 
       <div className="relative w-full md:max-w-sm">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search by name, email or role..."
+          placeholder="Search by name or email..."
           className="pl-8"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -96,7 +82,6 @@ export default function UsersPage() {
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Joined Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -124,9 +109,6 @@ export default function UsersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {getRoleBadge(user.role)}
-                    </TableCell>
-                    <TableCell>
                       {getStatusBadge(user.status)}
                     </TableCell>
                     <TableCell>
@@ -148,9 +130,6 @@ export default function UsersPage() {
                           <DropdownMenuItem>
                             <Edit className="mr-2 h-4 w-4" /> Edit Profile
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Shield className="mr-2 h-4 w-4" /> Change Role
-                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-destructive">
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Account
@@ -163,7 +142,7 @@ export default function UsersPage() {
               })}
               {filteredUsers.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-40 text-center">
+                  <TableCell colSpan={4} className="h-40 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground opacity-50">
                       <Shield className="h-10 w-10 mb-2" />
                       <p>No users found matching your search.</p>
