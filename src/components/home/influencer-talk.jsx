@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -12,7 +11,8 @@ import {
   Share2, 
   X, 
   ExternalLink,
-  Plus
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import {
   Dialog,
@@ -20,6 +20,13 @@ import {
   DialogPortal,
   DialogOverlay,
 } from '@/components/ui/dialog';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const influencerTalks = [
   {
@@ -85,70 +92,84 @@ export function InfluencerTalk() {
           </h2>
         </div>
 
-        {/* Horizontal Scroll Container */}
-        <div className="flex gap-4 overflow-x-auto pb-8 scrollbar-hide -mx-4 px-4 snap-x">
-          {influencerTalks.map((talk) => {
-            const media = getPlaceholderImage(talk.imageId);
-            return (
-              <div 
-                key={talk.id} 
-                className="flex-none w-[280px] sm:w-[320px] snap-start group flex flex-col"
-              >
-                {/* Media Card */}
-                <div 
-                  className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm bg-muted mb-4 border border-border/50 cursor-pointer"
-                  onClick={() => setSelectedTalk(talk)}
+        {/* Carousel Slider */}
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full relative"
+        >
+          <CarouselContent className="-ml-4">
+            {influencerTalks.map((talk) => {
+              const media = getPlaceholderImage(talk.imageId);
+              return (
+                <CarouselItem 
+                  key={talk.id} 
+                  className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                 >
-                  <LazyImage 
-                    src={media?.imageUrl} 
-                    alt={talk.title} 
-                    fill 
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    dataAiHint={media?.imageHint}
-                  />
-                  
-                  {/* Play Indicator (Optional reference style) */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="border-t-[8px] border-t-transparent border-l-[12px] border-l-white border-b-[8px] border-b-transparent ml-1" />
-                  </div>
+                  <div className="group flex flex-col h-full">
+                    {/* Media Card */}
+                    <div 
+                      className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm bg-muted mb-4 border border-border/50 cursor-pointer"
+                      onClick={() => setSelectedTalk(talk)}
+                    >
+                      <LazyImage 
+                        src={media?.imageUrl} 
+                        alt={talk.title} 
+                        fill 
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        dataAiHint={media?.imageHint}
+                      />
+                      
+                      {/* Play Indicator */}
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="border-t-[8px] border-t-transparent border-l-[12px] border-l-white border-b-[8px] border-b-transparent ml-1" />
+                      </div>
 
-                  {/* Text Overlay */}
-                  {talk.overlayText && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
-                      <p className={cn(
-                        "text-white drop-shadow-lg leading-tight",
-                        talk.overlayStyle || "font-bold text-xl"
-                      )}>
-                        {talk.overlayText}
-                      </p>
+                      {/* Text Overlay */}
+                      {talk.overlayText && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
+                          <p className={cn(
+                            "text-white drop-shadow-lg leading-tight",
+                            talk.overlayStyle || "font-bold text-xl"
+                          )}>
+                            {talk.overlayText}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Gradient bottom shadow */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60" />
                     </div>
-                  )}
 
-                  {/* Gradient bottom shadow */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60" />
-                </div>
-
-                {/* Product Info */}
-                <div className="space-y-3 flex-1 flex flex-col px-1">
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-black text-foreground line-clamp-1 group-hover:text-primary transition-colors">
-                      {talk.title}
-                    </h3>
-                    <p className="text-sm font-bold text-foreground/80">
-                      ₹ {talk.price}
-                    </p>
+                    {/* Product Info */}
+                    <div className="space-y-3 flex-1 flex flex-col px-1">
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-black text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                          {talk.title}
+                        </h3>
+                        <p className="text-sm font-bold text-foreground/80">
+                          ₹ {talk.price}
+                        </p>
+                      </div>
+                      
+                      <Button 
+                        className="w-full h-12 bg-[#1a1a1a] hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-widest mt-auto"
+                      >
+                        Add To Cart
+                      </Button>
+                    </div>
                   </div>
-                  
-                  <Button 
-                    className="w-full h-12 bg-[#1a1a1a] hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-widest mt-auto"
-                  >
-                    Add To Cart
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+          <div className="hidden lg:flex items-center gap-2 mt-8 justify-center">
+            <CarouselPrevious className="static translate-y-0 h-12 w-12 bg-white border-2 border-black/10 hover:bg-black hover:text-white transition-all shadow-md" />
+            <CarouselNext className="static translate-y-0 h-12 w-12 bg-white border-2 border-black/10 hover:bg-black hover:text-white transition-all shadow-md" />
+          </div>
+        </Carousel>
       </div>
 
       {/* Reel Player Modal */}
@@ -177,7 +198,7 @@ export function InfluencerTalk() {
                   </button>
                 </div>
 
-                {/* Close Button (Fixed screen top-right outside video) */}
+                {/* Close Button */}
                 <button 
                   onClick={() => setSelectedTalk(null)}
                   className="fixed top-6 right-6 h-10 w-10 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-all z-[110]"
@@ -192,7 +213,7 @@ export function InfluencerTalk() {
                   </button>
                 </div>
 
-                {/* Main Content (Image/Video) */}
+                {/* Main Content */}
                 <div className="absolute inset-0 z-0">
                   <LazyImage 
                     src={getPlaceholderImage(selectedTalk.imageId)?.imageUrl} 
@@ -200,7 +221,6 @@ export function InfluencerTalk() {
                     fill 
                     className="object-cover"
                   />
-                  {/* Subtle Grain Overlay */}
                   <div className="absolute inset-0 bg-black/10 mix-blend-overlay opacity-50" />
                 </div>
 
