@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -25,14 +26,15 @@ import { users } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 
-export default function UserProfileDetailPage({ params }) {
-  // In Next.js 15, params is a Promise that must be unwrapped
-  const resolvedParams = use(params);
-  const userId = resolvedParams?.id;
+export default function UserProfileDetailPage() {
+  const params = useParams();
+  const userId = params?.id;
   
   const [user, setUser] = useState(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (userId) {
       const foundUser = users.find(u => u.id === userId);
       // Fallback to specific user if found, or first user for demo fallback
@@ -80,11 +82,6 @@ export default function UserProfileDetailPage({ params }) {
               System Account • Joined {user.joinedDate}
             </p>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="destructive" size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-            <Trash2 className="mr-2 h-4 w-4" /> Delete Account
-          </Button>
         </div>
       </div>
 
