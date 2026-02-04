@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { 
   Search, 
-  UserPlus, 
   MoreHorizontal, 
   Mail, 
   Shield, 
@@ -36,10 +35,8 @@ import {
   Clock
 } from 'lucide-react';
 import { users } from '@/lib/data';
-import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
-import { cn } from '@/lib/utils';
 
 export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -81,11 +78,7 @@ export default function UsersPage() {
       <PageHeader 
         title="User Management" 
         description="Manage system access, roles, and account statuses for clinical staff and patients."
-      >
-        <Button>
-          <UserPlus className="mr-2 h-4 w-4" /> Add New User
-        </Button>
-      </PageHeader>
+      />
 
       <div className="relative w-full md:max-w-sm">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -138,7 +131,7 @@ export default function UsersPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
+                        <Calendar className="h-3 w-3 text-primary" />
                         {user.joinedDate}
                       </div>
                     </TableCell>
