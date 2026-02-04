@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -9,7 +10,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Send, MapPin, Phone, Mail, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link';
 
 export default function ContactUsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -163,24 +163,7 @@ export default function ContactUsPage() {
         </div>
       </main>
 
-      {/* Footer Branding */}
-      <footer className="bg-white py-16 border-t mt-auto">
-        <div className="container mx-auto px-4 text-center space-y-8">
-          <div className="flex flex-col items-center gap-2 font-black text-foreground">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-foreground font-bold text-lg">W</div>
-            <span className="uppercase tracking-tighter text-xl">Wellbeing Nutrition</span>
-          </div>
-          <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-            <Link href="/" className="hover:text-primary transition-colors">Shop</Link>
-            <Link href="/blog" className="hover:text-primary transition-colors">Journal</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Philosophy</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Sustainability</Link>
-          </nav>
-          <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-[0.3em]">
-            © 2024 Wellbeing Nutrition. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

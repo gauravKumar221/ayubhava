@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/header';
-import { PageHeader } from '@/components/shared/page-header';
+import { Footer } from '@/components/layout/footer';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
@@ -13,7 +12,6 @@ import {
   Calendar, 
   User, 
   Clock, 
-  ArrowRight,
   BookOpen,
   ChevronRight
 } from 'lucide-react';
@@ -121,19 +119,18 @@ export default function PublicBlogPage() {
             </div>
             <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
               {["All", "Nutrition", "Wellness", "Science"].map((cat) => (
-                <Button 
+                <button 
                   key={cat}
-                  variant="ghost" 
                   onClick={() => setActiveCategory(cat)}
                   className={cn(
-                    "text-xs font-black uppercase tracking-widest rounded-full px-6 h-10 transition-all",
+                    "text-[10px] font-black uppercase tracking-[0.2em] rounded-full px-8 h-10 transition-all border-2",
                     activeCategory === cat 
-                      ? "bg-black text-white hover:bg-black/90" 
-                      : "hover:bg-black hover:text-white text-foreground/60"
+                      ? "bg-black text-white border-black" 
+                      : "bg-transparent border-black/5 hover:border-black text-foreground/60"
                   )}
                 >
                   {cat}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -224,24 +221,7 @@ export default function PublicBlogPage() {
         </section>
       </main>
 
-      {/* Footer Branding */}
-      <footer className="bg-white py-16 border-t">
-        <div className="container mx-auto px-4 text-center space-y-8">
-          <div className="flex flex-col items-center gap-2 font-black text-foreground">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-foreground font-bold text-lg">W</div>
-            <span className="uppercase tracking-tighter text-xl">Wellbeing Nutrition</span>
-          </div>
-          <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-            <Link href="/" className="hover:text-primary transition-colors">Shop</Link>
-            <Link href="/contact-us" className="hover:text-primary transition-colors">Consultation</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Philosophy</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Sustainability</Link>
-          </nav>
-          <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-[0.3em]">
-            © 2024 Wellbeing Nutrition. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

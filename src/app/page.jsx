@@ -20,6 +20,7 @@ import { LazyImage } from '@/components/shared/lazy-image';
 import { InfluencerTalk } from '@/components/home/influencer-talk';
 import { ShopByHealthNeeds } from '@/components/home/shop-by-health-needs';
 import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
 
 const wellnessGoals = [
   {
@@ -245,16 +246,7 @@ export default function HomePage() {
         <InfluencerTalk />
       </main>
 
-      {/* Simple Footer */}
-      <footer className="bg-white py-12 border-t">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 font-black text-foreground text-xl mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-foreground font-bold text-xs">W</div>
-            <span className="uppercase tracking-tighter">Wellbeing Nutrition</span>
-          </div>
-          <p className="text-xs font-bold text-foreground/40 uppercase tracking-[0.3em]">© 2024 AYUBHYAVA Wellbeing. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

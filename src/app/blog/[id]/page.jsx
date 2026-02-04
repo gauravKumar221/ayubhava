@@ -3,6 +3,7 @@
 import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -13,12 +14,10 @@ import {
   Clock, 
   Share2, 
   Heart,
-  ChevronRight,
-  Quote
+  ChevronRight
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { LazyImage } from '@/components/shared/lazy-image';
-import { cn } from '@/lib/utils';
 
 // Mock blog database
 const allPosts = [
@@ -257,18 +256,7 @@ export default function BlogDetailPage({ params }) {
         </section>
       </main>
 
-      {/* Footer Branding */}
-      <footer className="bg-white py-16 border-t">
-        <div className="container mx-auto px-4 text-center space-y-8">
-          <div className="flex flex-col items-center gap-2 font-black text-foreground">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-foreground font-bold text-lg">W</div>
-            <span className="uppercase tracking-tighter text-xl">Wellbeing Nutrition</span>
-          </div>
-          <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-[0.3em]">
-            © 2024 Wellbeing Nutrition. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
