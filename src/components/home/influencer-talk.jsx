@@ -1,10 +1,25 @@
 
 'use client';
 
+import { useState } from 'react';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { Button } from '@/components/ui/button';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
+import { 
+  Volume2, 
+  VolumeX, 
+  Share2, 
+  X, 
+  ExternalLink,
+  Plus
+} from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogPortal,
+  DialogOverlay,
+} from '@/components/ui/dialog';
 
 const influencerTalks = [
   {
@@ -58,6 +73,9 @@ const influencerTalks = [
 ];
 
 export function InfluencerTalk() {
+  const [selectedTalk, setSelectedTalk] = useState(null);
+  const [isMuted, setIsMuted] = useState(true);
+
   return (
     <section className="py-24 bg-white">
       <div className="container mx-auto px-4 lg:px-8">
@@ -77,7 +95,10 @@ export function InfluencerTalk() {
                 className="flex-none w-[280px] sm:w-[320px] snap-start group flex flex-col"
               >
                 {/* Media Card */}
-                <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm bg-muted mb-4 border border-border/50">
+                <div 
+                  className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm bg-muted mb-4 border border-border/50 cursor-pointer"
+                  onClick={() => setSelectedTalk(talk)}
+                >
                   <LazyImage 
                     src={media?.imageUrl} 
                     alt={talk.title} 
@@ -86,6 +107,11 @@ export function InfluencerTalk() {
                     dataAiHint={media?.imageHint}
                   />
                   
+                  {/* Play Indicator (Optional reference style) */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="border-t-[8px] border-t-transparent border-l-[12px] border-l-white border-b-[8px] border-b-transparent ml-1" />
+                  </div>
+
                   {/* Text Overlay */}
                   {talk.overlayText && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
@@ -124,6 +150,93 @@ export function InfluencerTalk() {
           })}
         </div>
       </div>
+
+      {/* Reel Player Modal */}
+      <Dialog open={!!selectedTalk} onOpenChange={() => setSelectedTalk(null)}>
+        <DialogPortal>
+          <DialogOverlay className="bg-black/90 backdrop-blur-sm z-[100]" />
+          <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px] p-0 bg-transparent border-none shadow-none z-[101] focus:outline-none focus-visible:outline-none">
+            {selectedTalk && (
+              <div className="relative aspect-[9/16] w-full max-h-[90vh] rounded-[2rem] overflow-hidden bg-black animate-in zoom-in-95 duration-300">
+                {/* Progress Bar */}
+                <div className="absolute top-4 left-4 right-4 z-20 flex gap-1 h-1">
+                  <div className="flex-1 bg-white/30 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-[40%] animate-pulse" />
+                  </div>
+                  <div className="flex-1 bg-white/20 rounded-full" />
+                  <div className="flex-1 bg-white/20 rounded-full" />
+                </div>
+
+                {/* Top Controls */}
+                <div className="absolute top-8 right-4 z-20 flex flex-col gap-4">
+                  <button 
+                    onClick={() => setIsMuted(!isMuted)}
+                    className="h-10 w-10 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/40 transition-colors"
+                  >
+                    {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                  </button>
+                </div>
+
+                {/* Close Button (Fixed screen top-right outside video) */}
+                <button 
+                  onClick={() => setSelectedTalk(null)}
+                  className="fixed top-6 right-6 h-10 w-10 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-all z-[110]"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+
+                {/* Side Controls */}
+                <div className="absolute bottom-40 right-4 z-20 flex flex-col gap-6 items-center">
+                  <button className="h-10 w-10 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/40 transition-colors">
+                    <Share2 className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Main Content (Image/Video) */}
+                <div className="absolute inset-0 z-0">
+                  <LazyImage 
+                    src={getPlaceholderImage(selectedTalk.imageId)?.imageUrl} 
+                    alt="Reel" 
+                    fill 
+                    className="object-cover"
+                  />
+                  {/* Subtle Grain Overlay */}
+                  <div className="absolute inset-0 bg-black/10 mix-blend-overlay opacity-50" />
+                </div>
+
+                {/* Bottom Product Card */}
+                <div className="absolute bottom-6 left-4 right-4 z-20">
+                  <div className="bg-white/90 backdrop-blur-xl rounded-[1.5rem] p-4 shadow-2xl space-y-4 border border-white/20">
+                    <div className="flex gap-3">
+                      <div className="relative h-14 w-14 rounded-xl overflow-hidden border border-black/5 shrink-0 bg-white">
+                        <LazyImage 
+                          src={getPlaceholderImage(selectedTalk.imageId)?.imageUrl} 
+                          alt="Thumb" 
+                          fill 
+                          className="object-cover" 
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0 flex flex-col justify-center">
+                        <h4 className="text-[13px] font-black leading-tight text-black line-clamp-1 flex items-center gap-1.5">
+                          {selectedTalk.title}
+                          <ExternalLink className="h-3 w-3 opacity-40" />
+                        </h4>
+                        <p className="text-sm font-bold text-black/80 mt-0.5">₹ {selectedTalk.price}</p>
+                      </div>
+                    </div>
+                    <Button className="w-full h-12 bg-black hover:bg-black/90 text-white rounded-xl text-xs font-black uppercase tracking-[0.1em] shadow-lg">
+                      Add To Cart
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Gradient Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40 pointer-events-none" />
+              </div>
+            )}
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
     </section>
   );
 }
