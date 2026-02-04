@@ -31,7 +31,9 @@ import {
   Trash2, 
   DollarSign,
   Tag,
-  Plus
+  Plus,
+  Video,
+  ImageIcon
 } from 'lucide-react';
 
 export default function ProductCollectionPage() {
@@ -43,14 +45,38 @@ export default function ProductCollectionPage() {
     const savedCategories = localStorage.getItem('bitmax_categories');
     if (savedCategories) {
       const cats = JSON.parse(savedCategories);
-      // Flatten all products from all categories
-      const allProds = cats.flatMap(c => 
-        (c.products || []).map(p => ({ ...p, category: c.name, categoryId: c.id }))
-      );
+      // Flatten all products from all levels
+      const allProds = [];
+      
+      cats.forEach(c => {
+        // Direct category products
+        if (c.products) {
+          c.products.forEach(p => allProds.push({ ...p, category: c.name, categoryId: c.id }));
+        }
+        
+        // Subcategory products
+        if (c.subcategories) {
+          c.subcategories.forEach(s => {
+            if (s.products) {
+              s.products.forEach(p => allProds.push({ ...p, category: `${c.name} > ${s.name}`, categoryId: c.id }));
+            }
+            
+            // Sub-subcategory products
+            if (s.subSubcategories) {
+              s.subSubcategories.forEach(ss => {
+                if (ss.products) {
+                  ss.products.forEach(p => allProds.push({ ...p, category: `${c.name} > ${s.name} > ${ss.name}`, categoryId: c.id }));
+                }
+              });
+            }
+          });
+        }
+      });
+      
       setProducts(allProds);
     } else {
       const initialProducts = [
-        { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99, category: 'Instruments' },
+        { id: 'p1', name: 'Premium Stethoscope', sku: 'ST-500', price: 189.99, category: 'Instruments', images: [], videos: [] },
       ];
       setProducts(initialProducts);
     }
@@ -72,12 +98,25 @@ export default function ProductCollectionPage() {
     const savedCategories = localStorage.getItem('bitmax_categories');
     if (savedCategories) {
       const cats = JSON.parse(savedCategories);
+      
+      const removeFromList = (list) => (list || []).filter(p => p.id !== productId);
+      
       const updatedCats = cats.map(c => {
-        if (c.id === categoryId) {
-          return { ...c, products: (c.products || []).filter(p => p.id !== productId) };
-        }
-        return c;
+        let currentCat = { ...c };
+        currentCat.products = removeFromList(currentCat.products);
+        currentCat.subcategories = (currentCat.subcategories || []).map(s => {
+          let currentSub = { ...s };
+          currentSub.products = removeFromList(currentSub.products);
+          currentSub.subSubcategories = (currentSub.subSubcategories || []).map(ss => {
+            let currentSS = { ...ss };
+            currentSS.products = removeFromList(currentSS.products);
+            return currentSS;
+          });
+          return currentSub;
+        });
+        return currentCat;
       });
+      
       localStorage.setItem('bitmax_categories', JSON.stringify(updatedCats));
       loadData();
       window.dispatchEvent(new Event('storage'));
@@ -114,6 +153,7 @@ export default function ProductCollectionPage() {
               <TableRow>
                 <TableHead className="font-bold uppercase text-xs">Product Name</TableHead>
                 <TableHead className="font-bold uppercase text-xs">Category</TableHead>
+                <TableHead className="font-bold uppercase text-xs">Media Type</TableHead>
                 <TableHead className="font-bold uppercase text-xs">SKU</TableHead>
                 <TableHead className="font-bold uppercase text-xs">Price</TableHead>
                 <TableHead className="text-right font-bold uppercase text-xs">Actions</TableHead>
@@ -122,12 +162,42 @@ export default function ProductCollectionPage() {
             <TableBody>
               {filteredProducts.map((product) => (
                 <TableRow key={product.id} className="hover:bg-muted/30 transition-colors">
-                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="font-medium">
+                    <div className="flex flex-col gap-1">
+                      <span>{product.name}</span>
+                      {product.tags && product.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {product.tags.map((tag, i) => (
+                            <span key={i} className="text-[9px] bg-muted px-1.5 py-0.5 rounded-full text-muted-foreground border">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="flex w-fit items-center gap-1 border-primary/20 bg-primary/5 text-primary">
+                    <Badge variant="outline" className="flex w-fit items-center gap-1 border-primary/20 bg-primary/5 text-primary text-[10px]">
                       <Tag className="h-3 w-3" />
                       {product.category || 'Uncategorized'}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1.5">
+                      {product.images && product.images.length > 0 && (
+                        <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] gap-1 px-1.5">
+                          <ImageIcon className="h-3 w-3" /> Image ({product.images.length})
+                        </Badge>
+                      )}
+                      {product.videos && product.videos.length > 0 && (
+                        <Badge variant="secondary" className="bg-orange-50 text-orange-700 border-orange-200 text-[10px] gap-1 px-1.5">
+                          <Video className="h-3 w-3" /> Video ({product.videos.length})
+                        </Badge>
+                      )}
+                      {(!product.images?.length && !product.videos?.length) && (
+                        <span className="text-xs text-muted-foreground italic">No Media</span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="font-mono text-xs text-muted-foreground">{product.sku || 'N/A'}</TableCell>
                   <TableCell>
@@ -161,7 +231,7 @@ export default function ProductCollectionPage() {
               ))}
               {filteredProducts.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-40 text-center">
+                  <TableCell colSpan={6} className="h-40 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground opacity-50">
                       <Package className="h-10 w-10 mb-2" />
                       <p>No products found in the collection.</p>
