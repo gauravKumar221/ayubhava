@@ -117,7 +117,9 @@ export default function HomePage() {
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-4 text-foreground/70">
               <Zap className="h-5 w-5 cursor-pointer hover:text-primary" />
-              <Heart className="h-5 w-5 cursor-pointer hover:text-primary" />
+              <Link href="/wishlist">
+                <Heart className="h-5 w-5 cursor-pointer hover:text-primary" />
+              </Link>
               <Search className="h-5 w-5 cursor-pointer hover:text-primary" />
               <CartDrawer>
                 <div className="relative cursor-pointer hover:text-primary transition-colors">
