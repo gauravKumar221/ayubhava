@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { 
   Search, 
@@ -37,8 +38,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { CartDrawer } from '@/components/cart/cart-drawer';
+import { LoginModal } from '@/components/auth/login-modal';
 
 export function Header() {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="w-full flex h-20 items-center justify-between px-4 lg:px-12">
@@ -181,7 +185,10 @@ export function Header() {
 
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-4 text-foreground/70">
-            <Zap className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
+            <Zap 
+              className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" 
+              onClick={() => setIsLoginOpen(true)}
+            />
             <Link href="/wishlist">
               <Heart className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
             </Link>
@@ -200,6 +207,8 @@ export function Header() {
           </Button>
         </div>
       </div>
+
+      <LoginModal open={isLoginOpen} onOpenChange={setIsLoginOpen} />
     </header>
   );
 }
