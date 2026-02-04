@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import Link from 'next/link';
 import { StoreProvider } from '@/store/provider';
+import { MobileNav } from '@/components/layout/mobile-nav';
 
 function AppLayout({ children }) {
   const pathname = usePathname();
@@ -31,10 +32,11 @@ function AppLayout({ children }) {
 
   if (!isAdminRoute) {
     return (
-      <div className="min-h-screen w-full bg-background flex flex-col">
+      <div className="min-h-screen w-full bg-background flex flex-col pb-20 md:pb-0">
         <main className="flex-1">
           {children}
         </main>
+        <MobileNav />
       </div>
     );
   }
