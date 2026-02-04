@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { cartActions } from '@/store/cart-slice';
+import { useToast } from '@/hooks/use-toast';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { Button } from '@/components/ui/button';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
@@ -12,7 +15,8 @@ import {
   X, 
   ExternalLink,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  CheckCircle2
 } from 'lucide-react';
 import {
   Dialog,
@@ -83,6 +87,28 @@ const influencerTalks = [
 export function InfluencerTalk() {
   const [selectedTalk, setSelectedTalk] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
+  
+  const { toast } = useToast();
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
+
+  const handleAddToCart = (talk) => {
+    const media = getPlaceholderImage(talk.imageId);
+    const numericPrice = parseFloat(talk.price.replace(/,/g, ''));
+    
+    dispatch(cartActions.addItem({
+      id: talk.id,
+      title: talk.title,
+      price: numericPrice,
+      originalPrice: numericPrice * 1.15, // Mock premium original price
+      image: media?.imageUrl
+    }));
+
+    toast({
+      title: "Added to Cart!",
+      description: `${talk.title} added to your ritual bag.`,
+    });
+  };
 
   return (
     <section className="py-24 bg-white">
@@ -104,6 +130,8 @@ export function InfluencerTalk() {
           <CarouselContent className="-ml-4">
             {influencerTalks.map((talk) => {
               const media = getPlaceholderImage(talk.imageId);
+              const isInCart = cartItems.some(item => item.id === talk.id);
+
               return (
                 <CarouselItem 
                   key={talk.id} 
@@ -156,9 +184,21 @@ export function InfluencerTalk() {
                       </div>
                       
                       <Button 
-                        className="w-full h-12 bg-[#1a1a1a] hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-widest mt-auto"
+                        onClick={() => handleAddToCart(talk)}
+                        className={cn(
+                          "w-full h-12 rounded-xl text-xs font-black uppercase tracking-widest mt-auto transition-all",
+                          isInCart 
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                            : "bg-[#1a1a1a] hover:bg-black text-white"
+                        )}
                       >
-                        Add To Cart
+                        {isInCart ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <CheckCircle2 className="h-4 w-4" /> Already in Cart
+                          </span>
+                        ) : (
+                          "Add To Cart"
+                        )}
                       </Button>
                     </div>
                   </div>
@@ -246,8 +286,23 @@ export function InfluencerTalk() {
                         <p className="text-sm font-bold text-black/80 mt-0.5">₹ {selectedTalk.price}</p>
                       </div>
                     </div>
-                    <Button className="w-full h-12 bg-black hover:bg-black/90 text-white rounded-xl text-xs font-black uppercase tracking-[0.1em] shadow-lg">
-                      Add To Cart
+                    
+                    <Button 
+                      onClick={() => handleAddToCart(selectedTalk)}
+                      className={cn(
+                        "w-full h-12 rounded-xl text-xs font-black uppercase tracking-[0.1em] shadow-lg transition-all",
+                        cartItems.some(item => item.id === selectedTalk.id)
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                          : "bg-black hover:bg-black/90 text-white"
+                      )}
+                    >
+                      {cartItems.some(item => item.id === selectedTalk.id) ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <CheckCircle2 className="h-4 w-4" /> Already in Cart
+                        </span>
+                      ) : (
+                        "Add To Cart"
+                      )}
                     </Button>
                   </div>
                 </div>
