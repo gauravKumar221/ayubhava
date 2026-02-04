@@ -1,4 +1,3 @@
-
 'use client';
 
 import { use, useState, useEffect } from 'react';
@@ -14,6 +13,7 @@ import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Carousel,
   CarouselContent,
@@ -70,12 +70,19 @@ const allProducts = [
 export default function ProductDetailsPage({ params }) {
   const { id } = use(params);
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
   const product = allProducts.find(p => p.id === id) || allProducts[0];
   const media = getPlaceholderImage(product.imageId);
   
   // Carousel State
   const [api, setApi] = useState(null);
   const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    // Simulate initial load for UX
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, [id]);
 
   const handleThumbnailClick = (index) => {
     if (api) {
@@ -97,6 +104,86 @@ export default function ProductDetailsPage({ params }) {
     { stars: 2, count: 5, value: 15 },
     { stars: 1, count: 1, value: 3 },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white font-body">
+        <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur px-4">
+          <div className="container mx-auto flex h-16 items-center justify-between">
+            <Skeleton className="h-4 w-32" />
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-5 w-5 rounded-full" />
+              <Skeleton className="h-5 w-5 rounded-full" />
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 container mx-auto px-4 py-8 lg:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+            {/* Gallery Skeleton */}
+            <div className="space-y-6">
+              <Skeleton className="aspect-square w-full rounded-3xl" />
+              <div className="grid grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="aspect-square rounded-xl" />
+                ))}
+              </div>
+            </div>
+
+            {/* Info Skeleton */}
+            <div className="flex flex-col gap-6">
+              <div className="space-y-4">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-10 w-3/4" />
+                <div className="flex items-center gap-4 pt-2">
+                  <Skeleton className="h-6 w-16" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <div className="flex flex-wrap gap-2 pt-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Skeleton key={i} className="h-6 w-24" />
+                  ))}
+                </div>
+                <div className="pt-4 space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              </div>
+              <Skeleton className="h-10 w-32" />
+              <Separator className="my-2" />
+              <div className="space-y-4">
+                <Skeleton className="h-6 w-full" />
+                <div className="flex gap-4">
+                  <Skeleton className="h-14 flex-1" />
+                  <Skeleton className="h-14 w-14" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Details Tabs Skeleton */}
+          <div className="mt-24 grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-2 space-y-8">
+              <div className="flex gap-8 border-b pb-4">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-6 w-24" />
+              </div>
+              <div className="space-y-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            </div>
+            <div className="space-y-8">
+              <Skeleton className="h-[350px] w-full rounded-3xl" />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white font-body">
