@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
 import { wishlistActions } from '@/store/wishlist-slice';
-import { ChevronLeft, Trash2, ShoppingBag } from 'lucide-react';
+import { ChevronLeft, Trash2, ShoppingBag, Heart } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ export default function WishlistPage() {
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
   const dispatch = useDispatch();
-  const wishlistItems = useSelector((state) => state.wishlist.items);
+  const wishlistItems = useSelector((state) => state.wishlist.items || []);
 
   useEffect(() => {
     setMounted(true);
@@ -34,7 +34,7 @@ export default function WishlistPage() {
 
   const addToBag = (item) => {
     dispatch(cartActions.addItem({
-      ...item,
+      id: item.id,
       title: item.title,
       price: item.price,
       image: item.image

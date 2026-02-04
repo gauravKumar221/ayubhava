@@ -151,20 +151,23 @@ export function Header() {
               className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" 
               onClick={() => setIsLoginOpen(true)}
             />
-            <Link href="/wishlist" className="relative group block">
-              <Heart className={cn("h-5 w-5 cursor-pointer transition-colors", wishlistQuantity > 0 ? "text-red-500 fill-current" : "hover:text-primary")} />
+            <Link href="/wishlist" className="relative group block p-1">
+              <Heart className={cn(
+                "h-5 w-5 cursor-pointer transition-colors", 
+                wishlistQuantity > 0 ? "text-red-500 fill-current" : "hover:text-primary"
+              )} />
               {wishlistQuantity > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary text-[9px] text-primary-foreground h-4 w-4 flex items-center justify-center rounded-full font-bold animate-in zoom-in duration-300">
+                <span className="absolute -top-1 -right-1 bg-primary text-[9px] text-primary-foreground h-4 w-4 flex items-center justify-center rounded-full font-bold animate-in zoom-in duration-300">
                   {wishlistQuantity}
                 </span>
               )}
             </Link>
             <Search className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
             <CartDrawer>
-              <div className="relative cursor-pointer hover:text-primary transition-colors">
+              <div className="relative cursor-pointer hover:text-primary transition-colors p-1">
                 <ShoppingBag className="h-5 w-5" />
                 {cartQuantity > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-black text-[9px] text-white h-4 w-4 flex items-center justify-center rounded-full font-bold animate-in zoom-in duration-300">
+                  <span className="absolute -top-1 -right-1 bg-black text-[9px] text-white h-4 w-4 flex items-center justify-center rounded-full font-bold animate-in zoom-in duration-300">
                     {cartQuantity}
                   </span>
                 )}
