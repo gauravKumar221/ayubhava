@@ -1,6 +1,18 @@
 {
   "placeholderImages": [
     {
+      "id": "wellness-hero-bg",
+      "description": "Premium nutrition hero background",
+      "imageUrl": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1600&auto=format&fit=crop",
+      "imageHint": "clean kitchen"
+    },
+    {
+      "id": "protein-pouch-set",
+      "description": "Nutrition product pouches display",
+      "imageUrl": "https://images.unsplash.com/photo-1593094276927-230f7c8201b0?q=80&w=800&auto=format&fit=crop",
+      "imageHint": "protein pouches"
+    },
+    {
       "id": "user-avatar-1",
       "description": "User avatar 1",
       "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjI4MDgwNTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
