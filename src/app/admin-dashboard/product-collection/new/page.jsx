@@ -23,16 +23,20 @@ import {
   Search,
   Plus,
   Trash2,
-  Edit
+  Edit,
+  ChevronDown,
+  Check
 } from 'lucide-react';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 const RichTextEditor = ({ value, onChange, placeholder }) => {
   const editorRef = useRef(null);
@@ -81,7 +85,7 @@ function ProductForm() {
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('0.00');
   const [sku, setSku] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedVideos, setSelectedVideos] = useState([]);
@@ -102,33 +106,29 @@ function ProductForm() {
       
       if (productId) {
         let foundProduct = null;
-        let foundCategoryId = null;
+        let foundCategoryIds = [];
         
         for (const cat of parsedCategories) {
           const prod = (cat.products || []).find(p => p.id === productId);
           if (prod) {
             foundProduct = prod;
-            foundCategoryId = cat.id;
-            break;
+            foundCategoryIds.push(cat.id);
           }
+          
           for (const sub of (cat.subcategories || [])) {
             const sprod = (sub.products || []).find(p => p.id === productId);
             if (sprod) {
               foundProduct = sprod;
-              foundCategoryId = cat.id;
-              break;
+              if (!foundCategoryIds.includes(cat.id)) foundCategoryIds.push(cat.id);
             }
             for (const ss of (sub.subSubcategories || [])) {
               const ssprod = (ss.products || []).find(p => p.id === productId);
               if (ssprod) {
                 foundProduct = ssprod;
-                foundCategoryId = cat.id;
-                break;
+                if (!foundCategoryIds.includes(cat.id)) foundCategoryIds.push(cat.id);
               }
             }
-            if (foundProduct) break;
           }
-          if (foundProduct) break;
         }
         
         if (foundProduct) {
@@ -137,7 +137,7 @@ function ProductForm() {
           setDescription(foundProduct.description || '');
           setPrice((foundProduct.price || 0).toFixed(2));
           setSku(foundProduct.sku || '');
-          setSelectedCategory(foundCategoryId || '');
+          setSelectedCategories(foundCategoryIds);
           setSelectedImages(foundProduct.images || []);
           setSelectedVideos(foundProduct.videos || []);
           
@@ -207,9 +207,17 @@ function ProductForm() {
     ));
   };
 
+  const toggleCategory = (categoryId) => {
+    setSelectedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId) 
+        : [...prev, categoryId]
+    );
+  };
+
   const handleSave = () => {
-    if (!productName || !selectedCategory) {
-      alert("Please provide a product name and select a category.");
+    if (!productName || selectedCategories.length === 0) {
+      alert("Please provide a product name and select at least one category.");
       return;
     }
 
@@ -247,8 +255,8 @@ function ProductForm() {
           return currentSub;
         });
 
-        if (c.id === selectedCategory) {
-          currentCategory.products = [...currentCategory.products, productData];
+        if (selectedCategories.includes(c.id)) {
+          currentCategory.products = [...(currentCategory.products || []), productData];
         }
         
         return currentCategory;
@@ -277,6 +285,10 @@ function ProductForm() {
   };
 
   const seoDescription = stripHtml(description).trim() || 'Add a title and description to see how this product might appear in a search engine listing.';
+
+  const selectedCategoryNames = categories
+    .filter(c => selectedCategories.includes(c.id))
+    .map(c => c.name);
 
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto pb-20">
@@ -416,30 +428,49 @@ function ProductForm() {
               <div className="space-y-3">
                 {conditions.map((condition) => (
                   <div key={condition.id} className="flex flex-col md:flex-row items-start md:items-center gap-3">
-                    <Select 
-                      value={condition.field} 
-                      onValueChange={(val) => handleConditionChange(condition.id, 'field', val)}
-                    >
-                      <SelectTrigger className="w-full md:w-[200px]"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="tag">Tag</SelectItem>
-                        <SelectItem value="title">Product title</SelectItem>
-                        <SelectItem value="price">Price</SelectItem>
-                        <SelectItem value="weight">Weight</SelectItem>
-                        <SelectItem value="color">Color</SelectItem>
-                        <SelectItem value="height">Height</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select 
-                      value={condition.operator} 
-                      onValueChange={(val) => handleConditionChange(condition.id, 'operator', val)}
-                    >
-                      <SelectTrigger className="w-full md:w-[200px]"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="equals">is equal to</SelectItem>
-                        <SelectItem value="contains">contains</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full md:w-[200px] justify-between">
+                          {condition.field.charAt(0).toUpperCase() + condition.field.slice(1)}
+                          <ChevronDown className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-[200px]">
+                        {['tag', 'title', 'price', 'weight', 'color', 'height'].map((f) => (
+                          <DropdownMenuCheckboxItem
+                            key={f}
+                            checked={condition.field === f}
+                            onCheckedChange={() => handleConditionChange(condition.id, 'field', f)}
+                          >
+                            {f.charAt(0).toUpperCase() + f.slice(1)}
+                          </DropdownMenuCheckboxItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full md:w-[200px] justify-between">
+                          {condition.operator === 'equals' ? 'is equal to' : 'contains'}
+                          <ChevronDown className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-[200px]">
+                        <DropdownMenuCheckboxItem
+                          checked={condition.operator === 'equals'}
+                          onCheckedChange={() => handleConditionChange(condition.id, 'operator', 'equals')}
+                        >
+                          is equal to
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={condition.operator === 'contains'}
+                          onCheckedChange={() => handleConditionChange(condition.id, 'operator', 'contains')}
+                        >
+                          contains
+                        </DropdownMenuCheckboxItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
                     <Input 
                       placeholder="Condition value" 
                       className="flex-1"
@@ -509,15 +540,43 @@ function ProductForm() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
-                  <SelectContent>
-                    {categories.map(c => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Categories</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between h-auto min-h-10 text-left font-normal py-2 px-3">
+                      <div className="flex flex-wrap gap-1">
+                        {selectedCategoryNames.length > 0 ? (
+                          selectedCategoryNames.map((name, i) => (
+                            <span key={i} className="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1">
+                              {name}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-muted-foreground">Select Categories</span>
+                        )}
+                      </div>
+                      <ChevronDown className="h-4 w-4 opacity-50 shrink-0 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-[280px]" align="start">
+                    <DropdownMenuLabel>Available Categories</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {categories.length > 0 ? (
+                      categories.map(c => (
+                        <DropdownMenuCheckboxItem
+                          key={c.id}
+                          checked={selectedCategories.includes(c.id)}
+                          onCheckedChange={() => toggleCategory(c.id)}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          {c.name}
+                        </DropdownMenuCheckboxItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-xs text-muted-foreground italic">No categories found</div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="tags">Tags</Label>
@@ -531,16 +590,19 @@ function ProductForm() {
               <CardTitle className="text-sm font-semibold">Theme template</CardTitle>
             </CardHeader>
             <CardContent>
-              <Select defaultValue="default">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select template" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="default">Default product</SelectItem>
-                  <SelectItem value="featured">Featured product</SelectItem>
-                  <SelectItem value="promo">Promotional layout</SelectItem>
-                </SelectContent>
-              </Select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between">
+                    Default product
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-[240px]">
+                  <DropdownMenuCheckboxItem checked>Default product</DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem>Featured product</DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem>Promotional layout</DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </CardContent>
           </Card>
         </div>
