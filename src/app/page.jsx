@@ -14,7 +14,11 @@ import {
   LayoutDashboard,
   Award,
   Coffee,
-  Sun
+  Sun,
+  Pill,
+  Hexagon,
+  Waves,
+  Square
 } from 'lucide-react';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
@@ -48,6 +52,14 @@ const wellnessGoals = [
     icon: <Sun className="h-4 w-4" />,
     imageId: 'goal-rituals'
   }
+];
+
+const trendingSearches = [
+  { label: 'Magnesium', icon: <Pill className="h-5 w-5 rotate-[135deg]" /> },
+  { label: 'Collagen', icon: <Hexagon className="h-5 w-5" /> },
+  { label: 'Protein', icon: <Waves className="h-5 w-5" /> },
+  { label: 'Omega', icon: <Pill className="h-5 w-5 rotate-45" /> },
+  { label: 'Sleep', icon: <Square className="h-5 w-5" /> }
 ];
 
 export default function HomePage() {
@@ -218,9 +230,26 @@ export default function HomePage() {
               <p className="text-muted-foreground font-medium text-lg leading-relaxed px-4">
                 Elevate your daily ritual with high-performance nutrition tailored to your specific path of vitality.
               </p>
+
+              {/* Trending Searches */}
+              <div className="pt-10 flex flex-col items-center gap-6">
+                <h3 className="text-xl font-bold text-foreground tracking-tight">Trending searches</h3>
+                <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+                  {trendingSearches.map((item, idx) => (
+                    <Link 
+                      key={idx}
+                      href="#" 
+                      className="flex items-center gap-3 px-8 py-3.5 rounded-full border border-black/10 hover:border-black hover:shadow-md transition-all text-sm font-bold bg-white group"
+                    >
+                      <span className="text-foreground/60 group-hover:text-primary transition-colors">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 mt-16">
               {wellnessGoals.map((goal) => {
                 const goalImg = getPlaceholderImage(goal.imageId);
                 return (
