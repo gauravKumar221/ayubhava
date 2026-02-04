@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
+import { CartDrawer } from '@/components/cart/cart-drawer';
 
 const wellnessGoals = [
   {
@@ -115,10 +116,12 @@ export default function HomePage() {
               <Zap className="h-5 w-5 cursor-pointer hover:text-primary" />
               <Heart className="h-5 w-5 cursor-pointer hover:text-primary" />
               <Search className="h-5 w-5 cursor-pointer hover:text-primary" />
-              <div className="relative cursor-pointer hover:text-primary">
-                <ShoppingBag className="h-5 w-5" />
-                <span className="absolute -top-2 -right-2 bg-black text-[9px] text-white h-4 w-4 flex items-center justify-center rounded-full font-bold">1</span>
-              </div>
+              <CartDrawer>
+                <div className="relative cursor-pointer hover:text-primary transition-colors">
+                  <ShoppingBag className="h-5 w-5" />
+                  <span className="absolute -top-2 -right-2 bg-black text-[9px] text-white h-4 w-4 flex items-center justify-center rounded-full font-bold">1</span>
+                </div>
+              </CartDrawer>
             </div>
             <Button variant="ghost" size="icon" asChild className="hidden sm:flex rounded-full">
               <Link href="/admin-dashboard">
