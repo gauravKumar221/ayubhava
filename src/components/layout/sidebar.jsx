@@ -12,7 +12,8 @@ import {
   MessageSquare,
   ShoppingCart,
   User,
-  Package
+  Package,
+  Shield
 } from 'lucide-react';
 import { useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,11 @@ export const menuItems = [
     href: '/admin-dashboard/orders',
     icon: <ShoppingCart className="h-4 w-4" />,
     label: 'Orders',
+  },
+  {
+    href: '/admin-dashboard/users',
+    icon: <Shield className="h-4 w-4" />,
+    label: 'Users',
   },
   {
     href: '/admin-dashboard/categories',

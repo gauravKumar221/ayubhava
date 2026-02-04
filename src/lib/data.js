@@ -124,6 +124,14 @@ export const orders = [
   }
 ];
 
+export const users = [
+  { id: 'u1', name: 'Admin User', email: 'admin@bitmax.com', role: 'Admin', status: 'Active', joinedDate: '2023-01-01', avatarId: 'user-avatar-1' },
+  { id: 'u2', name: 'Dr. Emily Carter', email: 'e.carter@bitmax.com', role: 'Doctor', status: 'Active', joinedDate: '2023-05-15', avatarId: 'doctor-1' },
+  { id: 'u3', name: 'John Doe', email: 'john.doe@example.com', role: 'Patient', status: 'Active', joinedDate: '2024-01-15', avatarId: 'user-avatar-2' },
+  { id: 'u4', name: 'Sarah Wilson', email: 's.wilson@bitmax.com', role: 'Staff', status: 'Pending', joinedDate: '2024-07-20', avatarId: 'user-avatar-3' },
+  { id: 'u5', name: 'Michael Smith', email: 'm.smith@example.com', role: 'Patient', status: 'Inactive', joinedDate: '2023-11-10', avatarId: 'user-avatar-4' },
+];
+
 const appointmentHistory = [
   {
     id: 'hist-1',
