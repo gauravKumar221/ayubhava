@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { 
   ChevronLeft, 
   Mail, 
@@ -187,39 +186,6 @@ export default function UserProfileDetailPage({ params }) {
         </div>
 
         <div className="space-y-8">
-          <Card className="border-none shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Lock className="h-5 w-5 text-primary" /> Security Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-sm">Two-factor Auth</Label>
-                  <p className="text-[10px] text-muted-foreground">Add extra security layer</p>
-                </div>
-                <Switch />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-sm">Account Lock</Label>
-                  <p className="text-[10px] text-muted-foreground">Lock user out of system</p>
-                </div>
-                <Switch checked={user.status === 'Inactive'} />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-sm">Force Password Reset</Label>
-                  <p className="text-[10px] text-muted-foreground">Reset on next login</p>
-                </div>
-                <Button variant="ghost" size="sm" className="h-8 text-[10px] font-bold">RESET</Button>
-              </div>
-            </CardContent>
-          </Card>
-
           <Card className="border-none shadow-sm bg-accent/5">
             <CardHeader>
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-accent">Contact Details</CardTitle>
