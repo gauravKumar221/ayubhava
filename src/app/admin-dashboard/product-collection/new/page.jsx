@@ -541,7 +541,10 @@ function ProductForm() {
                 <Label>Categories</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full justify-between h-auto min-h-10 text-left font-normal py-2 px-3">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-between h-auto min-h-10 text-left font-normal py-2 px-3 hover:bg-muted/30 hover:text-current"
+                    >
                       <div className="flex flex-wrap gap-1">
                         {selectedCategoryObjects.length > 0 ? (
                           selectedCategoryObjects.map((cat) => (
