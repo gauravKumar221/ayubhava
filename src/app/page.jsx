@@ -37,6 +37,10 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuLabel,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
@@ -121,9 +125,30 @@ export default function HomePage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
                 <DropdownMenuLabel className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 px-2">Health Goals</DropdownMenuLabel>
-                <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
-                  <Sparkles className="mr-3 h-4 w-4 text-primary" /> Skin Glow & Hair
-                </DropdownMenuItem>
+                
+                {/* Skin Glow & Hair with Sub-categories */}
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors focus:bg-primary/5 focus:text-primary outline-none">
+                    <Sparkles className="mr-3 h-4 w-4 text-primary" /> Skin Glow & Hair
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent className="w-56 p-2 rounded-2xl shadow-2xl border-none ml-1 animate-in slide-in-from-left-1 duration-200">
+                      <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                        Marine Collagen
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                        Skin Fuel
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                        Melts Skin Glow
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                        Melts Hair Fall
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+
                 <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
                   <Square className="mr-3 h-4 w-4 text-primary" /> Deep Sleep & Stress
                 </DropdownMenuItem>
