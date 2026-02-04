@@ -12,6 +12,7 @@ import {
   ChevronLeft, 
   Upload, 
   Image as ImageIcon, 
+  Video as VideoIcon,
   X,
   Bold,
   Italic,
@@ -83,10 +84,12 @@ function ProductForm() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedVideos, setSelectedVideos] = useState([]);
   const [conditions, setConditions] = useState([
     { id: Date.now(), field: 'tag', operator: 'equals', value: '' }
   ]);
   const fileInputRef = useRef(null);
+  const videoInputRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('bitmax_categories');
@@ -133,6 +136,7 @@ function ProductForm() {
           setSku(foundProduct.sku || '');
           setSelectedCategory(foundCategoryId || '');
           setSelectedImages(foundProduct.images || []);
+          setSelectedVideos(foundProduct.videos || []);
           
           if (foundProduct.tags && foundProduct.tags.length > 0) {
             setConditions(foundProduct.tags.map((tag, idx) => ({
@@ -160,8 +164,25 @@ function ProductForm() {
     }
   };
 
+  const handleVideoChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setSelectedVideos(prev => [...prev, reader.result]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
   const removeImage = (index) => {
     setSelectedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeVideo = (index) => {
+    setSelectedVideos(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleAddCondition = () => {
@@ -198,6 +219,7 @@ function ProductForm() {
       price: parseFloat(price),
       description: description,
       images: selectedImages,
+      videos: selectedVideos,
       tags: conditions.map(c => c.value).filter(v => v)
     };
 
@@ -295,39 +317,58 @@ function ProductForm() {
             <CardHeader>
               <CardTitle className="text-sm font-semibold">Media</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {selectedImages.map((img, index) => (
-                  <div key={index} className="relative aspect-square rounded-lg border overflow-hidden group">
-                    <Image src={img} alt={`Preview ${index}`} fill className="object-cover" />
-                    <button 
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute top-1 right-1 h-6 w-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Images</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {selectedImages.map((img, index) => (
+                    <div key={index} className="relative aspect-square rounded-lg border overflow-hidden group">
+                      <Image src={img} alt={`Preview ${index}`} fill className="object-cover" />
+                      <button 
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 h-6 w-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  <div 
+                    className="relative aspect-square rounded-lg border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-2 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Plus className="h-6 w-6 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground font-medium">Add Image</span>
                   </div>
-                ))}
-                <div 
-                  className="relative aspect-square rounded-lg border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-2 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Plus className="h-6 w-6 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground font-medium">Add more</span>
                 </div>
               </div>
-              
-              {selectedImages.length === 0 && (
-                <div 
-                  className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/5 cursor-pointer hover:bg-muted/10 transition-colors"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Upload className="h-10 w-10 text-muted-foreground/40 mb-2" />
-                  <p className="text-sm font-medium">Add multiple images</p>
-                  <p className="text-xs text-muted-foreground mt-1 text-center px-4">Drag and drop images here, or click to browse</p>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Videos</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {selectedVideos.map((video, index) => (
+                    <div key={index} className="relative aspect-square rounded-lg border overflow-hidden group bg-black">
+                      <video src={video} className="h-full w-full object-cover" controls />
+                      <button 
+                        type="button"
+                        onClick={() => removeVideo(index)}
+                        className="absolute top-1 right-1 h-6 w-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80 z-10"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  <div 
+                    className="relative aspect-square rounded-lg border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-2 bg-muted/10 hover:bg-muted/20 transition-colors cursor-pointer"
+                    onClick={() => videoInputRef.current?.click()}
+                  >
+                    <Plus className="h-6 w-6 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground font-medium">Add Video</span>
+                  </div>
                 </div>
-              )}
+              </div>
               
               <input 
                 type="file" 
@@ -336,6 +377,14 @@ function ProductForm() {
                 accept="image/*" 
                 multiple 
                 onChange={handleImageChange} 
+              />
+              <input 
+                type="file" 
+                ref={videoInputRef} 
+                className="hidden" 
+                accept="video/*" 
+                multiple 
+                onChange={handleVideoChange} 
               />
             </CardContent>
           </Card>
@@ -448,17 +497,6 @@ function ProductForm() {
                     {categories.map(c => (
                       <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                     ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="subcategory">Subcategory</Label>
-                <Select defaultValue="none">
-                  <SelectTrigger><SelectValue placeholder="Select Subcategory" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    <SelectItem value="surgical">Surgical Tools</SelectItem>
-                    <SelectItem value="diagnostic">Diagnostic Scopes</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
