@@ -50,9 +50,9 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { LazyImage } from '@/components/shared/lazy-image';
 
 // Simple Rich Text Editor Component
 const RichTextEditor = ({ value, onChange, placeholder }) => {
@@ -399,7 +399,7 @@ export default function BlogManagerPage() {
                       >
                         {selectedImage ? (
                           <>
-                            <Image src={selectedImage} alt="Preview" fill className="object-cover" />
+                            <LazyImage src={selectedImage} alt="Preview" fill className="object-cover" />
                             <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity hover:opacity-100 flex items-center justify-center">
                               <Upload className="h-8 w-8 text-white" />
                             </div>
@@ -461,7 +461,7 @@ export default function BlogManagerPage() {
               <Card key={blog.id} className="group overflow-hidden flex flex-col h-full border-none shadow-md transition-all hover:shadow-lg">
                 <div className="relative aspect-video w-full overflow-hidden bg-muted">
                   {blog.image ? (
-                    <Image 
+                    <LazyImage 
                       src={blog.image} 
                       alt={blog.title} 
                       fill 

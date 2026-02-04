@@ -49,8 +49,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import Image from 'next/image';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
+import { LazyImage } from '@/components/shared/lazy-image';
 
 const initialCoupons = [
   { 
@@ -317,7 +317,7 @@ export default function CouponsPage() {
                     >
                       {selectedImage ? (
                         <>
-                          <Image 
+                          <LazyImage 
                             src={selectedImage} 
                             alt="Preview" 
                             fill 
@@ -410,12 +410,12 @@ export default function CouponsPage() {
                   )}>
                     {promoImage && !isExpired && (
                       <div className="absolute inset-0 z-0">
-                        <Image 
+                        <LazyImage 
                           src={promoImage.imageUrl} 
                           alt="Promo" 
                           fill 
                           className="object-cover opacity-40 mix-blend-overlay"
-                          data-ai-hint={promoImage.imageHint}
+                          dataAiHint={promoImage.imageHint}
                         />
                       </div>
                     )}

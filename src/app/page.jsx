@@ -1,10 +1,7 @@
-
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
   Leaf, 
   Search, 
@@ -18,6 +15,7 @@ import {
   Award
 } from 'lucide-react';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
+import { LazyImage } from '@/components/shared/lazy-image';
 
 export default function HomePage() {
   const heroBg = getPlaceholderImage('wellness-hero-bg');
@@ -90,13 +88,13 @@ export default function HomePage() {
         {/* Rebranded Hero Section */}
         <section className="relative w-full h-[600px] lg:h-[750px] overflow-hidden bg-[#f8f5f2]">
           <div className="absolute inset-0 z-0">
-            <Image 
+            <LazyImage 
               src={heroBg.imageUrl} 
               alt="Background" 
               fill 
               className="object-cover opacity-40 mix-blend-multiply"
-              priority
-              data-ai-hint={heroBg.imageHint}
+              priority={true}
+              dataAiHint={heroBg.imageHint}
             />
           </div>
           
@@ -123,12 +121,13 @@ export default function HomePage() {
             <div className="relative flex-1 w-full lg:w-auto h-[400px] lg:h-full flex items-center justify-center lg:justify-end animate-in fade-in zoom-in-95 duration-1000 delay-300">
               {/* Product Pouch Cluster */}
               <div className="relative aspect-square w-full max-w-[600px]">
-                <Image 
+                <LazyImage 
                   src={productSet.imageUrl} 
                   alt="Whey Protein Pouches" 
                   fill 
                   className="object-contain drop-shadow-2xl"
-                  data-ai-hint={productSet.imageHint}
+                  priority={true}
+                  dataAiHint={productSet.imageHint}
                 />
                 
                 {/* Certification Badges */}

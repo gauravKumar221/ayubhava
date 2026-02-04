@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -36,6 +35,7 @@ import {
   Video,
   ImageIcon
 } from 'lucide-react';
+import { LazyImage } from '@/components/shared/lazy-image';
 
 export default function ProductCollectionPage() {
   const [products, setProducts] = useState([]);
@@ -167,7 +167,7 @@ export default function ProductCollectionPage() {
                   <TableCell>
                     <div className="relative h-12 w-12 rounded-md overflow-hidden border bg-muted flex items-center justify-center">
                       {product.images && product.images.length > 0 ? (
-                        <Image 
+                        <LazyImage 
                           src={product.images[0]} 
                           alt={product.name} 
                           fill 
