@@ -66,17 +66,22 @@ const blogPosts = [
 
 export default function PublicBlogPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const filteredPosts = blogPosts.filter(post =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPosts = blogPosts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.category.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = activeCategory === 'All' || post.category === activeCategory || (activeCategory === 'Science' && post.category === 'Medical Research');
+    
+    return matchesSearch && matchesCategory;
+  });
 
   if (!mounted) return null;
 
@@ -119,9 +124,12 @@ export default function PublicBlogPage() {
                 <Button 
                   key={cat}
                   variant="ghost" 
+                  onClick={() => setActiveCategory(cat)}
                   className={cn(
-                    "text-xs font-black uppercase tracking-widest rounded-full px-6 h-10",
-                    cat === "All" ? "bg-black text-white hover:bg-black/90" : "hover:bg-muted"
+                    "text-xs font-black uppercase tracking-widest rounded-full px-6 h-10 transition-all",
+                    activeCategory === cat 
+                      ? "bg-black text-white hover:bg-black/90" 
+                      : "hover:bg-black hover:text-white text-foreground/60"
                   )}
                 >
                   {cat}
@@ -196,7 +204,10 @@ export default function PublicBlogPage() {
                 </div>
                 <Button 
                   variant="outline" 
-                  onClick={() => setSearchTerm('')}
+                  onClick={() => {
+                    setSearchTerm('');
+                    setActiveCategory('All');
+                  }}
                   className="rounded-none border-2 border-black font-black uppercase text-xs tracking-widest px-8 h-12 mt-4"
                 >
                   Clear Search
