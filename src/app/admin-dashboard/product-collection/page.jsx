@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -151,6 +152,7 @@ export default function ProductCollectionPage() {
           <Table>
             <TableHeader className="bg-muted/50">
               <TableRow>
+                <TableHead className="w-[80px] font-bold uppercase text-xs">Image</TableHead>
                 <TableHead className="font-bold uppercase text-xs">Product Name</TableHead>
                 <TableHead className="font-bold uppercase text-xs">Category</TableHead>
                 <TableHead className="font-bold uppercase text-xs">Media Type</TableHead>
@@ -162,6 +164,20 @@ export default function ProductCollectionPage() {
             <TableBody>
               {filteredProducts.map((product) => (
                 <TableRow key={product.id} className="hover:bg-muted/30 transition-colors">
+                  <TableCell>
+                    <div className="relative h-12 w-12 rounded-md overflow-hidden border bg-muted flex items-center justify-center">
+                      {product.images && product.images.length > 0 ? (
+                        <Image 
+                          src={product.images[0]} 
+                          alt={product.name} 
+                          fill 
+                          className="object-cover"
+                        />
+                      ) : (
+                        <Package className="h-6 w-6 text-muted-foreground/40" />
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell className="font-medium">
                     <div className="flex flex-col gap-1">
                       <span>{product.name}</span>
@@ -231,7 +247,7 @@ export default function ProductCollectionPage() {
               ))}
               {filteredProducts.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-40 text-center">
+                  <TableCell colSpan={7} className="h-40 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground opacity-50">
                       <Package className="h-10 w-10 mb-2" />
                       <p>No products found in the collection.</p>
