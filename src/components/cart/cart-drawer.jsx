@@ -58,6 +58,11 @@ export function CartDrawer({ children }) {
     setIsCheckoutOpen(true);
   };
 
+  const handleBackToCart = () => {
+    setIsCheckoutOpen(false);
+    setIsSheetOpen(true);
+  };
+
   // Progress logic for freebies (mock thresholds)
   const progressPercent = Math.min((totalAmount / 6000) * 100, 100);
 
