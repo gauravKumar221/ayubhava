@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const categories = [
   "All", "Best Sellers", "Immunity", "Sleep & Stress", "Gut", "Weight", "Detox", "Beauty", "Essentials", "Energy & Me"
@@ -84,9 +85,43 @@ const allProducts = [
   }
 ];
 
+function ProductCardSkeleton() {
+  return (
+    <div className="flex flex-col space-y-4">
+      <Skeleton className="aspect-square w-full rounded-2xl" />
+      <div className="space-y-3 px-1">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-3 w-10" />
+          <div className="flex gap-1.5">
+            <Skeleton className="h-6 w-6 rounded-full" />
+            <Skeleton className="h-6 w-6 rounded-full" />
+          </div>
+        </div>
+        <Skeleton className="h-5 w-24 rounded" />
+        <Skeleton className="h-6 w-3/4" />
+        <div className="flex gap-2">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+        <div className="pt-4 space-y-4">
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-12 w-full rounded-none" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ShopByHealthNeeds() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Initial loading simulation
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleAddToWishlist = (product) => {
     const existing = JSON.parse(localStorage.getItem('wellbeing_wishlist') || '[]');
@@ -148,90 +183,96 @@ export function ShopByHealthNeeds() {
           ))}
         </div>
 
-        {/* Product Grid */}
+        {/* Product Grid / Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[400px]">
-          {displayProducts.map((product) => {
-            const media = getPlaceholderImage(product.imageId);
-            return (
-              <div key={product.id} className="flex flex-col group h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {/* Image Container */}
-                <div className="relative aspect-square bg-[#f9f9f9] rounded-2xl overflow-hidden mb-6">
-                  <Link href={`/products/${product.id}`} className="block h-full w-full">
-                    <LazyImage 
-                      src={media?.imageUrl} 
-                      alt={product.title} 
-                      fill 
-                      className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
-                      dataAiHint={media?.imageHint}
-                    />
-                  </Link>
-                  
-                  {product.isHighlyReordered && (
-                    <div className="absolute top-0 right-0 bg-black text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl">
-                      Highly reordered
-                    </div>
-                  )}
-                  
-                  {/* Wishlist Button */}
-                  <button 
-                    onClick={() => handleAddToWishlist(product)}
-                    className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-white shadow-md flex items-center justify-center text-foreground hover:text-red-500 transition-colors z-10"
-                  >
-                    <Heart className="h-5 w-5" />
-                  </button>
-                </div>
+          {isLoading ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))
+          ) : (
+            displayProducts.map((product) => {
+              const media = getPlaceholderImage(product.imageId);
+              return (
+                <div key={product.id} className="flex flex-col group h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  {/* Image Container */}
+                  <div className="relative aspect-square bg-[#f9f9f9] rounded-2xl overflow-hidden mb-6">
+                    <Link href={`/products/${product.id}`} className="block h-full w-full">
+                      <LazyImage 
+                        src={media?.imageUrl} 
+                        alt={product.title} 
+                        fill 
+                        className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
+                        dataAiHint={media?.imageHint}
+                      />
+                    </Link>
+                    
+                    {product.isHighlyReordered && (
+                      <div className="absolute top-0 right-0 bg-black text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl">
+                        Highly reordered
+                      </div>
+                    )}
+                    
+                    {/* Wishlist Button */}
+                    <button 
+                      onClick={() => handleAddToWishlist(product)}
+                      className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-white shadow-md flex items-center justify-center text-foreground hover:text-red-500 transition-colors z-10"
+                    >
+                      <Heart className="h-5 w-5" />
+                    </button>
+                  </div>
 
-                {/* Product Info */}
-                <div className="flex-1 flex flex-col space-y-4 px-1">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Pack:</span>
-                      <div className="flex gap-1.5">
-                        <button className="h-6 w-6 rounded-full border-2 border-black flex items-center justify-center text-[10px] font-black bg-black text-white">1</button>
-                        <button className="h-6 w-6 rounded-full border-2 border-black/10 flex items-center justify-center text-[10px] font-black hover:border-black/30">2</button>
+                  {/* Product Info */}
+                  <div className="flex-1 flex flex-col space-y-4 px-1">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Pack:</span>
+                        <div className="flex gap-1.5">
+                          <button className="h-6 w-6 rounded-full border-2 border-black flex items-center justify-center text-[10px] font-black bg-black text-white">1</button>
+                          <button className="h-6 w-6 rounded-full border-2 border-black/10 flex items-center justify-center text-[10px] font-black hover:border-black/30">2</button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 bg-black text-white w-fit px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">
+                        <Star className="h-3 w-3 fill-white" />
+                        {product.reviews} reviews
+                      </div>
+
+                      <Link href={`/products/${product.id}`}>
+                        <h3 className="text-lg font-black text-foreground leading-tight tracking-tight hover:text-primary transition-colors">
+                          {product.title}
+                        </h3>
+                      </Link>
+
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {product.tags.map(tag => (
+                          <span key={tag} className="bg-[#eef4f2] text-[#4a6b5d] px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide">
+                            {tag}
+                          </span>
+                        ))}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 bg-black text-white w-fit px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">
-                      <Star className="h-3 w-3 fill-white" />
-                      {product.reviews} reviews
+                    <div className="mt-auto pt-4 space-y-4">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl font-black">₹{product.price}</span>
+                        {product.originalPrice && (
+                          <>
+                            <span className="text-sm text-muted-foreground line-through font-bold">₹{product.originalPrice}</span>
+                            <span className="text-sm font-black text-[#4caf50] uppercase">{product.discount}</span>
+                          </>
+                        )}
+                      </div>
+
+                      <Button className="w-full h-12 bg-black hover:bg-black/90 text-white rounded-none font-black uppercase tracking-[0.2em] transition-all">
+                        Add To Cart
+                      </Button>
                     </div>
-
-                    <Link href={`/products/${product.id}`}>
-                      <h3 className="text-lg font-black text-foreground leading-tight tracking-tight hover:text-primary transition-colors">
-                        {product.title}
-                      </h3>
-                    </Link>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      {product.tags.map(tag => (
-                        <span key={tag} className="bg-[#eef4f2] text-[#4a6b5d] px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-auto pt-4 space-y-4">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl font-black">₹{product.price}</span>
-                      {product.originalPrice && (
-                        <>
-                          <span className="text-sm text-muted-foreground line-through font-bold">₹{product.originalPrice}</span>
-                          <span className="text-sm font-black text-[#4caf50] uppercase">{product.discount}</span>
-                        </>
-                      )}
-                    </div>
-
-                    <Button className="w-full h-12 bg-black hover:bg-black/90 text-white rounded-none font-black uppercase tracking-[0.2em] transition-all">
-                      Add To Cart
-                    </Button>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-          {displayProducts.length === 0 && (
+              );
+            })
+          )}
+          {!isLoading && displayProducts.length === 0 && (
             <div className="col-span-full flex flex-col items-center justify-center py-20 text-center opacity-50">
               <p className="text-lg font-bold">No products found in this category.</p>
               <Button variant="link" onClick={() => setActiveCategory("All")}>Show all products</Button>
