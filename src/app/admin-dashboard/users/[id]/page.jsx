@@ -1,7 +1,8 @@
 'use client';
 
-import { use, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -11,7 +12,6 @@ import { Label } from '@/components/ui/label';
 import { 
   ChevronLeft, 
   Mail, 
-  Calendar, 
   Shield, 
   CheckCircle2, 
   XCircle, 
@@ -19,23 +19,23 @@ import {
   Phone,
   Trash2,
   History,
-  Lock,
   Smartphone,
   Info
 } from 'lucide-react';
 import { users } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
-import { cn } from '@/lib/utils';
 
-export default function UserProfileDetailPage({ params }) {
-  const unwrappedParams = use(params);
-  const userId = unwrappedParams.id;
+export default function UserProfileDetailPage() {
+  const params = useParams();
+  const userId = params.id;
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const foundUser = users.find(u => u.id === userId);
-    setUser(foundUser || users[0]);
+    if (userId) {
+      const foundUser = users.find(u => u.id === userId);
+      setUser(foundUser || users[0]);
+    }
   }, [userId]);
 
   if (!user) return <div className="p-20 text-center">Loading user data...</div>;
@@ -160,8 +160,8 @@ export default function UserProfileDetailPage({ params }) {
               <div className="space-y-4">
                 {[
                   { action: 'Profile updated', time: '2 hours ago', icon: <Clock className="h-4 w-4" /> },
-                  { action: 'Logged in successfully', time: '5 hours ago', icon: <Lock className="h-4 w-4" /> },
-                  { action: 'Password changed', time: '3 days ago', icon: <Shield className="h-4 w-4" /> },
+                  { action: 'Logged in successfully', time: '5 hours ago', icon: <Shield className="h-4 w-4" /> },
+                  { action: 'Session started', time: 'Yesterday', icon: <History className="h-4 w-4" /> },
                 ].map((log, i) => (
                   <div key={i} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 border border-border/50">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">

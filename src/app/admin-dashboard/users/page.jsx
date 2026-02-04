@@ -23,22 +23,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { 
   Search, 
   MoreHorizontal, 
@@ -49,8 +33,7 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  Eye,
-  Plus
+  Eye
 } from 'lucide-react';
 import { users as initialUsers } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -59,7 +42,6 @@ import { getPlaceholderImage } from '@/lib/placeholder-images';
 export default function UsersPage() {
   const [users, setUsers] = useState(initialUsers);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,26 +50,6 @@ export default function UsersPage() {
 
   const handleDeleteUser = (id) => {
     setUsers(users.filter(u => u.id !== id));
-  };
-
-  const handleAddUser = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const newUser = {
-      id: `u-${Math.random().toString(36).substr(2, 9)}`,
-      name: formData.get('name'),
-      email: formData.get('email'),
-      status: formData.get('status'),
-      role: 'Staff',
-      joinedDate: new Date().toISOString().split('T')[0],
-      avatarId: 'user-avatar-1',
-      loginMethod: 'Email',
-      accountId: `ACC-${Math.floor(1000 + Math.random() * 9000)}`,
-      lastLogin: 'Never'
-    };
-
-    setUsers([...users, newUser]);
-    setIsAddDialogOpen(false);
   };
 
   const getStatusBadge = (status) => {
@@ -108,11 +70,7 @@ export default function UsersPage() {
       <PageHeader 
         title="User Management" 
         description="Manage system access and account statuses for clinical staff and patients."
-      >
-        <Button onClick={() => setIsAddDialogOpen(true)} className="bg-primary text-primary-foreground">
-          <Plus className="mr-2 h-4 w-4" /> Add User
-        </Button>
-      </PageHeader>
+      />
 
       <div className="relative w-full md:max-w-sm">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -208,45 +166,6 @@ export default function UsersPage() {
           </Table>
         </CardContent>
       </Card>
-
-      {/* Add User Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <form onSubmit={handleAddUser}>
-            <DialogHeader>
-              <DialogTitle>Add New User</DialogTitle>
-              <DialogDescription>
-                Create a new system account for a clinical member.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" name="name" placeholder="John Doe" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" placeholder="john@bitmax.com" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="status">Initial Status</Label>
-                <Select name="status" defaultValue="Active">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Create User</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
