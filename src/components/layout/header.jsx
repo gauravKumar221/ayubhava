@@ -43,6 +43,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from "@/components/ui/sheet";
 import {
   Accordion,
@@ -84,6 +85,11 @@ export function Header() {
                       </div>
                     </Link>
                   </SheetTitle>
+                  <SheetClose asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted transition-colors">
+                      <X className="h-5 w-5 text-muted-foreground" />
+                    </Button>
+                  </SheetClose>
                 </div>
               </SheetHeader>
               
