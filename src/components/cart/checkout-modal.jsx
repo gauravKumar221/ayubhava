@@ -58,9 +58,9 @@ export function CheckoutModal({ open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[480px] p-0 overflow-hidden bg-[#f4f7f9] border-none gap-0 sm:rounded-[2rem] h-[90vh] sm:h-auto">
+      <DialogContent className="max-w-[480px] p-0 overflow-hidden bg-[#f4f7f9] border-none gap-0 sm:rounded-[2rem] h-[85vh] flex flex-col shadow-2xl">
         {/* Sticky Header */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10">
+        <div className="bg-white px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10 shrink-0">
           <div className="flex items-center gap-3">
             <button onClick={() => onOpenChange(false)} className="p-1 hover:bg-muted rounded-full transition-colors">
               <ChevronLeft className="h-5 w-5" />
@@ -84,11 +84,12 @@ export function CheckoutModal({ open, onOpenChange }) {
         </div>
 
         {/* Prepaid Offer Banner */}
-        <div className="bg-black text-white text-center py-2 text-[11px] font-bold uppercase tracking-wider">
+        <div className="bg-black text-white text-center py-2 text-[11px] font-bold uppercase tracking-wider shrink-0">
           Upto Rs.100 off on Prepaid Orders
         </div>
 
-        <div className="p-4 space-y-4 overflow-y-auto pb-10 flex-1">
+        {/* Scrollable Content with Hidden Scrollbar */}
+        <div className="p-4 space-y-4 overflow-y-auto pb-10 flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {/* Delivery Details */}
           <div className="space-y-2">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Details</h3>
@@ -240,10 +241,10 @@ export function CheckoutModal({ open, onOpenChange }) {
 
         {/* Coupons Bottom Sheet */}
         <Sheet open={isCouponsOpen} onOpenChange={setIsCouponsOpen}>
-          <SheetContent side="bottom" className="max-w-[480px] mx-auto p-0 rounded-t-[2rem] border-none overflow-hidden h-[85vh] sm:h-auto">
+          <SheetContent side="bottom" className="max-w-[480px] mx-auto p-0 rounded-t-[2rem] border-none overflow-hidden h-[80vh] flex flex-col">
             <div className="bg-white flex flex-col h-full">
               {/* Coupons Header */}
-              <div className="px-6 py-5 flex items-center justify-between border-b sticky top-0 bg-white z-10">
+              <div className="px-6 py-5 flex items-center justify-between border-b sticky top-0 bg-white z-10 shrink-0">
                 <div className="flex items-center gap-3">
                   <Tag className="h-5 w-5 text-muted-foreground" />
                   <h2 className="text-sm font-black">Coupons & Offers</h2>
@@ -253,7 +254,8 @@ export function CheckoutModal({ open, onOpenChange }) {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 space-y-6">
+              {/* Coupons Content with Hidden Scrollbar */}
+              <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 space-y-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Coupon Input */}
                 <div className="bg-white rounded-2xl p-4 shadow-sm border border-white">
                   <div className="relative">
@@ -268,7 +270,7 @@ export function CheckoutModal({ open, onOpenChange }) {
                 </div>
 
                 {/* Filters */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   <Badge className="bg-white text-foreground hover:bg-white border-none py-2 px-4 rounded-xl text-xs font-bold shadow-sm cursor-pointer">Active Coupons</Badge>
                   <Badge className="bg-[#e9ecef] text-muted-foreground hover:bg-[#e9ecef] border-none py-2 px-4 rounded-xl text-xs font-bold cursor-pointer">Payment Offers</Badge>
                 </div>
