@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -26,20 +25,26 @@ import { users } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 
-export default function UserProfileDetailPage() {
-  const params = useParams();
-  const userId = params?.id;
+export default function UserProfileDetailPage({ params }) {
+  // In Next.js 15, params is a Promise that must be unwrapped
+  const resolvedParams = use(params);
+  const userId = resolvedParams?.id;
+  
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     if (userId) {
       const foundUser = users.find(u => u.id === userId);
-      // Fallback to first user for demo purposes if not found
+      // Fallback to specific user if found, or first user for demo fallback
       setUser(foundUser || users[0]);
     }
   }, [userId]);
 
-  if (!user) return <div className="p-20 text-center">Loading user data...</div>;
+  if (!user) return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  );
 
   const avatar = getPlaceholderImage(user.avatarId);
 
