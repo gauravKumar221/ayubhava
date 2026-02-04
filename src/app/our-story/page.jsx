@@ -1,11 +1,18 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { Sparkles, Leaf, Microscope, Heart } from 'lucide-react';
 
 export default function OurStoryPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-white font-body">
       <Header />
@@ -20,7 +27,7 @@ export default function OurStoryPage() {
               Modern Science.<br />
               <span className="text-primary">Ancient Roots.</span>
             </h1>
-            <p className="text-lg lg:text-xl text-muted-foreground font-medium leading-relaxed uppercase tracking-tight">
+            <p className="text-lg lg:text-xl text-muted-foreground font-medium leading-relaxed uppercase tracking-tight font-serif italic">
               We started with a simple question: Why should daily vitality be a chore? 
               AYUBHAVA was born to turn high-performance nutrition into a beautiful, effortless daily ritual.
             </p>
@@ -78,7 +85,9 @@ export default function OurStoryPage() {
             <blockquote className="text-3xl lg:text-6xl font-black uppercase tracking-tighter leading-none max-w-5xl mx-auto italic">
               "We don't just sell supplements. We design the infrastructure for a more vibrant, high-energy life."
             </blockquote>
-            <p className="mt-8 text-primary font-black uppercase tracking-[0.3em] text-sm">Founded on Ritual • 2024</p>
+            <p className="mt-8 text-primary font-black uppercase tracking-[0.3em] text-sm">
+              Founded on Ritual • {mounted ? new Date().getFullYear() : '2024'}
+            </p>
           </div>
           <div className="absolute inset-0 bg-primary/10 opacity-30" />
         </section>
