@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Trash2, ShoppingBag, Heart } from 'lucide-react';
+import { ChevronLeft, Trash2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { Separator } from '@/components/ui/separator';
@@ -54,7 +54,6 @@ export default function WishlistPage() {
   const saveToStorage = (newItems) => {
     setItems(newItems);
     localStorage.setItem('wellbeing_wishlist', JSON.stringify(newItems));
-    // Dispatch event for other components to listen if needed
     window.dispatchEvent(new Event('storage'));
   };
 
@@ -68,8 +67,6 @@ export default function WishlistPage() {
   };
 
   const addToBag = (item) => {
-    // In a real app, this would add to cart state
-    // For CRUD demo, we'll remove it from wishlist as it' "moved" to bag
     const updated = items.filter(i => i.id !== item.id);
     saveToStorage(updated);
     toast({
@@ -97,77 +94,98 @@ export default function WishlistPage() {
 
       <main className="flex-1 container mx-auto max-w-2xl px-0 sm:px-4">
         <div className="flex flex-col">
-          {items.map((item, index) => (
-            <div key={item.id} className="relative animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="flex p-4 sm:p-6 gap-6 group hover:bg-muted/5 transition-colors">
-                {/* Product Image */}
-                <div className="relative aspect-[3/4] w-32 sm:w-40 shrink-0 overflow-hidden bg-muted rounded-xl">
-                  <LazyImage 
-                    src={item.image} 
-                    alt={item.title} 
-                    fill 
-                    className="object-cover"
-                    dataAiHint={item.imageHint}
-                  />
-                </div>
+          {items.length > 0 ? (
+            items.map((item, index) => (
+              <div key={item.id} className="relative animate-in fade-in slide-in-from-right-4 duration-300">
+                <div className="flex p-4 sm:p-6 gap-6 group hover:bg-muted/5 transition-colors">
+                  {/* Product Image */}
+                  <div className="relative aspect-[3/4] w-32 sm:w-40 shrink-0 overflow-hidden bg-muted rounded-xl">
+                    <LazyImage 
+                      src={item.image} 
+                      alt={item.title} 
+                      fill 
+                      className="object-cover"
+                      dataAiHint={item.imageHint}
+                    />
+                  </div>
 
-                {/* Content Area */}
-                <div className="flex flex-1 flex-col justify-between py-1">
-                  <div className="space-y-1">
-                    <div className="flex justify-between items-start gap-4">
-                      <h2 className="text-base sm:text-lg font-bold leading-tight text-foreground">
-                        {item.title}
-                      </h2>
-                      <button 
-                        onClick={() => removeItem(item.id)}
-                        className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                  {/* Content Area */}
+                  <div className="flex flex-1 flex-col justify-between py-1">
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-start gap-4">
+                        <h2 className="text-base sm:text-lg font-bold leading-tight text-foreground">
+                          {item.title}
+                        </h2>
+                        <button 
+                          onClick={() => removeItem(item.id)}
+                          className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                          Item ID: {item.id}
+                        </p>
+                        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                          {item.category}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Price and Button Row */}
+                    <div className="flex items-end justify-between mt-4">
+                      <span className="text-lg font-black text-foreground">
+                        ${typeof item.price === 'number' ? item.price.toFixed(2) : item.price}
+                      </span>
+                      <Button 
+                        onClick={() => addToBag(item)}
+                        className="bg-black hover:bg-black/90 text-white rounded-none px-6 py-6 h-auto text-xs font-black uppercase tracking-widest transition-transform active:scale-95 shadow-lg"
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                        Add to Bag
+                      </Button>
                     </div>
-                    <div className="space-y-0.5">
-                      <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                        Item ID: {item.id}
-                      </p>
-                      <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                        {item.category}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Price and Button Row */}
-                  <div className="flex items-end justify-between mt-4">
-                    <span className="text-lg font-black text-foreground">
-                      ${typeof item.price === 'number' ? item.price.toFixed(2) : item.price}
-                    </span>
-                    <Button 
-                      onClick={() => addToBag(item)}
-                      className="bg-black hover:bg-black/90 text-white rounded-none px-6 py-6 h-auto text-xs font-black uppercase tracking-widest transition-transform active:scale-95 shadow-lg"
-                    >
-                      Add to Bag
-                    </Button>
                   </div>
                 </div>
+                {index < items.length - 1 && (
+                  <Separator className="bg-muted/50" />
+                )}
               </div>
-              {/* Divider between items, but not after the last one */}
-              {index < items.length - 1 && (
-                <Separator className="bg-muted/50" />
-              )}
-            </div>
-          ))}
+            ))
+          ) : (
+            /* EXACT EMPTY STATE AS PER IMAGE */
+            <div className="flex flex-col items-center justify-center py-32 sm:py-48 text-center animate-in fade-in zoom-in-95 duration-500">
+              <div className="relative mb-8">
+                {/* Custom SVG Box Illustration */}
+                <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M110 50L70 30L30 50V90L70 110L110 90V50Z" fill="#E2E2E2" />
+                  <path d="M70 30L30 50L70 70L110 50L70 30Z" fill="#F2F2F2" />
+                  <path d="M110 50L70 70V110L110 90V50Z" fill="#D4D4D4" />
+                  <path d="M70 110V70L30 50V90L70 110Z" fill="#E2E2E2" />
+                  <path d="M70 30V70" stroke="white" strokeWidth="0.5" strokeOpacity="0.5" />
+                  {/* Floating Heart */}
+                  <path d="M78 35C78 33.3431 76.6569 32 75 32C73.3431 32 72 33.3431 72 35C72 38 75 41 75 41C75 41 78 38 78 35Z" fill="#FF5A5F" />
+                </svg>
+              </div>
+              
+              <div className="space-y-3 px-6">
+                <h3 className="text-2xl font-black text-foreground tracking-tight">
+                  Your Wishlist is Empty
+                </h3>
+                <p className="text-muted-foreground text-sm font-medium max-w-[280px] mx-auto leading-relaxed">
+                  Tap heart button to start saving your favorite items.
+                </p>
+              </div>
 
-          {items.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 px-4">
-              <div className="h-24 w-24 rounded-full bg-primary/5 flex items-center justify-center">
-                <Heart className="h-12 w-12 text-primary opacity-20" />
+              <div className="mt-10">
+                <Button 
+                  asChild 
+                  variant="outline" 
+                  className="rounded-none border-2 border-black px-10 h-14 font-black text-xs uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-sm"
+                >
+                  <Link href="/">Add Now</Link>
+                </Button>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-black uppercase tracking-tight">Your wishlist is empty</h3>
-                <p className="text-muted-foreground max-w-xs mx-auto">Looks like you haven't saved anything yet. Start exploring our nutrition collection!</p>
-              </div>
-              <Button asChild className="bg-black hover:bg-black/90 text-white rounded-full px-10 h-14 font-black uppercase tracking-widest shadow-xl transition-all hover:-translate-y-1">
-                <Link href="/">Shop All Products</Link>
-              </Button>
             </div>
           )}
         </div>
