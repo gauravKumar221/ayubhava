@@ -164,8 +164,8 @@ export default function HomePage() {
                       />
                     </div>
                     
-                    <div className="container mx-auto h-full px-4 lg:px-12 relative z-10 flex flex-col items-center justify-center pt-12 lg:pt-0">
-                      <div className="flex flex-col gap-4 text-center max-w-3xl">
+                    <div className="container mx-auto h-full px-4 lg:px-12 relative z-10 flex flex-col items-start justify-center pt-12 lg:pt-0">
+                      <div className="flex flex-col gap-4 text-left max-w-3xl">
                         <h1 className="text-5xl md:text-8xl font-black text-[#2d2d2d] leading-[0.9] tracking-tighter whitespace-pre-line">
                           {slide.title}
                         </h1>
@@ -173,7 +173,7 @@ export default function HomePage() {
                           <p className="text-2xl md:text-4xl font-black text-primary/80 tracking-tighter uppercase">
                             {slide.subtitle}
                           </p>
-                          <p className="text-lg md:text-xl font-bold text-[#2d2d2d]/60 uppercase tracking-tight max-w-xl mx-auto">
+                          <p className="text-lg md:text-xl font-bold text-[#2d2d2d]/60 uppercase tracking-tight max-w-xl">
                             {slide.description}
                           </p>
                         </div>
