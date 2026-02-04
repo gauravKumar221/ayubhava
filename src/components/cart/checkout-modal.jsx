@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -22,15 +22,50 @@ import {
   Eye,
   CheckCircle2,
   X,
-  Tag
+  Tag,
+  Pencil,
+  Plus,
+  Trash2
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
+
+const initialAddresses = [
+  {
+    id: 'addr-1',
+    name: 'Gaurav Kumar',
+    type: 'Home',
+    line1: 'Bihar Darbhanga Naka No 5',
+    city: 'Darbhanga',
+    state: 'Bihar',
+    pincode: '846004',
+    phone: '+91 9304987505',
+    email: 'princegauravaj@gmail.com'
+  }
+];
 
 export function CheckoutModal({ open, onOpenChange }) {
   const [showQR, setShowQR] = useState(false);
   const [isCouponsOpen, setIsCouponsOpen] = useState(false);
+  const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
+  const [addresses, setAddresses] = useState(initialAddresses);
+  const [selectedAddress, setSelectedAddress] = useState(initialAddresses[0]);
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    name: '',
+    type: 'Home',
+    line1: '',
+    city: '',
+    state: '',
+    pincode: '',
+    phone: '',
+    email: ''
+  });
 
   const paymentOffers = [
     {
@@ -46,15 +81,49 @@ export function CheckoutModal({ open, onOpenChange }) {
       subtitle: 'Valid On A Minimum Order Of ₹300',
       description: 'Upto ₹100 cashback on payments with Airtel Payments Bank UPI',
       icon: 'https://placehold.co/40x40?text=Airtel',
-    },
-    {
-      id: 'bhim-upi',
-      title: 'Upto ₹100 instant cashback on using BHIM App',
-      subtitle: 'Assured Cashback Upto ₹100',
-      description: 'Upto ₹100 instant cashback on using BHIM App',
-      icon: 'https://placehold.co/40x40?text=BHIM',
     }
   ];
+
+  const handleOpenEdit = (addr) => {
+    setEditingAddress(addr);
+    setFormData(addr);
+    setIsAddingNew(true);
+  };
+
+  const handleAddNew = () => {
+    setEditingAddress(null);
+    setFormData({
+      name: '',
+      type: 'Home',
+      line1: '',
+      city: '',
+      state: '',
+      pincode: '',
+      phone: '',
+      email: ''
+    });
+    setIsAddingNew(true);
+  };
+
+  const handleSaveAddress = (e) => {
+    e.preventDefault();
+    if (editingAddress) {
+      const updated = addresses.map(a => a.id === editingAddress.id ? { ...formData, id: a.id } : a);
+      setAddresses(updated);
+      if (selectedAddress.id === editingAddress.id) setSelectedAddress({ ...formData, id: editingAddress.id });
+    } else {
+      const newAddr = { ...formData, id: `addr-${Math.random().toString(36).substr(2, 9)}` };
+      setAddresses([...addresses, newAddr]);
+    }
+    setIsAddingNew(false);
+  };
+
+  const handleDeleteAddress = (id) => {
+    const updated = addresses.filter(a => a.id !== id);
+    setAddresses(updated);
+    if (selectedAddress.id === id && updated.length > 0) setSelectedAddress(updated[0]);
+    setIsAddingNew(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -88,8 +157,8 @@ export function CheckoutModal({ open, onOpenChange }) {
           Upto Rs.100 off on Prepaid Orders
         </div>
 
-        {/* Scrollable Content with Hidden Scrollbar */}
-        <div className="p-4 space-y-4 overflow-y-auto pb-10 flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        {/* Scrollable Content */}
+        <div className="p-4 space-y-4 overflow-y-auto pb-10 flex-1 [&::-webkit-scrollbar]:hidden">
           {/* Delivery Details */}
           <div className="space-y-2">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Details</h3>
@@ -100,16 +169,18 @@ export function CheckoutModal({ open, onOpenChange }) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-black">Deliver To Gaurav Kumar</p>
-                    <div className="relative">
-                      <span className="absolute -top-8 right-0 bg-[#2d2d2d] text-white text-[9px] px-2 py-1 rounded-md whitespace-nowrap font-bold">Tap To Edit Address</span>
-                      <button className="text-[10px] font-black text-primary border border-primary/20 px-3 py-1 rounded-lg hover:bg-primary/5 transition-colors">Change</button>
-                    </div>
+                    <p className="text-xs font-black">Deliver To {selectedAddress?.name}</p>
+                    <button 
+                      onClick={() => setIsAddressSheetOpen(true)}
+                      className="text-[10px] font-black text-primary border border-primary/20 px-3 py-1 rounded-lg hover:bg-primary/5 transition-colors"
+                    >
+                      Change
+                    </button>
                   </div>
                   <p className="text-[11px] text-muted-foreground leading-relaxed mt-1">
-                    Bihar Darbhanga Naka No 5, Darbhanga<br />
-                    Bihar, 846004<br />
-                    +91 9304987505 | princegauravaj@gmail.com
+                    {selectedAddress?.line1}, {selectedAddress?.city}<br />
+                    {selectedAddress?.state}, {selectedAddress?.pincode}<br />
+                    {selectedAddress?.phone} | {selectedAddress?.email}
                   </p>
                 </div>
               </div>
@@ -149,33 +220,14 @@ export function CheckoutModal({ open, onOpenChange }) {
                   <span className="text-[10px] font-black text-primary uppercase group-hover:underline">View All</span>
                 </div>
               </div>
-              <Separator className="bg-muted/50" />
-              <div className="p-4 flex items-center justify-between cursor-pointer group">
-                <div className="flex items-center gap-3">
-                  <Gift className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs font-bold">Have Gift Card?</span>
-                </div>
-                <span className="text-[10px] font-black text-primary uppercase group-hover:underline">Redeem</span>
-              </div>
             </div>
           </div>
 
           {/* Payment Options */}
           <div className="space-y-2 pb-8">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Options</h3>
-            <div className="bg-[#e9ecef] py-2 px-4 rounded-xl text-[11px] font-bold text-muted-foreground">
-              Additional 99% discount upto 100 on UPI
-            </div>
-
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-white relative overflow-hidden">
-              {/* Promo Ribbon */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2">
-                <div className="bg-primary text-white text-[8px] font-black px-3 py-0.5 rounded-b-lg uppercase tracking-wider">
-                  Get 99% discount + cashback
-                </div>
-              </div>
-
-              <div className="mt-4 flex items-start justify-between">
+              <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-5 w-5 rotate-45 border-2 border-foreground flex items-center justify-center rounded-sm">
                     <div className="h-2 w-2 bg-foreground rounded-full" />
@@ -183,8 +235,7 @@ export function CheckoutModal({ open, onOpenChange }) {
                   <span className="text-sm font-black">UPI</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-muted-foreground line-through block font-bold">₹6646</span>
-                  <span className="text-sm font-black block">₹6546</span>
+                  <span className="text-sm font-black">₹6546</span>
                 </div>
               </div>
 
@@ -201,37 +252,21 @@ export function CheckoutModal({ open, onOpenChange }) {
                       onClick={() => setShowQR(true)}
                       className="absolute inset-0 flex items-center justify-center"
                     >
-                      <div className="bg-white border shadow-md px-4 py-2 rounded-full flex items-center gap-2 hover:bg-muted transition-colors">
+                      <div className="bg-white border shadow-md px-4 py-2 rounded-full flex items-center gap-2">
                         <Eye className="h-4 w-4" />
                         <span className="text-[10px] font-black uppercase tracking-wider">Show QR</span>
                       </div>
                     </button>
                   )}
                 </div>
-
-                <div className="space-y-1">
-                  <p className="text-[11px] font-bold text-muted-foreground px-8 leading-tight">
-                    Open any UPI Apps & scan QR Code to pay
-                  </p>
-                  <div className="flex items-center justify-center gap-3 opacity-60">
-                    <div className="h-4 w-10 bg-[url('https://upload.wikimedia.org/wikipedia/commons/c/cc/Paytm_Logo.pxvg')] bg-contain bg-no-repeat bg-center grayscale" />
-                    <div className="h-4 w-10 bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/e1/PhonePe_Logo.pxvg')] bg-contain bg-no-repeat bg-center grayscale" />
-                    <div className="h-4 w-10 bg-[url('https://upload.wikimedia.org/wikipedia/commons/b/b5/Google_Pay_Logo.pxvg')] bg-contain bg-no-repeat bg-center grayscale" />
-                  </div>
-                </div>
               </div>
 
-              <div className="relative py-6">
-                <Separator className="bg-muted/50" />
-                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-[9px] font-black text-muted-foreground uppercase tracking-widest">Or</span>
-              </div>
-
-              <div className="space-y-3">
+              <div className="mt-6 space-y-3">
                 <Input 
                   placeholder="Pay via UPI ID" 
                   className="h-11 rounded-xl bg-[#f8f9fa] border-muted/50 text-xs font-bold"
                 />
-                <Button className="w-full h-12 bg-primary hover:bg-primary/90 rounded-xl font-black text-xs uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+                <Button className="w-full h-12 bg-primary hover:bg-primary/90 rounded-xl font-black text-xs uppercase tracking-[0.1em]">
                   Pay Now
                 </Button>
               </div>
@@ -243,8 +278,7 @@ export function CheckoutModal({ open, onOpenChange }) {
         <Sheet open={isCouponsOpen} onOpenChange={setIsCouponsOpen}>
           <SheetContent side="bottom" className="max-w-[480px] mx-auto p-0 rounded-t-[2rem] border-none overflow-hidden h-[80vh] flex flex-col">
             <div className="bg-white flex flex-col h-full">
-              {/* Coupons Header */}
-              <div className="px-6 py-5 flex items-center justify-between border-b sticky top-0 bg-white z-10 shrink-0">
+              <div className="px-6 py-5 flex items-center justify-between border-b bg-white z-10 shrink-0">
                 <div className="flex items-center gap-3">
                   <Tag className="h-5 w-5 text-muted-foreground" />
                   <h2 className="text-sm font-black">Coupons & Offers</h2>
@@ -253,59 +287,198 @@ export function CheckoutModal({ open, onOpenChange }) {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-
-              {/* Coupons Content with Hidden Scrollbar */}
-              <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 space-y-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                {/* Coupon Input */}
+              <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 space-y-6 [&::-webkit-scrollbar]:hidden">
                 <div className="bg-white rounded-2xl p-4 shadow-sm border border-white">
                   <div className="relative">
-                    <Input 
-                      placeholder="Enter coupon code" 
-                      className="h-12 rounded-xl bg-[#f8f9fa] border-muted/50 text-xs font-bold"
-                    />
-                    <button className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-primary uppercase tracking-widest hover:underline">
-                      Apply
-                    </button>
+                    <Input placeholder="Enter coupon code" className="h-12 rounded-xl bg-[#f8f9fa] border-muted/50 text-xs font-bold" />
+                    <button className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-primary uppercase tracking-widest">Apply</button>
                   </div>
                 </div>
-
-                {/* Filters */}
-                <div className="flex gap-2 shrink-0">
-                  <Badge className="bg-white text-foreground hover:bg-white border-none py-2 px-4 rounded-xl text-xs font-bold shadow-sm cursor-pointer">Active Coupons</Badge>
-                  <Badge className="bg-[#e9ecef] text-muted-foreground hover:bg-[#e9ecef] border-none py-2 px-4 rounded-xl text-xs font-bold cursor-pointer">Payment Offers</Badge>
-                </div>
-
-                {/* Payment Offers Section */}
-                <div className="space-y-4 pb-10">
-                  <div className="flex flex-col gap-3">
-                    <h3 className="text-xs font-bold text-muted-foreground ml-1">Payment Offers</h3>
-                    <div className="bg-[#e6f7f4] py-2.5 px-4 rounded-xl text-[10px] font-bold text-primary border border-primary/10 leading-snug">
-                      Save more with these offers auto-applied on select payment methods
+                <div className="space-y-3 pb-10">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Offers</h4>
+                  {paymentOffers.map((offer) => (
+                    <div key={offer.id} className="bg-white rounded-2xl p-4 border border-white shadow-sm space-y-3 relative group">
+                      <div className="flex gap-4">
+                        <div className="h-10 w-10 rounded-xl overflow-hidden shrink-0 border bg-[#f8f9fa] flex items-center justify-center">
+                          <img src={offer.icon} alt={offer.id} className="h-6 w-6 grayscale" />
+                        </div>
+                        <div className="flex-1 space-y-1 pr-16">
+                          <h5 className="text-[13px] font-black leading-tight">{offer.title}</h5>
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{offer.subtitle}</p>
+                        </div>
+                        <button className="absolute top-4 right-4 h-8 px-5 rounded-xl border-2 border-foreground text-[10px] font-black hover:bg-muted uppercase">PAY</button>
+                      </div>
                     </div>
-                  </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
 
-                  <div className="space-y-3">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">UPI</h4>
-                    {paymentOffers.map((offer) => (
-                      <div key={offer.id} className="bg-white rounded-2xl p-4 border border-white shadow-sm space-y-3 relative group">
-                        <div className="flex gap-4">
-                          <div className="h-10 w-10 rounded-xl overflow-hidden shrink-0 border bg-[#f8f9fa] flex items-center justify-center">
-                            <img src={offer.icon} alt={offer.id} className="h-6 w-6 grayscale" />
-                          </div>
-                          <div className="flex-1 space-y-1 pr-16">
-                            <h5 className="text-[13px] font-black leading-tight">{offer.title}</h5>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{offer.subtitle}</p>
-                            <p className="text-[11px] text-muted-foreground leading-snug pt-1">{offer.description}</p>
-                            <button className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest hover:underline pt-2 block">Know more</button>
-                          </div>
-                          <button className="absolute top-4 right-4 h-8 px-5 rounded-xl border-2 border-foreground text-[10px] font-black hover:bg-muted transition-colors uppercase tracking-wider">
-                            PAY
-                          </button>
+        {/* Address Bottom Sheet */}
+        <Sheet open={isAddressSheetOpen} onOpenChange={setIsAddressSheetOpen}>
+          <SheetContent side="bottom" className="max-w-[480px] mx-auto p-0 rounded-t-[2rem] border-none overflow-hidden h-[80vh] flex flex-col">
+            <div className="bg-white flex flex-col h-full">
+              {/* Address Header */}
+              <div className="px-6 py-5 flex items-center justify-between border-b bg-white z-10 shrink-0">
+                <h2 className="text-sm font-black">{isAddingNew ? (editingAddress ? 'Edit Address' : 'Add New Address') : 'Select Delivery Address'}</h2>
+                {!isAddingNew ? (
+                  <button 
+                    onClick={handleAddNew}
+                    className="flex items-center gap-1 text-[10px] font-black text-primary border-2 border-primary/20 rounded-xl px-3 py-1.5 hover:bg-primary/5"
+                  >
+                    <Plus className="h-3 w-3" /> Add New Address
+                  </button>
+                ) : (
+                  <button onClick={() => setIsAddingNew(false)} className="p-1.5 hover:bg-muted rounded-full transition-colors">
+                    <X className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 [&::-webkit-scrollbar]:hidden">
+                {isAddingNew ? (
+                  /* Add/Edit Form */
+                  <form onSubmit={handleSaveAddress} className="space-y-4 animate-in slide-in-from-right duration-300">
+                    <div className="bg-white rounded-2xl p-5 shadow-sm border border-white space-y-4">
+                      <div className="grid gap-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Name</Label>
+                        <Input 
+                          value={formData.name} 
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          placeholder="e.g. Gaurav Kumar" 
+                          className="h-12 rounded-xl bg-[#f8f9fa] border-muted/50 text-xs font-bold"
+                          required
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Address Line</Label>
+                        <Input 
+                          value={formData.line1} 
+                          onChange={(e) => setFormData({...formData, line1: e.target.value})}
+                          placeholder="House No, Street, Area" 
+                          className="h-12 rounded-xl bg-[#f8f9fa] border-muted/50 text-xs font-bold"
+                          required
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">City</Label>
+                          <Input 
+                            value={formData.city} 
+                            onChange={(e) => setFormData({...formData, city: e.target.value})}
+                            placeholder="City" 
+                            className="h-12 rounded-xl bg-[#f8f9fa] border-muted/50 text-xs font-bold"
+                            required
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Pincode</Label>
+                          <Input 
+                            value={formData.pincode} 
+                            onChange={(e) => setFormData({...formData, pincode: e.target.value})}
+                            placeholder="Pincode" 
+                            className="h-12 rounded-xl bg-[#f8f9fa] border-muted/50 text-xs font-bold"
+                            required
+                          />
                         </div>
                       </div>
+                      <div className="grid gap-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Phone Number</Label>
+                        <Input 
+                          value={formData.phone} 
+                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                          placeholder="+91 0000000000" 
+                          className="h-12 rounded-xl bg-[#f8f9fa] border-muted/50 text-xs font-bold"
+                          required
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Address Type</Label>
+                        <div className="flex gap-2">
+                          {['Home', 'Work'].map(type => (
+                            <button
+                              key={type}
+                              type="button"
+                              onClick={() => setFormData({...formData, type})}
+                              className={cn(
+                                "flex-1 py-3 rounded-xl text-xs font-bold border-2 transition-all",
+                                formData.type === type ? "bg-primary/10 border-primary text-primary" : "bg-[#f8f9fa] border-muted/50 text-muted-foreground"
+                              )}
+                            >
+                              {type}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      {editingAddress && (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => handleDeleteAddress(editingAddress.id)}
+                          className="flex-1 h-14 rounded-xl border-destructive/20 text-destructive hover:bg-destructive/5 font-black uppercase text-xs"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" /> Remove
+                        </Button>
+                      )}
+                      <Button type="submit" className="flex-[2] h-14 bg-black text-white hover:bg-black/90 rounded-xl font-black uppercase tracking-widest text-xs">
+                        {editingAddress ? 'Update Address' : 'Save Address'}
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
+                  /* Address List */
+                  <div className="space-y-4 pb-10">
+                    {addresses.map((addr) => (
+                      <div 
+                        key={addr.id} 
+                        className={cn(
+                          "bg-white rounded-2xl p-5 shadow-sm border-2 transition-all relative group",
+                          selectedAddress.id === addr.id ? "border-black" : "border-white"
+                        )}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-black">{addr.name}</span>
+                            <Badge className="bg-[#e6f7f4] text-primary text-[9px] hover:bg-[#e6f7f4] border-none font-black py-0 px-2 rounded-md">
+                              {addr.type}
+                            </Badge>
+                          </div>
+                          <button 
+                            onClick={() => handleOpenEdit(addr)}
+                            className="p-1.5 hover:bg-muted rounded-full transition-colors"
+                          >
+                            <Pencil className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                        </div>
+                        
+                        <div className="text-[11px] text-muted-foreground leading-relaxed">
+                          <p>{addr.line1}, {addr.city}, {addr.state}, {addr.pincode}</p>
+                          <p className="mt-1">{addr.phone} | {addr.email}</p>
+                        </div>
+
+                        <button 
+                          onClick={() => {
+                            setSelectedAddress(addr);
+                            setIsAddressSheetOpen(false);
+                          }}
+                          className="w-full mt-5 h-12 bg-black text-white hover:bg-black/90 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg"
+                        >
+                          Deliver Here
+                        </button>
+                      </div>
                     ))}
+                    {addresses.length === 0 && (
+                      <div className="text-center py-20 opacity-40">
+                        <MapPin className="h-12 w-12 mx-auto mb-4" />
+                        <p className="font-bold text-sm">No saved addresses</p>
+                      </div>
+                    )}
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </SheetContent>
