@@ -1,6 +1,8 @@
+
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Star } from 'lucide-react';
@@ -154,13 +156,15 @@ export function ShopByHealthNeeds() {
               <div key={product.id} className="flex flex-col group h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {/* Image Container */}
                 <div className="relative aspect-square bg-[#f9f9f9] rounded-2xl overflow-hidden mb-6">
-                  <LazyImage 
-                    src={media?.imageUrl} 
-                    alt={product.title} 
-                    fill 
-                    className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
-                    dataAiHint={media?.imageHint}
-                  />
+                  <Link href={`/products/${product.id}`} className="block h-full w-full">
+                    <LazyImage 
+                      src={media?.imageUrl} 
+                      alt={product.title} 
+                      fill 
+                      className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
+                      dataAiHint={media?.imageHint}
+                    />
+                  </Link>
                   
                   {product.isHighlyReordered && (
                     <div className="absolute top-0 right-0 bg-black text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl">
@@ -193,9 +197,11 @@ export function ShopByHealthNeeds() {
                       {product.reviews} reviews
                     </div>
 
-                    <h3 className="text-lg font-black text-foreground leading-tight tracking-tight">
-                      {product.title}
-                    </h3>
+                    <Link href={`/products/${product.id}`}>
+                      <h3 className="text-lg font-black text-foreground leading-tight tracking-tight hover:text-primary transition-colors">
+                        {product.title}
+                      </h3>
+                    </Link>
 
                     <div className="flex flex-wrap gap-2 pt-1">
                       {product.tags.map(tag => (

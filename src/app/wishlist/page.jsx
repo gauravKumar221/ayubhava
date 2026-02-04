@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,28 +11,20 @@ import { useToast } from '@/hooks/use-toast';
 
 const initialWishlist = [
   {
-    id: '10972345',
-    title: 'Black Linen Scarf',
-    category: 'Scarves',
-    price: 21.95,
-    image: 'https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?q=80&w=400&auto=format&fit=crop',
-    imageHint: 'linen scarf'
+    id: 'sleep-1',
+    title: 'Restful Sleep Melts (10mg)',
+    category: 'Sleep & Stress',
+    price: 599,
+    image: 'https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?q=80&w=800&auto=format&fit=crop',
+    imageHint: 'health product'
   },
   {
-    id: '10837492',
-    title: 'Classic Cateye Sunglasses',
-    category: 'Sunglasses',
-    price: 14.99,
-    image: 'https://images.unsplash.com/photo-1511499767390-a73359580bf1?q=80&w=400&auto=format&fit=crop',
-    imageHint: 'cateye sunglasses'
-  },
-  {
-    id: '11823409',
-    title: 'Performance seamless sports bra',
-    category: 'Activewear',
-    price: 24.99,
-    image: 'https://images.unsplash.com/photo-1548330065-2956a164554c?q=80&w=400&auto=format&fit=crop',
-    imageHint: 'sports bra'
+    id: 'best-1',
+    title: 'Premium Collagen Peptides',
+    category: 'Best Sellers',
+    price: 1899,
+    image: 'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?q=80&w=800&auto=format&fit=crop',
+    imageHint: 'skincare portrait'
   }
 ];
 
@@ -99,7 +92,7 @@ export default function WishlistPage() {
               <div key={item.id} className="relative animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="flex p-4 sm:p-6 gap-6 group hover:bg-muted/5 transition-colors">
                   {/* Product Image */}
-                  <div className="relative aspect-[3/4] w-32 sm:w-40 shrink-0 overflow-hidden bg-muted rounded-xl">
+                  <Link href={`/products/${item.id}`} className="relative aspect-[3/4] w-32 sm:w-40 shrink-0 overflow-hidden bg-muted rounded-xl">
                     <LazyImage 
                       src={item.image} 
                       alt={item.title} 
@@ -107,15 +100,17 @@ export default function WishlistPage() {
                       className="object-cover"
                       dataAiHint={item.imageHint}
                     />
-                  </div>
+                  </Link>
 
                   {/* Content Area */}
                   <div className="flex flex-1 flex-col justify-between py-1">
                     <div className="space-y-1">
                       <div className="flex justify-between items-start gap-4">
-                        <h2 className="text-base sm:text-lg font-bold leading-tight text-foreground">
-                          {item.title}
-                        </h2>
+                        <Link href={`/products/${item.id}`} className="hover:text-primary transition-colors">
+                          <h2 className="text-base sm:text-lg font-bold leading-tight text-foreground">
+                            {item.title}
+                          </h2>
+                        </Link>
                         <button 
                           onClick={() => removeItem(item.id)}
                           className="text-muted-foreground hover:text-destructive transition-colors p-1"
@@ -136,7 +131,7 @@ export default function WishlistPage() {
                     {/* Price and Button Row */}
                     <div className="flex items-end justify-between mt-4">
                       <span className="text-lg font-black text-foreground">
-                        ${typeof item.price === 'number' ? item.price.toFixed(2) : item.price}
+                        ₹{typeof item.price === 'number' ? item.price.toLocaleString() : item.price}
                       </span>
                       <Button 
                         onClick={() => addToBag(item)}
@@ -153,17 +148,14 @@ export default function WishlistPage() {
               </div>
             ))
           ) : (
-            /* EXACT EMPTY STATE AS PER IMAGE */
             <div className="flex flex-col items-center justify-center py-32 sm:py-48 text-center animate-in fade-in zoom-in-95 duration-500">
               <div className="relative mb-8">
-                {/* Custom SVG Box Illustration */}
                 <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M110 50L70 30L30 50V90L70 110L110 90V50Z" fill="#E2E2E2" />
                   <path d="M70 30L30 50L70 70L110 50L70 30Z" fill="#F2F2F2" />
                   <path d="M110 50L70 70V110L110 90V50Z" fill="#D4D4D4" />
                   <path d="M70 110V70L30 50V90L70 110Z" fill="#E2E2E2" />
                   <path d="M70 30V70" stroke="white" strokeWidth="0.5" strokeOpacity="0.5" />
-                  {/* Floating Heart */}
                   <path d="M78 35C78 33.3431 76.6569 32 75 32C73.3431 32 72 33.3431 72 35C72 38 75 41 75 41C75 41 78 38 78 35Z" fill="#FF5A5F" />
                 </svg>
               </div>
