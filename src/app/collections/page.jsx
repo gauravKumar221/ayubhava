@@ -40,7 +40,7 @@ const allProducts = [
   {
     id: 'sleep-1',
     category: "Melts Oral Strips",
-    title: 'Restful Sleep Melts (10mg)',
+    title: 'Deep Sleep Ritual - Restful Melts',
     reviews: 919,
     price: 599,
     originalPrice: 699,
@@ -51,7 +51,7 @@ const allProducts = [
   {
     id: 'sleep-2',
     category: "Wholefood Multivitamins",
-    title: 'Triple Magnesium Complex',
+    title: 'Vitality Ritual - Triple Magnesium',
     reviews: 781,
     price: 1329,
     originalPrice: 1399,
@@ -63,7 +63,7 @@ const allProducts = [
   {
     id: 'best-1',
     category: "Marine Collagen",
-    title: 'Premium Collagen Peptides',
+    title: 'Glow Ritual - Marine Collagen',
     reviews: 2500,
     price: 1899,
     originalPrice: 1999,
@@ -74,7 +74,7 @@ const allProducts = [
   {
     id: 'protein-1',
     category: "Vegan Protein Isolate",
-    title: 'Performance Isolate - Belgian Dark Chocolate',
+    title: 'Performance Ritual - Vegan Isolate',
     reviews: 1420,
     price: 3824,
     originalPrice: 4200,
@@ -85,7 +85,7 @@ const allProducts = [
   {
     id: 'glow-1',
     category: "Marine Collagen",
-    title: 'Glow Marine Collagen',
+    title: 'Skin Ritual - Marine Glow',
     reviews: 850,
     price: 1899,
     originalPrice: 1999,
@@ -96,7 +96,7 @@ const allProducts = [
   {
     id: 'kids-1',
     category: "Wholefood Multivitamins",
-    title: 'Kids Superfuel - Milk Chocolate',
+    title: 'Growth Ritual - Kids Superfuel',
     reviews: 340,
     price: 854,
     originalPrice: 950,
@@ -156,7 +156,7 @@ export default function CollectionsPage() {
           <div className="container mx-auto px-4 lg:px-12">
             <div className="max-w-2xl space-y-4">
               <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
-                <Tag className="h-3 w-3" /> The Full Collection
+                <Tag className="h-3 w-3" /> The Ritual Collection
               </div>
               <h1 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase leading-none">
                 Elevate Your <br />Daily Ritual.
@@ -190,7 +190,7 @@ export default function CollectionsPage() {
 
                 {/* Categories List */}
                 <div className="space-y-6">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Collections</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Browse Rituals</h3>
                   <div className="flex flex-col items-start gap-4">
                     {categories.map((cat) => (
                       <button

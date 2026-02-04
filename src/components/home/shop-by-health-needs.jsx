@@ -22,7 +22,7 @@ const allProducts = [
   {
     id: 'sleep-1',
     category: "Sleep & Stress",
-    title: 'Restful Sleep Melts (10mg)',
+    title: 'Deep Sleep Ritual - Restful Melts',
     reviews: 919,
     price: 599,
     originalPrice: 699,
@@ -33,7 +33,7 @@ const allProducts = [
   {
     id: 'sleep-2',
     category: "Sleep & Stress",
-    title: 'Triple Magnesium Complex',
+    title: 'Vitality Ritual - Triple Magnesium',
     reviews: 781,
     price: 1329,
     originalPrice: 1399,
@@ -45,7 +45,7 @@ const allProducts = [
   {
     id: 'sleep-3',
     category: "Sleep & Stress",
-    title: 'Restful Sleep (5mg)',
+    title: 'Sleep Focus Ritual (5mg)',
     reviews: 549,
     price: 599,
     originalPrice: 650,
@@ -57,7 +57,7 @@ const allProducts = [
   {
     id: 'imm-1',
     category: "Immunity",
-    title: 'Daily Immunity Defense',
+    title: 'Immunity Ritual - Daily Defense',
     reviews: 420,
     price: 899,
     originalPrice: 999,
@@ -69,7 +69,7 @@ const allProducts = [
   {
     id: 'gut-1',
     category: "Gut",
-    title: '4B CFU Probiotic Mix',
+    title: 'Gut Health Ritual - 4B Probiotic',
     reviews: 1205,
     price: 1499,
     originalPrice: 1699,
@@ -81,7 +81,7 @@ const allProducts = [
   {
     id: 'best-1',
     category: "Best Sellers",
-    title: 'Premium Collagen Peptides',
+    title: 'Glow Ritual - Marine Collagen',
     reviews: 2500,
     price: 1899,
     originalPrice: 1999,
