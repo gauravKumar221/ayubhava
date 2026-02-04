@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -25,9 +26,9 @@ import { users } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 
-export default function UserProfileDetailPage({ params }) {
-  const unwrappedParams = use(params);
-  const userId = unwrappedParams.id;
+export default function UserProfileDetailPage() {
+  const params = useParams();
+  const userId = params?.id;
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -137,7 +138,7 @@ export default function UserProfileDetailPage({ params }) {
                     <div className="flex flex-col gap-1">
                       <Label className="text-xs text-muted-foreground">Login Method</Label>
                       <div className="flex items-center gap-2">
-                        {user.loginMethod === 'Email' ? <Mail className="h-3 w-3" /> : <Smartphone className="h-3 w-3" />}
+                        {user.loginMethod === 'Phone' ? <Smartphone className="h-3 w-3" /> : <Mail className="h-3 w-3" />}
                         <p className="text-sm font-medium">{user.loginMethod || 'Email'}</p>
                       </div>
                     </div>
