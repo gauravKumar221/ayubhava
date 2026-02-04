@@ -2,12 +2,10 @@
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { 
   ChevronLeft, 
@@ -16,15 +14,11 @@ import {
   CheckCircle2, 
   XCircle, 
   Clock,
-  Phone,
-  Trash2,
   History,
   Smartphone,
   Info
 } from 'lucide-react';
 import { users } from '@/lib/data';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { getPlaceholderImage } from '@/lib/placeholder-images';
 
 export default function UserProfileDetailPage({ params }) {
   const unwrappedParams = use(params);
@@ -46,8 +40,6 @@ export default function UserProfileDetailPage({ params }) {
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
     </div>
   );
-
-  const avatar = getPlaceholderImage(user.avatarId);
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -86,25 +78,6 @@ export default function UserProfileDetailPage({ params }) {
 
       <div className="space-y-8">
         <Card className="border-none shadow-sm overflow-hidden">
-          <CardHeader className="bg-primary/5 pb-8">
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-                {avatar && <AvatarImage src={avatar.imageUrl} alt={user.name} data-ai-hint={avatar.imageHint} />}
-                <AvatarFallback className="text-2xl font-bold">{user.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div className="text-center sm:text-left space-y-1">
-                <h3 className="text-xl font-bold">{user.name}</h3>
-                <p className="text-muted-foreground flex items-center justify-center sm:justify-start gap-2">
-                  <Mail className="h-4 w-4" /> {user.email}
-                </p>
-                <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
-                  <Badge variant="secondary" className="bg-white/50 text-[10px] font-bold uppercase tracking-wider">
-                    ID: {user.accountId || 'N/A'}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
           <CardContent className="pt-8 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <div className="space-y-4">
@@ -123,6 +96,10 @@ export default function UserProfileDetailPage({ params }) {
                   <div className="flex flex-col gap-1">
                     <Label className="text-xs text-muted-foreground">Account Created</Label>
                     <p className="text-sm font-medium">{user.joinedDate}</p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Label className="text-xs text-muted-foreground">Account ID</Label>
+                    <p className="text-sm font-mono font-bold text-primary">{user.accountId || 'N/A'}</p>
                   </div>
                 </div>
               </div>
