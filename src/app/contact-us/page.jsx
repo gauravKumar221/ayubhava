@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PageHeader } from '@/components/shared/page-header';
+import { Header } from '@/components/layout/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Send, MapPin, Phone, Mail, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 export default function ContactUsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,110 +48,139 @@ export default function ContactUsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-8 max-w-5xl mx-auto py-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl text-primary">
-          Contact Us
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Have questions or need assistance? Our medical staff is here to help you.
-        </p>
-      </div>
+    <div className="flex flex-col min-h-screen bg-white font-body">
+      <Header />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-        <div className="space-y-6">
-          <Card className="border-none shadow-sm bg-primary/5">
-            <CardContent className="p-6 flex items-start gap-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <MapPin className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-bold">Our Location</h3>
-                <p className="text-sm text-muted-foreground">123 Medical Plaza, Health City, HC 54321</p>
-              </div>
-            </CardContent>
-          </Card>
+      <main className="flex-1 container mx-auto px-4 py-12 lg:py-20">
+        <div className="max-w-5xl mx-auto space-y-12">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-black tracking-tighter lg:text-6xl text-foreground uppercase">
+              Get In Touch.
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-medium">
+              Have questions about your daily ritual? Our wellness experts are here to guide you on your journey to vitality.
+            </p>
+          </div>
 
-          <Card className="border-none shadow-sm bg-accent/5">
-            <CardContent className="p-6 flex items-start gap-4">
-              <div className="bg-accent/10 p-3 rounded-full">
-                <Phone className="h-6 w-6 text-accent" />
-              </div>
-              <div>
-                <h3 className="font-bold">Phone Number</h3>
-                <p className="text-sm text-muted-foreground">+1 (555) 000-1234</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+            <div className="space-y-6">
+              <Card className="border-none shadow-sm bg-[#f9f9f9] rounded-3xl">
+                <CardContent className="p-6 flex items-start gap-4">
+                  <div className="bg-primary/10 p-3 rounded-2xl">
+                    <MapPin className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-sm uppercase tracking-wider">Our Sanctuary</h3>
+                    <p className="text-xs text-muted-foreground mt-1">123 Wellness Plaza, Health District, HC 54321</p>
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card className="border-none shadow-sm bg-muted">
-            <CardContent className="p-6 flex items-start gap-4">
-              <div className="bg-muted-foreground/10 p-3 rounded-full">
-                <Mail className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div>
-                <h3 className="font-bold">Email Support</h3>
-                <p className="text-sm text-muted-foreground">support@bitmax.com</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              <Card className="border-none shadow-sm bg-[#f9f9f9] rounded-3xl">
+                <CardContent className="p-6 flex items-start gap-4">
+                  <div className="bg-primary/10 p-3 rounded-2xl">
+                    <Phone className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-sm uppercase tracking-wider">Connect</h3>
+                    <p className="text-xs text-muted-foreground mt-1">+1 (555) 000-1234</p>
+                  </div>
+                </CardContent>
+              </Card>
 
-        <div className="md:col-span-2">
-          <Card className="shadow-lg border-none">
-            <CardHeader>
-              <CardTitle>Send us a Message</CardTitle>
-              <CardDescription>Fill out the form below and we will respond within 24 hours.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {submitted ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center space-y-4 animate-in zoom-in duration-300">
-                  <CheckCircle2 className="h-16 w-16 text-accent" />
-                  <h2 className="text-2xl font-bold">Thank You!</h2>
-                  <p className="text-muted-foreground">Your message has been successfully recorded.</p>
-                  <Button variant="outline" onClick={() => setSubmitted(false)}>Send Another Message</Button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="grid gap-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input id="name" name="name" placeholder="John Doe" required />
+              <Card className="border-none shadow-sm bg-[#f9f9f9] rounded-3xl">
+                <CardContent className="p-6 flex items-start gap-4">
+                  <div className="bg-primary/10 p-3 rounded-2xl">
+                    <Mail className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-sm uppercase tracking-wider">Support</h3>
+                    <p className="text-xs text-muted-foreground mt-1">rituals@ayubhyava.com</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="md:col-span-2">
+              <Card className="shadow-2xl border-none rounded-[2.5rem] overflow-hidden">
+                <CardHeader className="bg-black text-white p-8">
+                  <CardTitle className="text-2xl font-black uppercase tracking-tight">Send a Message</CardTitle>
+                  <CardDescription className="text-white/60">Fill out the form below and an expert will respond within 24 hours.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-8">
+                  {submitted ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-center space-y-6 animate-in zoom-in duration-300">
+                      <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
+                        <CheckCircle2 className="h-10 w-10 text-primary" />
+                      </div>
+                      <div className="space-y-2">
+                        <h2 className="text-3xl font-black uppercase tracking-tight">Ritual Recorded.</h2>
+                        <p className="text-muted-foreground font-medium">Your inquiry has been successfully sent to our team.</p>
+                      </div>
+                      <Button variant="outline" className="rounded-none border-2 border-black font-black uppercase tracking-widest text-xs px-8 h-12" onClick={() => setSubmitted(false)}>Send Another Message</Button>
                     </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input id="email" name="email" type="email" placeholder="john@example.com" required />
-                    </div>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="subject">Subject</Label>
-                    <Input id="subject" name="subject" placeholder="What is this regarding?" required />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="message">Message</Label>
-                    <Textarea 
-                      id="message" 
-                      name="message" 
-                      placeholder="How can we help you today?" 
-                      className="min-h-[150px]" 
-                      required 
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      "Sending..."
-                    ) : (
-                      <>
-                        <Send className="mr-2 h-4 w-4" /> Submit Inquiry
-                      </>
-                    )}
-                  </Button>
-                </form>
-              )}
-            </CardContent>
-          </Card>
+                  ) : (
+                    <form onSubmit={handleSubmit} className="grid gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="grid gap-2">
+                          <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest ml-1">Full Name</Label>
+                          <Input id="name" name="name" placeholder="John Doe" className="h-12 rounded-xl bg-muted/30 border-none focus-visible:ring-primary/20" required />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest ml-1">Email Address</Label>
+                          <Input id="email" name="email" type="email" placeholder="john@example.com" className="h-12 rounded-xl bg-muted/30 border-none focus-visible:ring-primary/20" required />
+                        </div>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="subject" className="text-[10px] font-black uppercase tracking-widest ml-1">Subject</Label>
+                        <Input id="subject" name="subject" placeholder="What is this regarding?" className="h-12 rounded-xl bg-muted/30 border-none focus-visible:ring-primary/20" required />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="message" className="text-[10px] font-black uppercase tracking-widest ml-1">Message</Label>
+                        <Textarea 
+                          id="message" 
+                          name="message" 
+                          placeholder="How can we help you today?" 
+                          className="min-h-[150px] rounded-2xl bg-muted/30 border-none focus-visible:ring-primary/20" 
+                          required 
+                        />
+                      </div>
+                      <Button type="submit" className="w-full h-14 bg-black text-white hover:bg-black/90 rounded-none font-black uppercase tracking-[0.2em] text-sm shadow-xl mt-4 transition-all active:scale-[0.98]" disabled={isSubmitting}>
+                        {isSubmitting ? (
+                          "TRANSMITTING..."
+                        ) : (
+                          <>
+                            <Send className="mr-2 h-4 w-4" /> Submit Inquiry
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
+
+      {/* Footer Branding */}
+      <footer className="bg-white py-16 border-t mt-auto">
+        <div className="container mx-auto px-4 text-center space-y-8">
+          <div className="flex flex-col items-center gap-2 font-black text-foreground">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-foreground font-bold text-lg">W</div>
+            <span className="uppercase tracking-tighter text-xl">Wellbeing Nutrition</span>
+          </div>
+          <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+            <Link href="/" className="hover:text-primary transition-colors">Shop</Link>
+            <Link href="/blog" className="hover:text-primary transition-colors">Journal</Link>
+            <Link href="#" className="hover:text-primary transition-colors">Philosophy</Link>
+            <Link href="#" className="hover:text-primary transition-colors">Sustainability</Link>
+          </nav>
+          <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-[0.3em]">
+            © 2024 Wellbeing Nutrition. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
