@@ -13,6 +13,30 @@
       "imageHint": "protein pouches"
     },
     {
+      "id": "goal-superfoods",
+      "description": "Healthy superfood bowl",
+      "imageUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop",
+      "imageHint": "superfood salad"
+    },
+    {
+      "id": "goal-supplements",
+      "description": "Fresh vegetables and nutrition",
+      "imageUrl": "https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=800&auto=format&fit=crop",
+      "imageHint": "fresh vegetables"
+    },
+    {
+      "id": "goal-elixirs",
+      "description": "Herbal tea and elixirs",
+      "imageUrl": "https://images.unsplash.com/photo-1544787210-22839483c6ea?q=80&w=800&auto=format&fit=crop",
+      "imageHint": "herbal tea"
+    },
+    {
+      "id": "goal-rituals",
+      "description": "Meditation ritual at sunset",
+      "imageUrl": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop",
+      "imageHint": "meditation sunset"
+    },
+    {
       "id": "user-avatar-1",
       "description": "User avatar 1",
       "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjI4MDgwNTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -57,7 +81,7 @@
     {
       "id": "doctor-3",
       "description": "Dr. Olivia Chen",
-      "imageUrl": "https://images.unsplash.com/photo-1673865641073-4479f93a7776?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxkb2N0b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjI4MTExNDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1673865641073-4479f93a7776?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkb2N0b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjI4MTExNDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "doctor portrait"
     },
     {

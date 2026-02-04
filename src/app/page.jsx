@@ -12,10 +12,43 @@ import {
   ChevronLeft,
   ChevronDown,
   LayoutDashboard,
-  Award
+  Award,
+  Coffee,
+  Sun
 } from 'lucide-react';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
+
+const wellnessGoals = [
+  {
+    id: 'superfoods',
+    title: 'Superfoods',
+    subtitle: '120+ Essentials',
+    icon: <Leaf className="h-4 w-4" />,
+    imageId: 'goal-superfoods'
+  },
+  {
+    id: 'supplements',
+    title: 'Supplements',
+    subtitle: '85+ Formulas',
+    icon: <Zap className="h-4 w-4" />,
+    imageId: 'goal-supplements'
+  },
+  {
+    id: 'elixirs',
+    title: 'Elixirs & Tea',
+    subtitle: '40+ Blends',
+    icon: <Coffee className="h-4 w-4" />,
+    imageId: 'goal-elixirs'
+  },
+  {
+    id: 'rituals',
+    title: 'Rituals',
+    subtitle: 'Mindful Kits',
+    icon: <Sun className="h-4 w-4" />,
+    imageId: 'goal-rituals'
+  }
+];
 
 export default function HomePage() {
   const heroBg = getPlaceholderImage('wellness-hero-bg');
@@ -172,6 +205,61 @@ export default function HomePage() {
                 <span className="text-sm font-black uppercase tracking-widest text-foreground/60">{item.label}</span>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Shop by Wellness Goal Section */}
+        <section className="py-24 bg-white">
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+              <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight">
+                Shop by Wellness Goal
+              </h2>
+              <p className="text-muted-foreground font-medium text-lg leading-relaxed px-4">
+                Elevate your daily ritual with high-performance nutrition tailored to your specific path of vitality.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+              {wellnessGoals.map((goal) => {
+                const goalImg = getPlaceholderImage(goal.imageId);
+                return (
+                  <Link 
+                    key={goal.id} 
+                    href={`/admin-dashboard/product-collection?goal=${goal.id}`}
+                    className="group relative aspect-[4/5] overflow-hidden rounded-3xl bg-muted shadow-sm transition-all hover:shadow-2xl hover:-translate-y-1"
+                  >
+                    <div className="absolute inset-0 z-0">
+                      <LazyImage 
+                        src={goalImg?.imageUrl} 
+                        alt={goal.title} 
+                        fill 
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        dataAiHint={goalImg?.imageHint}
+                      />
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    </div>
+
+                    <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 lg:p-8">
+                      <div className="flex items-end justify-between w-full">
+                        <div className="space-y-1 text-white">
+                          <h3 className="text-xl lg:text-2xl font-black leading-tight">
+                            {goal.title}
+                          </h3>
+                          <p className="text-xs lg:text-sm font-bold opacity-80 uppercase tracking-widest">
+                            {goal.subtitle}
+                          </p>
+                        </div>
+                        <div className="h-10 w-10 lg:h-12 lg:w-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-transform group-hover:scale-110 group-hover:bg-white group-hover:text-primary">
+                          {goal.icon}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </section>
       </main>
