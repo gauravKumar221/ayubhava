@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,11 @@ import {
   Sheet,
   SheetContent,
 } from '@/components/ui/sheet';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -25,12 +30,14 @@ import {
   Tag,
   Pencil,
   Plus,
-  Trash2
+  Trash2,
+  ChevronUp
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { LazyImage } from '@/components/shared/lazy-image';
 
 const initialAddresses = [
   {
@@ -46,6 +53,33 @@ const initialAddresses = [
   }
 ];
 
+const summaryItems = [
+  {
+    id: 'sum-1',
+    name: 'Vegan Protein Canadian Mixed Berry Gift Sachet',
+    qty: 1,
+    originalPrice: 127,
+    price: 0,
+    image: 'https://images.unsplash.com/photo-1593094276927-230f7c8201b0?q=80&w=200&auto=format&fit=crop'
+  },
+  {
+    id: 'sum-2',
+    name: 'Vegan Protein 22g | 500g | 3B CFU Probiotics | Belgian Dark Chocolate - Pack of 1',
+    qty: 1,
+    originalPrice: 1799,
+    price: 1709,
+    image: 'https://images.unsplash.com/photo-1593094276927-230f7c8201b0?q=80&w=200&auto=format&fit=crop'
+  },
+  {
+    id: 'sum-3',
+    name: 'Hydrasalt® Electrolyte Drink | Free Variety Pack of 3',
+    qty: 1,
+    originalPrice: 160,
+    price: 0,
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=200&auto=format&fit=crop'
+  }
+];
+
 export function CheckoutModal({ open, onOpenChange }) {
   const [showQR, setShowQR] = useState(false);
   const [isCouponsOpen, setIsCouponsOpen] = useState(false);
@@ -54,6 +88,7 @@ export function CheckoutModal({ open, onOpenChange }) {
   const [selectedAddress, setSelectedAddress] = useState(initialAddresses[0]);
   const [editingAddress, setEditingAddress] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -129,7 +164,7 @@ export function CheckoutModal({ open, onOpenChange }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[480px] p-0 overflow-hidden bg-[#f4f7f9] border-none gap-0 sm:rounded-[2rem] h-[85vh] flex flex-col shadow-2xl">
         {/* Sticky Header */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10 shrink-0">
+        <div className="bg-white px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10 shrink-0 border-b border-muted/20">
           <div className="flex items-center gap-3">
             <button onClick={() => onOpenChange(false)} className="p-1 hover:bg-muted rounded-full transition-colors">
               <ChevronLeft className="h-5 w-5" />
@@ -138,17 +173,70 @@ export function CheckoutModal({ open, onOpenChange }) {
           </div>
           
           <div className="flex items-center gap-2">
-            <div className="bg-[#e6f7f4] px-2 py-1 rounded-full flex items-center gap-1.5">
+            <div className="bg-[#e6f7f4] px-2 py-1 rounded-full flex items-center gap-1.5 border border-primary/10">
               <span className="text-[10px] font-black text-primary">₹726 saved so far</span>
             </div>
-            <div className="flex flex-col items-end leading-none">
-              <span className="text-[10px] text-muted-foreground font-bold">• 7 items</span>
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] text-muted-foreground line-through">₹7,372</span>
-                <span className="text-sm font-black">₹6,646</span>
-                <ChevronDown className="h-3 w-3 opacity-40" />
-              </div>
-            </div>
+            
+            <Popover open={isSummaryOpen} onOpenChange={setIsSummaryOpen}>
+              <PopoverTrigger asChild>
+                <div className="flex flex-col items-end leading-none cursor-pointer group">
+                  <span className="text-[10px] text-muted-foreground font-bold group-hover:text-primary transition-colors">• 7 items</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-muted-foreground line-through">₹7,372</span>
+                    <span className="text-sm font-black">₹6,646</span>
+                    <div className={cn("transition-transform duration-200", isSummaryOpen && "rotate-180")}>
+                      <ChevronDown className="h-3 w-3 opacity-40 group-hover:opacity-100" />
+                    </div>
+                  </div>
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[440px] p-0 rounded-[1.5rem] overflow-hidden shadow-2xl border-none animate-in zoom-in-95 duration-200" align="end" sideOffset={8}>
+                <div className="flex flex-col bg-white">
+                  <div className="p-4 overflow-y-auto max-h-[400px] [&::-webkit-scrollbar]:hidden space-y-4">
+                    {summaryItems.map((item) => (
+                      <div key={item.id} className="flex gap-4">
+                        <div className="relative h-16 w-16 rounded-xl overflow-hidden border border-muted/50 shrink-0">
+                          <LazyImage src={item.image} alt={item.name} fill className="object-cover" />
+                        </div>
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
+                          <h4 className="text-[11px] font-bold text-foreground leading-tight line-clamp-2">{item.name}</h4>
+                          <span className="text-[10px] font-medium text-muted-foreground">Qty: {item.qty}</span>
+                        </div>
+                        <div className="text-right shrink-0 flex flex-col justify-between">
+                          <span className="text-[10px] text-muted-foreground line-through">₹{item.originalPrice}</span>
+                          <span className="text-sm font-black">₹{item.price === 0 ? '0' : item.price}</span>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    <Separator className="bg-muted/50 my-2" />
+
+                    <div className="bg-[#f8f9fa] rounded-2xl p-4 space-y-2">
+                      <div className="flex justify-between items-center text-[11px] font-bold text-muted-foreground">
+                        <span>MRP Total</span>
+                        <span className="text-foreground">₹7,372</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px] font-bold text-muted-foreground">
+                        <span>Discount on MRP</span>
+                        <span className="text-primary">-₹726</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px] font-bold text-muted-foreground">
+                        <span>Subtotal</span>
+                        <span className="text-foreground">₹6,646</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px] font-bold text-muted-foreground">
+                        <span>Shipping</span>
+                        <span className="text-primary">Free</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="px-6 py-4 bg-white border-t flex justify-between items-center">
+                    <span className="text-sm font-black uppercase tracking-wider">To Pay</span>
+                    <span className="text-lg font-black">₹6,646</span>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
