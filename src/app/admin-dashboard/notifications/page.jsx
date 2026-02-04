@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -65,6 +65,11 @@ const initialNotifications = [
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState(initialNotifications);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const markAllRead = () => {
     setNotifications(notifications.map(n => ({ ...n, read: true })));
@@ -118,7 +123,7 @@ export default function NotificationsPage() {
                       </div>
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {formatDistanceToNow(new Date(notification.time), { addSuffix: true })}
+                        {mounted ? formatDistanceToNow(new Date(notification.time), { addSuffix: true }) : '...'}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">

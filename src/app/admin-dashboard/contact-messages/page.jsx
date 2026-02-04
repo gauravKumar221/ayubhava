@@ -39,9 +39,10 @@ import { cn } from '@/lib/utils';
 export default function ContactMessagesPage() {
   const [messages, setMessages] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [mounted, setMounted] = useState(false);
 
-  // Load messages from localStorage on mount
   useEffect(() => {
+    setMounted(true);
     const savedMessages = localStorage.getItem('contact_messages');
     if (savedMessages) {
       setMessages(JSON.parse(savedMessages));
@@ -156,11 +157,11 @@ export default function ContactMessagesPage() {
                     <div className="flex flex-col text-xs">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3 text-primary" />
-                        {format(new Date(msg.date), 'MMM dd, yyyy')}
+                        {mounted ? format(new Date(msg.date), 'MMM dd, yyyy') : '...'}
                       </span>
                       <span className="flex items-center gap-1 text-muted-foreground">
                         <Clock className="h-3 w-3" />
-                        {format(new Date(msg.date), 'hh:mm a')}
+                        {mounted ? format(new Date(msg.date), 'hh:mm a') : '...'}
                       </span>
                     </div>
                   </TableCell>

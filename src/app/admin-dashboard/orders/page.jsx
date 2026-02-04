@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -76,6 +76,11 @@ const initialOrders = [
 export default function OrdersPage() {
   const [orders, setOrders] = useState(initialOrders);
   const [searchTerm, setSearchTerm] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredOrders = orders.filter(o =>
     o.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -150,7 +155,7 @@ export default function OrdersPage() {
                   <TableCell>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Calendar className="h-3 w-3 text-primary" />
-                      {format(new Date(order.date), 'MMM dd, yyyy hh:mm a')}
+                      {mounted ? format(new Date(order.date), 'MMM dd, yyyy hh:mm a') : '...'}
                     </div>
                   </TableCell>
                   <TableCell className="font-bold">${order.total.toFixed(2)}</TableCell>

@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
@@ -86,6 +86,11 @@ export default function OrderDetailsPage({ params }) {
   const unwrappedParams = use(params);
   const orderId = unwrappedParams.id;
   const order = getOrderDetails(orderId);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -106,6 +111,14 @@ export default function OrderDetailsPage({ params }) {
     window.print();
   };
 
+  const formattedDate = mounted 
+    ? format(new Date(order.date), 'MMMM dd, yyyy at hh:mm a') 
+    : '...';
+
+  const formattedInvoiceDate = mounted
+    ? format(new Date(order.date), 'MMMM dd, yyyy')
+    : '...';
+
   return (
     <div className="flex flex-col gap-8 max-w-6xl mx-auto">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between no-print">
@@ -122,7 +135,7 @@ export default function OrderDetailsPage({ params }) {
             </div>
             <p className="text-muted-foreground flex items-center gap-2 text-sm mt-1">
               <Calendar className="h-3 w-3" />
-              Placed on {format(new Date(order.date), 'MMMM dd, yyyy at hh:mm a')}
+              Placed on {formattedDate}
             </p>
           </div>
         </div>
@@ -147,7 +160,7 @@ export default function OrderDetailsPage({ params }) {
           <div className="text-right">
             <h2 className="text-xl font-bold">INVOICE</h2>
             <p className="text-sm font-bold">{order.id}</p>
-            <p className="text-xs text-muted-foreground">{format(new Date(order.date), 'MMMM dd, yyyy')}</p>
+            <p className="text-xs text-muted-foreground">{formattedInvoiceDate}</p>
           </div>
         </div>
         <Separator className="my-6" />
