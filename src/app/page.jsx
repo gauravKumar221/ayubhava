@@ -25,6 +25,7 @@ import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { CartDrawer } from '@/components/cart/cart-drawer';
 import { InfluencerTalk } from '@/components/home/influencer-talk';
+import { ShopByHealthNeeds } from '@/components/home/shop-by-health-needs';
 
 const wellnessGoals = [
   {
@@ -296,6 +297,9 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Shop by Health Needs Section */}
+        <ShopByHealthNeeds />
 
         {/* Let Influencers Talk Section */}
         <InfluencerTalk />
