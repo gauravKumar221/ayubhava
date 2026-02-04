@@ -23,7 +23,9 @@ import {
   Award,
   Calendar,
   Star,
-  Leaf
+  Leaf,
+  Menu,
+  X
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -36,6 +38,13 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Button } from '@/components/ui/button';
 import { CartDrawer } from '@/components/cart/cart-drawer';
 import { LoginModal } from '@/components/auth/login-modal';
@@ -49,7 +58,64 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="w-full flex h-20 items-center justify-between px-4 lg:px-12">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 lg:gap-8">
+          {/* Mobile Navigation Trigger */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="xl:hidden h-10 w-10">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Open Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto px-6 border-r-0 shadow-2xl">
+              <SheetHeader className="text-left mb-10 pt-4">
+                <SheetTitle>
+                  <Link href="/" className="flex items-center gap-2 font-black text-foreground text-2xl tracking-tighter">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-foreground font-bold text-lg">W</div>
+                    <div className="flex flex-col leading-none">
+                      <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60 text-left">Wellbeing</span>
+                      <span className="text-lg uppercase font-black">AYUBHAVA</span>
+                    </div>
+                  </Link>
+                </SheetTitle>
+              </SheetHeader>
+              
+              <nav className="flex flex-col gap-8 text-sm font-black uppercase tracking-widest pb-12">
+                <Link href="/products" className="hover:text-primary transition-colors py-1 border-b border-muted">Shop All Rituals</Link>
+                
+                <div className="space-y-5">
+                  <p className="text-[9px] text-primary tracking-[0.3em] font-black uppercase">Wellness Benefits</p>
+                  <div className="flex flex-col gap-4 pl-2">
+                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Sparkles className="h-4 w-4 text-primary" /> Skin Glow & Hair</Link>
+                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Square className="h-4 w-4 text-primary" /> Deep Sleep & Stress</Link>
+                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Scale className="h-4 w-4 text-primary" /> Weight & Metabolism</Link>
+                  </div>
+                </div>
+
+                <div className="space-y-5">
+                  <p className="text-[9px] text-primary tracking-[0.3em] font-black uppercase">Product Lines</p>
+                  <div className="flex flex-col gap-4 pl-2">
+                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Waves className="h-4 w-4 text-primary" /> Marine Collagen</Link>
+                    <Link href="/products" className="flex items-center gap-3 hover:text-primary transition-all"><Pill className="h-4 w-4 text-primary" /> Melts Oral Strips</Link>
+                  </div>
+                </div>
+
+                <div className="space-y-5">
+                  <p className="text-[9px] text-primary tracking-[0.3em] font-black uppercase">World of Wellbeing</p>
+                  <div className="flex flex-col gap-4 pl-2">
+                    <Link href="/our-story" className="flex items-center gap-3 hover:text-primary transition-all"><Info className="h-4 w-4 text-primary" /> Our Story</Link>
+                    <Link href="/certificates" className="flex items-center gap-3 hover:text-primary transition-all"><Award className="h-4 w-4 text-primary" /> Certificates</Link>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-4 pt-4 border-t border-muted">
+                  <Link href="/blog" className="hover:text-primary transition-colors">Blog & Insights</Link>
+                  <Link href="/contact-us" className="text-primary hover:underline transition-colors">FREE Consultation</Link>
+                </div>
+              </nav>
+            </SheetContent>
+          </Sheet>
+
           <Link href="/" className="flex items-center gap-2 font-black text-foreground text-2xl tracking-tighter">
             <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-foreground font-bold text-lg">W</div>
             <div className="flex flex-col leading-none">
