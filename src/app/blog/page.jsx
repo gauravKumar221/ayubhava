@@ -145,19 +145,21 @@ export default function PublicBlogPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {filteredPosts.map((post) => (
                 <article key={post.id} className="group flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="relative aspect-[16/10] overflow-hidden rounded-3xl bg-muted mb-6 shadow-sm">
-                    <LazyImage 
-                      src={post.image} 
-                      alt={post.title} 
-                      fill 
-                      className="object-cover transition-transform duration-700 group-hover:scale-105" 
-                    />
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-white/90 backdrop-blur-md text-black border-none font-black text-[9px] uppercase tracking-widest px-3 py-1 shadow-sm">
-                        {post.category}
-                      </Badge>
+                  <Link href={`/blog/${post.id}`} className="block">
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-3xl bg-muted mb-6 shadow-sm">
+                      <LazyImage 
+                        src={post.image} 
+                        alt={post.title} 
+                        fill 
+                        className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                      />
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-white/90 backdrop-blur-md text-black border-none font-black text-[9px] uppercase tracking-widest px-3 py-1 shadow-sm">
+                          {post.category}
+                        </Badge>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
 
                   <div className="flex-1 flex flex-col space-y-4 px-1">
                     <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground">
@@ -171,9 +173,11 @@ export default function PublicBlogPage() {
                       </span>
                     </div>
 
-                    <h3 className="text-2xl font-black tracking-tight leading-tight group-hover:text-primary transition-colors">
-                      {post.title}
-                    </h3>
+                    <Link href={`/blog/${post.id}`} className="block group-hover:text-primary transition-colors">
+                      <h3 className="text-2xl font-black tracking-tight leading-tight">
+                        {post.title}
+                      </h3>
+                    </Link>
 
                     <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1 font-medium">
                       {post.description}
@@ -186,8 +190,10 @@ export default function PublicBlogPage() {
                         </div>
                         <span className="text-[11px] font-black uppercase tracking-wider">{post.author}</span>
                       </div>
-                      <Button variant="link" className="p-0 h-auto font-black text-xs uppercase tracking-widest group-hover:translate-x-1 transition-transform">
-                        Read More <ChevronRight className="h-3 w-3 ml-1" />
+                      <Button asChild variant="link" className="p-0 h-auto font-black text-xs uppercase tracking-widest group-hover:translate-x-1 transition-transform">
+                        <Link href={`/blog/${post.id}`}>
+                          Read More <ChevronRight className="h-3 w-3 ml-1" />
+                        </Link>
                       </Button>
                     </div>
                   </div>
