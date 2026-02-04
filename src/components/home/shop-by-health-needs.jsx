@@ -5,90 +5,16 @@ import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Heart, Star } from 'lucide-react';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { products } from '@/lib/data';
 
 const categories = [
   "All", "Best Sellers", "Immunity", "Sleep & Stress", "Gut", "Weight", "Detox", "Beauty", "Essentials", "Energy & Me"
-];
-
-const allProducts = [
-  // Sleep & Stress
-  {
-    id: 'sleep-1',
-    category: "Sleep & Stress",
-    title: 'Deep Sleep Ritual - Restful Melts',
-    reviews: 919,
-    price: 599,
-    originalPrice: 699,
-    tags: ["Deep Sleep", "Sleep Cycle"],
-    imageId: 'product-sleep-melts-10',
-    isHighlyReordered: true
-  },
-  {
-    id: 'sleep-2',
-    category: "Sleep & Stress",
-    title: 'Vitality Ritual - Triple Magnesium',
-    reviews: 781,
-    price: 1329,
-    originalPrice: 1399,
-    discount: 'Save 5%',
-    tags: ["Sleep", "Cognition & Muscle"],
-    imageId: 'product-magnesium-complex',
-    isHighlyReordered: true
-  },
-  {
-    id: 'sleep-3',
-    category: "Sleep & Stress",
-    title: 'Sleep Focus Ritual (5mg)',
-    reviews: 549,
-    price: 599,
-    originalPrice: 650,
-    tags: ["Deep Sleep", "Sleep Cycle"],
-    imageId: 'product-sleep-melts-5',
-    isHighlyReordered: false
-  },
-  // Immunity
-  {
-    id: 'imm-1',
-    category: "Immunity",
-    title: 'Immunity Ritual - Daily Defense',
-    reviews: 420,
-    price: 899,
-    originalPrice: 999,
-    tags: ["Shield", "Vitamin C"],
-    imageId: 'goal-supplements',
-    isHighlyReordered: true
-  },
-  // Gut
-  {
-    id: 'gut-1',
-    category: "Gut",
-    title: 'Gut Health Ritual - 4B Probiotic',
-    reviews: 1205,
-    price: 1499,
-    originalPrice: 1699,
-    tags: ["Digestion", "Gut Health"],
-    imageId: 'goal-superfoods',
-    isHighlyReordered: true
-  },
-  // Best Sellers
-  {
-    id: 'best-1',
-    category: "Best Sellers",
-    title: 'Glow Ritual - Marine Collagen',
-    reviews: 2500,
-    price: 1899,
-    originalPrice: 1999,
-    tags: ["Skin", "Anti-Aging"],
-    imageId: 'influencer-3',
-    isHighlyReordered: true
-  }
 ];
 
 function ProductCardSkeleton() {
@@ -172,8 +98,8 @@ export function ShopByHealthNeeds() {
   };
 
   const displayProducts = activeCategory === "All" 
-    ? allProducts 
-    : allProducts.filter(p => p.category === activeCategory);
+    ? products 
+    : products.filter(p => p.category === activeCategory);
 
   return (
     <section className="py-24 bg-white">
@@ -213,41 +139,46 @@ export function ShopByHealthNeeds() {
               const media = getPlaceholderImage(product.imageId);
               return (
                 <div key={product.id} className="flex flex-col group h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  {/* Image Container */}
-                  <div className="relative aspect-square bg-[#f9f9f9] rounded-2xl overflow-hidden mb-6">
-                    <Link href={`/products/${product.id}`} className="block h-full w-full">
-                      <LazyImage 
-                        src={media?.imageUrl} 
-                        alt={product.title} 
-                        fill 
-                        className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
-                        dataAiHint={media?.imageHint}
-                      />
+                  {/* Image Container Link Area */}
+                  <div className="relative mb-6">
+                    <Link href={`/products/${product.id}`} className="block">
+                      <div className="relative aspect-square bg-[#f9f9f9] rounded-2xl overflow-hidden shadow-sm border border-black/5">
+                        <LazyImage 
+                          src={media?.imageUrl} 
+                          alt={product.title} 
+                          fill 
+                          className="object-contain p-8 group-hover:scale-105 transition-transform duration-500"
+                          dataAiHint={media?.imageHint}
+                        />
+                        {product.isHighlyReordered && (
+                          <div className="absolute top-0 right-0 bg-black text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl z-10">
+                            Highly reordered
+                          </div>
+                        )}
+                      </div>
                     </Link>
                     
-                    {product.isHighlyReordered && (
-                      <div className="absolute top-0 right-0 bg-black text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl">
-                        Highly reordered
-                      </div>
-                    )}
-                    
-                    {/* Wishlist Button */}
+                    {/* Wishlist Button - Outside the main link to avoid nested interaction issues */}
                     <button 
-                      onClick={() => handleAddToWishlist(product)}
-                      className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-white shadow-md flex items-center justify-center text-foreground hover:text-red-500 transition-colors z-10"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddToWishlist(product);
+                      }}
+                      className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center text-foreground hover:text-red-500 transition-colors z-20"
                     >
                       <Heart className="h-5 w-5" />
                     </button>
                   </div>
 
-                  {/* Product Info */}
+                  {/* Product Info - Wrap title and details in a Link too */}
                   <div className="flex-1 flex flex-col space-y-4 px-1">
-                    <div className="space-y-2">
+                    <Link href={`/products/${product.id}`} className="space-y-2 block">
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Pack:</span>
                         <div className="flex gap-1.5">
-                          <button className="h-6 w-6 rounded-full border-2 border-black flex items-center justify-center text-[10px] font-black bg-black text-white">1</button>
-                          <button className="h-6 w-6 rounded-full border-2 border-black/10 flex items-center justify-center text-[10px] font-black hover:border-black/30">2</button>
+                          <div className="h-6 w-6 rounded-full border-2 border-black flex items-center justify-center text-[10px] font-black bg-black text-white">1</div>
+                          <div className="h-6 w-6 rounded-full border-2 border-black/10 flex items-center justify-center text-[10px] font-black hover:border-black/30">2</div>
                         </div>
                       </div>
 
@@ -256,11 +187,9 @@ export function ShopByHealthNeeds() {
                         {product.reviews} reviews
                       </div>
 
-                      <Link href={`/products/${product.id}`}>
-                        <h3 className="text-lg font-black text-foreground leading-tight tracking-tight hover:text-primary transition-colors">
-                          {product.title}
-                        </h3>
-                      </Link>
+                      <h3 className="text-lg font-black text-foreground leading-tight tracking-tight hover:text-primary transition-colors">
+                        {product.title}
+                      </h3>
 
                       <div className="flex flex-wrap gap-2 pt-1">
                         {product.tags.map(tag => (
@@ -269,7 +198,7 @@ export function ShopByHealthNeeds() {
                           </span>
                         ))}
                       </div>
-                    </div>
+                    </Link>
 
                     <div className="mt-auto pt-4 space-y-4">
                       <div className="flex items-baseline gap-2">
@@ -278,7 +207,7 @@ export function ShopByHealthNeeds() {
                           <>
                             <span className="text-sm text-muted-foreground line-through font-bold">₹{product.originalPrice}</span>
                             {product.discount && (
-                              <span className="text-sm font-black text-[#4caf50] uppercase">{product.discount}</span>
+                              <span className="text-sm font-black text-primary uppercase">{product.discount}</span>
                             )}
                           </>
                         )}

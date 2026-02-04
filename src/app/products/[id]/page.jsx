@@ -6,13 +6,10 @@ import { useDispatch } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { ChevronLeft, Star, Heart, Share2, ShoppingBag, CheckCircle2, Tag } from 'lucide-react';
+import { ChevronLeft, Star, Heart, ShoppingBag, CheckCircle2, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { useToast } from '@/hooks/use-toast';
@@ -25,60 +22,18 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
-// Mock product database
-const allProducts = [
-  {
-    id: 'sleep-1',
-    category: "Sleep & Stress",
-    title: 'Deep Sleep Ritual - Restful Melts',
-    reviews: 919,
-    price: 599,
-    originalPrice: 699,
-    tags: ["Deep Sleep", "Sleep Cycle", "Melatonin Free", "Vegan"],
-    imageId: 'product-sleep-melts-10',
-    description: "Everyone should have something like this in their ritual. These melts will make you appreciate everyone who looks at you. Many people like its modern and clean style. It's a one-of-a-kind piece created in our newly remodeled facility.",
-    pattern: "Fine Powder",
-    material: "Natural Extracts",
-    sizeFit: "30 Melts Pack"
-  },
-  {
-    id: 'sleep-2',
-    category: "Sleep & Stress",
-    title: 'Vitality Ritual - Triple Magnesium',
-    reviews: 781,
-    price: 1329,
-    originalPrice: 1399,
-    discount: 'Save 5%',
-    tags: ["Sleep", "Cognition & Muscle", "Recovery"],
-    imageId: 'product-magnesium-complex',
-    description: "Elevate your magnesium levels with our triple complex. Designed for muscle recovery and cognitive support, this formula ensures you wake up refreshed and ready for the day.",
-    pattern: "Capsules",
-    material: "Magnesium Citrate, Malate, Glycinate",
-    sizeFit: "60 Capsules"
-  },
-  {
-    id: 'best-1',
-    category: "Best Sellers",
-    title: 'Glow Ritual - Marine Collagen',
-    reviews: 2500,
-    price: 1899,
-    originalPrice: 1999,
-    tags: ["Skin", "Anti-Aging", "Glow", "Marine Sourced"],
-    imageId: 'influencer-3',
-    description: "Our #1 best seller. Sourced from deep-sea marine life, these peptides are bioavailable and designed to restore your skin's natural glow within 60 days.",
-    pattern: "Marine Peptides",
-    material: "Pure Fish Collagen",
-    sizeFit: "250g Jar"
-  }
-];
+import { products as sharedProducts } from '@/lib/data';
 
 export default function ProductDetailsPage({ params }) {
-  const { id } = use(params);
+  const unwrappedParams = use(params);
+  const id = unwrappedParams.id;
+  
   const { toast } = useToast();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
-  const product = allProducts.find(p => p.id === id) || allProducts[0];
+  
+  // Find product from shared data
+  const product = sharedProducts.find(p => p.id === id) || sharedProducts[0];
   const media = getPlaceholderImage(product.imageId);
   
   // Carousel State
@@ -87,7 +42,8 @@ export default function ProductDetailsPage({ params }) {
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    // Simulate initial load for UX
+    // Simulate initial load for UX and scroll to top
+    window.scrollTo(0, 0);
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, [id]);
@@ -166,7 +122,7 @@ export default function ProductDetailsPage({ params }) {
 
       <main className="flex-1 container mx-auto px-4 py-8 lg:py-12">
         <div className="mb-8">
-          <Link href="/products" className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors">
+          <Link href="/products" className="flex items-center gap-2 text-sm font-black uppercase tracking-widest hover:text-primary transition-colors">
             <ChevronLeft className="h-4 w-4" />
             Back to Rituals
           </Link>
@@ -324,17 +280,17 @@ export default function ProductDetailsPage({ params }) {
                 <div className="space-y-6 pt-4">
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-black uppercase tracking-widest w-32">Pattern:</span>
-                    <span className="text-sm font-medium text-muted-foreground">{product.pattern}</span>
+                    <span className="text-sm font-medium text-muted-foreground">{product.pattern || "N/A"}</span>
                   </div>
                   <Separator className="bg-muted/50" />
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-black uppercase tracking-widest w-32">Material:</span>
-                    <span className="text-sm font-medium text-muted-foreground">{product.material}</span>
+                    <span className="text-sm font-medium text-muted-foreground">{product.material || "N/A"}</span>
                   </div>
                   <Separator className="bg-muted/50" />
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-black uppercase tracking-widest w-32">Size & Fit:</span>
-                    <span className="text-sm font-medium text-muted-foreground">{product.sizeFit}</span>
+                    <span className="text-sm font-medium text-muted-foreground">{product.sizeFit || "N/A"}</span>
                   </div>
                 </div>
               </TabsContent>

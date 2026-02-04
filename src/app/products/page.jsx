@@ -6,7 +6,6 @@ import { cartActions } from '@/store/cart-slice';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { 
   Search, 
@@ -14,8 +13,6 @@ import {
   Star,
   ChevronRight,
   Tag,
-  LayoutGrid,
-  List
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -28,79 +25,10 @@ import { LazyImage } from '@/components/shared/lazy-image';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { products as sharedProducts } from '@/lib/data';
 
 const categories = [
   "All", "Marine Collagen", "Effervescent Tablets", "Melts Oral Strips", "Vegan Protein Isolate", "Wholefood Multivitamins"
-];
-
-const allProducts = [
-  {
-    id: 'sleep-1',
-    category: "Melts Oral Strips",
-    title: 'Deep Sleep Ritual - Restful Melts',
-    reviews: 919,
-    price: 599,
-    originalPrice: 699,
-    tags: ["Deep Sleep", "Sleep Cycle"],
-    imageId: 'product-sleep-melts-10',
-    isHighlyReordered: true
-  },
-  {
-    id: 'sleep-2',
-    category: "Wholefood Multivitamins",
-    title: 'Vitality Ritual - Triple Magnesium',
-    reviews: 781,
-    price: 1329,
-    originalPrice: 1399,
-    discount: 'Save 5%',
-    tags: ["Sleep", "Cognition & Muscle"],
-    imageId: 'product-magnesium-complex',
-    isHighlyReordered: true
-  },
-  {
-    id: 'best-1',
-    category: "Marine Collagen",
-    title: 'Glow Ritual - Marine Collagen',
-    reviews: 2500,
-    price: 1899,
-    originalPrice: 1999,
-    tags: ["Skin", "Anti-Aging"],
-    imageId: 'influencer-3',
-    isHighlyReordered: true
-  },
-  {
-    id: 'protein-1',
-    category: "Vegan Protein Isolate",
-    title: 'Performance Ritual - Vegan Isolate',
-    reviews: 1420,
-    price: 3824,
-    originalPrice: 4200,
-    tags: ["Recovery", "Muscle"],
-    imageId: 'influencer-2',
-    isHighlyReordered: false
-  },
-  {
-    id: 'glow-1',
-    category: "Marine Collagen",
-    title: 'Skin Ritual - Marine Glow',
-    reviews: 850,
-    price: 1899,
-    originalPrice: 1999,
-    tags: ["Hydration", "Elasticity"],
-    imageId: 'influencer-4',
-    isHighlyReordered: true
-  },
-  {
-    id: 'kids-1',
-    category: "Wholefood Multivitamins",
-    title: 'Growth Ritual - Kids Superfuel',
-    reviews: 340,
-    price: 854,
-    originalPrice: 950,
-    tags: ["Focus", "Growth"],
-    imageId: 'influencer-6',
-    isHighlyReordered: false
-  }
 ];
 
 export default function PublicProductsPage() {
@@ -115,8 +43,8 @@ export default function PublicProductsPage() {
     setMounted(true);
   }, []);
 
-  const filteredProducts = allProducts.filter(p => {
-    const matchesCategory = activeCategory === "All" || p.category === activeCategory;
+  const filteredProducts = sharedProducts.filter(p => {
+    const matchesCategory = activeCategory === "All" || p.subCategory === activeCategory || p.category === activeCategory;
     const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           p.category.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
@@ -184,7 +112,7 @@ export default function PublicProductsPage() {
                 </div>
 
                 <div className="space-y-6">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Categories</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Browse Rituals</h3>
                   <div className="flex flex-col items-start gap-4">
                     {categories.map((cat) => (
                       <button
@@ -229,22 +157,27 @@ export default function PublicProductsPage() {
                   const media = getPlaceholderImage(product.imageId);
                   return (
                     <div key={product.id} className="group flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                      <div className="relative aspect-square bg-[#f9f9f9] overflow-hidden mb-8 border border-black/5 transition-all shadow-sm hover:shadow-2xl">
+                      <div className="relative aspect-square bg-[#f9f9f9] overflow-hidden mb-8 border border-black/5 transition-all shadow-sm hover:shadow-2xl rounded-2xl">
                         <Link href={`/products/${product.id}`} className="block h-full w-full">
                           <LazyImage src={media?.imageUrl} alt={product.title} fill className="object-contain p-12 transition-transform duration-700 group-hover:scale-110" />
                         </Link>
-                        <button onClick={() => handleAddToWishlist(product)} className="absolute bottom-6 right-6 h-12 w-12 bg-white/80 backdrop-blur shadow-xl flex items-center justify-center text-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
+                        <button 
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToWishlist(product); }} 
+                          className="absolute bottom-6 right-6 h-12 w-12 bg-white/80 backdrop-blur shadow-xl flex items-center justify-center text-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded-full z-10"
+                        >
                           <Heart className="h-5 w-5" />
                         </button>
                       </div>
                       <div className="flex-1 flex flex-col">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{product.category}</span>
-                          <div className="flex items-center gap-1 bg-black text-white px-2 py-0.5 rounded text-[9px] font-black">
-                            <Star className="h-2.5 w-2.5 fill-white" /> {product.reviews}
+                        <Link href={`/products/${product.id}`} className="block space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{product.category}</span>
+                            <div className="flex items-center gap-1 bg-black text-white px-2 py-0.5 rounded text-[9px] font-black">
+                              <Star className="h-2.5 w-2.5 fill-white" /> {product.reviews}
+                            </div>
                           </div>
-                        </div>
-                        <Link href={`/products/${product.id}`}><h3 className="text-xl font-black hover:text-primary transition-colors">{product.title}</h3></Link>
+                          <h3 className="text-xl font-black hover:text-primary transition-colors line-clamp-2">{product.title}</h3>
+                        </Link>
                         <div className="mt-auto pt-6 flex items-center justify-between">
                           <span className="text-2xl font-black">₹{product.price.toLocaleString()}</span>
                           <Button onClick={() => handleAddToCart(product)} className="bg-black hover:bg-black/90 text-white rounded-none font-black uppercase text-[10px] px-6">Add To Cart</Button>
