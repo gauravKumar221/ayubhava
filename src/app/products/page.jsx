@@ -6,7 +6,8 @@ export default function RootProductsRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/admin-dashboard/products');
+    // Redirect to the public collections page instead of the admin dashboard
+    router.replace('/collections');
   }, [router]);
 
   return (
