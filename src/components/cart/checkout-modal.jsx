@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -80,7 +80,7 @@ const summaryItems = [
   }
 ];
 
-export function CheckoutModal({ open, onOpenChange, onBack }) {
+export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = false }) {
   const [showQR, setShowQR] = useState(false);
   const [isCouponsOpen, setIsCouponsOpen] = useState(false);
   const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
@@ -89,6 +89,14 @@ export function CheckoutModal({ open, onOpenChange, onBack }) {
   const [editingAddress, setEditingAddress] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+
+  useEffect(() => {
+    if (open && triggerCoupons) {
+      setIsCouponsOpen(true);
+    } else if (!open) {
+      setIsCouponsOpen(false);
+    }
+  }, [open, triggerCoupons]);
 
   // Form State
   const [formData, setFormData] = useState({

@@ -32,6 +32,7 @@ export function CartDrawer({ children }) {
   const [mounted, setMounted] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [triggerCoupons, setTriggerCoupons] = useState(false);
   
   useEffect(() => {
     setMounted(true);
@@ -48,6 +49,13 @@ export function CartDrawer({ children }) {
   };
 
   const handleCheckoutClick = () => {
+    setTriggerCoupons(false);
+    setIsSheetOpen(false);
+    setIsCheckoutOpen(true);
+  };
+
+  const handleCouponClick = () => {
+    setTriggerCoupons(true);
     setIsSheetOpen(false);
     setIsCheckoutOpen(true);
   };
@@ -162,13 +170,17 @@ export function CartDrawer({ children }) {
 
             {/* Coupon Input */}
             <div className="px-4 pb-10">
-              <div className="relative group">
+              <div 
+                className="relative group cursor-pointer"
+                onClick={handleCouponClick}
+              >
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-primary">
                   <Ticket className="h-4 w-4 rotate-45" />
                 </div>
                 <Input 
+                  readOnly
                   placeholder="Enter Coupon Code" 
-                  className="pl-10 h-12 rounded-xl border-dashed bg-white border-2 border-primary/20 focus-visible:ring-primary/20 focus-visible:border-primary text-xs font-bold uppercase tracking-widest placeholder:normal-case placeholder:tracking-normal"
+                  className="pl-10 h-12 rounded-xl border-dashed bg-white border-2 border-primary/20 focus-visible:ring-primary/20 focus-visible:border-primary text-xs font-bold uppercase tracking-widest placeholder:normal-case placeholder:tracking-normal cursor-pointer"
                 />
                 <button className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-primary uppercase tracking-widest hover:underline">
                   Apply
@@ -213,6 +225,7 @@ export function CartDrawer({ children }) {
         open={isCheckoutOpen} 
         onOpenChange={setIsCheckoutOpen} 
         onBack={handleBackToCart}
+        triggerCoupons={triggerCoupons}
       />
     </>
   );
