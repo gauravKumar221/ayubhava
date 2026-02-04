@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -14,10 +15,19 @@ import {
 
 export function Footer() {
   const [mounted, setMounted] = useState(false);
+  const [email, setEmail] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleJoin = (e) => {
+    e.preventDefault();
+    if (email) {
+      router.push('/thank-you');
+    }
+  };
 
   return (
     <footer className="bg-black text-white py-20 px-4 lg:px-8 border-t border-white/10 mt-auto">
@@ -38,15 +48,19 @@ export function Footer() {
               <p className="text-white/60 text-[10px] font-bold leading-relaxed uppercase tracking-wider">
                 Subscribe to receive wellness insights, early access to new launches, and curated ritual guides.
               </p>
-              <div className="flex gap-2">
+              <form onSubmit={handleJoin} className="flex gap-2">
                 <Input 
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="EMAIL ADDRESS" 
                   className="bg-white/5 border-white/10 h-12 rounded-none focus-visible:ring-primary/50 text-[10px] font-black uppercase tracking-[0.2em] placeholder:text-white/20"
                 />
-                <Button className="bg-white text-black hover:bg-primary hover:text-white h-12 rounded-none px-8 font-black uppercase text-[10px] tracking-[0.2em] transition-all">
+                <Button type="submit" className="bg-white text-black hover:bg-primary hover:text-white h-12 rounded-none px-8 font-black uppercase text-[10px] tracking-[0.2em] transition-all">
                   JOIN
                 </Button>
-              </div>
+              </form>
             </div>
           </div>
 
