@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { 
@@ -42,7 +42,21 @@ import { LoginModal } from '@/components/auth/login-modal';
 
 export function Header() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const cartQuantity = useSelector((state) => state.cart.totalQuantity);
+
+  useEffect(() => {
+    const updateWishlistCount = () => {
+      if (typeof window !== 'undefined') {
+        const saved = JSON.parse(localStorage.getItem('wellbeing_wishlist') || '[]');
+        setWishlistCount(saved.length);
+      }
+    };
+
+    updateWishlistCount();
+    window.addEventListener('storage', updateWishlistCount);
+    return () => window.removeEventListener('storage', updateWishlistCount);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -85,7 +99,7 @@ export function Header() {
                 </DropdownMenuPortal>
               </DropdownMenuSub>
 
-              <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
+              <DropdownMenuItem asChild className="rounded-xl py-3 cursor-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
                 <Link href="/products" className="flex items-center">
                   <Square className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Deep Sleep & Stress
                 </Link>
@@ -149,8 +163,13 @@ export function Header() {
               className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" 
               onClick={() => setIsLoginOpen(true)}
             />
-            <Link href="/wishlist">
+            <Link href="/wishlist" className="relative">
               <Heart className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-[9px] text-primary-foreground h-4 w-4 flex items-center justify-center rounded-full font-bold animate-in zoom-in duration-300">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
             <Search className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
             <CartDrawer>

@@ -79,6 +79,7 @@ export function ShopByHealthNeeds() {
 
     const updated = [...existing, newWishlistItem];
     localStorage.setItem('wellbeing_wishlist', JSON.stringify(updated));
+    window.dispatchEvent(new Event('storage'));
     
     toast({
       title: "Added to Wishlist",

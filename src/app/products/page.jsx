@@ -61,6 +61,7 @@ export default function PublicProductsPage() {
     const media = getPlaceholderImage(product.imageId);
     const updated = [...existing, { ...product, image: media?.imageUrl }];
     localStorage.setItem('wellbeing_wishlist', JSON.stringify(updated));
+    window.dispatchEvent(new Event('storage'));
     toast({ title: "Added to Wishlist", description: `${product.title} saved.` });
   };
 
