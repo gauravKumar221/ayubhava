@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,12 @@ import { useToast } from '@/hooks/use-toast';
 export default function ReferralProgramPage() {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -88,7 +93,7 @@ export default function ReferralProgramPage() {
             {/* Bottom Insight */}
             <div className="pt-12">
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.4em] opacity-40">
-                The AYUBHYAVA Community Ritual • 2024
+                The AYUBHYAVA Community Ritual • {mounted ? new Date().getFullYear() : '2024'}
               </p>
             </div>
           </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,12 @@ import {
 } from 'lucide-react';
 
 export function Footer() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <footer className="bg-black text-white py-20 px-4 lg:px-8 border-t border-white/10 mt-auto">
       <div className="container mx-auto">
@@ -109,7 +116,7 @@ export function Footer() {
           
           <div className="flex flex-col items-center md:items-end gap-2 text-center md:text-right">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">
-              © 2024 AYUBHYAVA Wellbeing Nutrition. All rights reserved.
+              © {mounted ? new Date().getFullYear() : '2024'} AYUBHYAVA Wellbeing Nutrition. All rights reserved.
             </p>
             <div className="flex gap-4 text-[8px] font-black uppercase tracking-[0.2em] text-white/10">
               <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
