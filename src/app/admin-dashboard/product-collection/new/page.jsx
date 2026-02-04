@@ -85,9 +85,12 @@ function ProductForm() {
   const [categories, setCategories] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedVideos, setSelectedVideos] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  
   const [conditions, setConditions] = useState([
     { id: Date.now(), field: 'tag', operator: 'equals', value: '' }
   ]);
+  
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
 
@@ -210,48 +213,60 @@ function ProductForm() {
       return;
     }
 
-    const currentId = productId || Math.random().toString(36).substr(2, 9);
-    const productData = {
-      id: currentId,
-      name: productName,
-      title: title || productName,
-      sku: sku,
-      price: parseFloat(price),
-      description: description,
-      images: selectedImages,
-      videos: selectedVideos,
-      tags: conditions.map(c => c.value).filter(v => v)
-    };
+    setIsSaving(true);
 
-    const updatedCategories = categories.map(c => {
-      const updateProductList = (list = []) => {
-        const filtered = list.filter(p => p.id !== currentId);
-        return filtered;
+    try {
+      const currentId = productId || Math.random().toString(36).substr(2, 9);
+      const productData = {
+        id: currentId,
+        name: productName,
+        title: title || productName,
+        sku: sku,
+        price: parseFloat(price) || 0,
+        description: description,
+        images: selectedImages,
+        videos: selectedVideos,
+        tags: conditions.map(c => c.value).filter(v => v)
       };
 
-      let currentCategory = { ...c };
-      currentCategory.products = updateProductList(currentCategory.products);
-      currentCategory.subcategories = (currentCategory.subcategories || []).map(s => {
-        let currentSub = { ...s };
-        currentSub.products = updateProductList(currentSub.products);
-        currentSub.subSubcategories = (currentSub.subSubcategories || []).map(ss => {
-          let currentSS = { ...ss };
-          currentSS.products = updateProductList(currentSS.products);
-          return currentSS;
+      const updatedCategories = categories.map(c => {
+        const updateProductList = (list = []) => {
+          return (list || []).filter(p => p.id !== currentId);
+        };
+
+        let currentCategory = { ...c };
+        currentCategory.products = updateProductList(currentCategory.products);
+        currentCategory.subcategories = (currentCategory.subcategories || []).map(s => {
+          let currentSub = { ...s };
+          currentSub.products = updateProductList(currentSub.products);
+          currentSub.subSubcategories = (currentSub.subSubcategories || []).map(ss => {
+            let currentSS = { ...ss };
+            currentSS.products = updateProductList(currentSS.products);
+            return currentSS;
+          });
+          return currentSub;
         });
-        return currentSub;
+
+        if (c.id === selectedCategory) {
+          currentCategory.products = [...currentCategory.products, productData];
+        }
+        
+        return currentCategory;
       });
 
-      if (c.id === selectedCategory) {
-        currentCategory.products = [...currentCategory.products, productData];
+      localStorage.setItem('bitmax_categories', JSON.stringify(updatedCategories));
+      window.dispatchEvent(new Event('storage'));
+      router.push('/admin-dashboard/product-collection');
+    } catch (error) {
+      console.error('Save failed:', error);
+      if (error.name === 'QuotaExceededError') {
+        alert("The storage limit has been exceeded. This is likely because the video or image files are too large for browser storage. Please try using smaller files.");
+      } else {
+        alert("An error occurred while saving. Please check the console for details.");
       }
-      
-      return currentCategory;
-    });
-
-    localStorage.setItem('bitmax_categories', JSON.stringify(updatedCategories));
-    window.dispatchEvent(new Event('storage'));
-    router.push('/admin-dashboard/product-collection');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const stripHtml = (html) => {
@@ -277,10 +292,12 @@ function ProductForm() {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild disabled={isSaving}>
             <Link href="/admin-dashboard/product-collection">Discard</Link>
           </Button>
-          <Button onClick={handleSave}>{productId ? 'Save Changes' : 'Save Product'}</Button>
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? 'Saving...' : (productId ? 'Save Changes' : 'Save Product')}
+          </Button>
         </div>
       </div>
 
@@ -346,7 +363,9 @@ function ProductForm() {
               <Separator />
 
               <div className="space-y-4">
-                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Videos</Label>
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold flex items-center gap-2">
+                  <VideoIcon className="h-3 w-3" /> Videos
+                </Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {selectedVideos.map((video, index) => (
                     <div key={index} className="relative aspect-square rounded-lg border overflow-hidden group bg-black">
