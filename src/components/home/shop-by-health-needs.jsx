@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useDispatch } from 'react-redux';
+import { cartActions } from '@/store/cart-slice';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Star } from 'lucide-react';
@@ -23,6 +25,7 @@ const allProducts = [
     title: 'Restful Sleep Melts (10mg)',
     reviews: 919,
     price: 599,
+    originalPrice: 699,
     tags: ["Deep Sleep", "Sleep Cycle"],
     imageId: 'product-sleep-melts-10',
     isHighlyReordered: true
@@ -45,6 +48,7 @@ const allProducts = [
     title: 'Restful Sleep (5mg)',
     reviews: 549,
     price: 599,
+    originalPrice: 650,
     tags: ["Deep Sleep", "Sleep Cycle"],
     imageId: 'product-sleep-melts-5',
     isHighlyReordered: false
@@ -56,6 +60,7 @@ const allProducts = [
     title: 'Daily Immunity Defense',
     reviews: 420,
     price: 899,
+    originalPrice: 999,
     tags: ["Shield", "Vitamin C"],
     imageId: 'goal-supplements',
     isHighlyReordered: true
@@ -67,6 +72,7 @@ const allProducts = [
     title: '4B CFU Probiotic Mix',
     reviews: 1205,
     price: 1499,
+    originalPrice: 1699,
     tags: ["Digestion", "Gut Health"],
     imageId: 'goal-superfoods',
     isHighlyReordered: true
@@ -78,6 +84,7 @@ const allProducts = [
     title: 'Premium Collagen Peptides',
     reviews: 2500,
     price: 1899,
+    originalPrice: 1999,
     tags: ["Skin", "Anti-Aging"],
     imageId: 'influencer-3',
     isHighlyReordered: true
@@ -115,6 +122,7 @@ export function ShopByHealthNeeds() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // Initial loading simulation
@@ -148,6 +156,18 @@ export function ShopByHealthNeeds() {
     toast({
       title: "Added to Wishlist",
       description: "The product has been saved to your list.",
+    });
+  };
+
+  const handleAddToCart = (product) => {
+    const media = getPlaceholderImage(product.imageId);
+    dispatch(cartActions.addItem({
+      ...product,
+      image: media?.imageUrl
+    }));
+    toast({
+      title: "Added to Cart!",
+      description: `${product.title} is now in your ritual bag.`,
     });
   };
 
@@ -257,12 +277,17 @@ export function ShopByHealthNeeds() {
                         {product.originalPrice && (
                           <>
                             <span className="text-sm text-muted-foreground line-through font-bold">₹{product.originalPrice}</span>
-                            <span className="text-sm font-black text-[#4caf50] uppercase">{product.discount}</span>
+                            {product.discount && (
+                              <span className="text-sm font-black text-[#4caf50] uppercase">{product.discount}</span>
+                            )}
                           </>
                         )}
                       </div>
 
-                      <Button className="w-full h-12 bg-black hover:bg-black/90 text-white rounded-none font-black uppercase tracking-[0.2em] transition-all">
+                      <Button 
+                        onClick={() => handleAddToCart(product)}
+                        className="w-full h-12 bg-black hover:bg-black/90 text-white rounded-none font-black uppercase tracking-[0.2em] transition-all"
+                      >
                         Add To Cart
                       </Button>
                     </div>
@@ -274,7 +299,7 @@ export function ShopByHealthNeeds() {
           {!isLoading && displayProducts.length === 0 && (
             <div className="col-span-full flex flex-col items-center justify-center py-20 text-center opacity-50">
               <p className="text-lg font-bold">No products found in this category.</p>
-              <Button variant="link" onClick={() => setActiveCategory("All")}>Show all products</Button>
+              <button onClick={() => setActiveCategory("All")} className="text-primary font-bold mt-2">Show all products</button>
             </div>
           )}
         </div>

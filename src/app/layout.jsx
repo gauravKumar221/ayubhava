@@ -20,6 +20,7 @@ import { SidebarProvider, useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import Link from 'next/link';
+import { StoreProvider } from '@/store/provider';
 
 function AppLayout({ children }) {
   const pathname = usePathname();
@@ -188,9 +189,11 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <SidebarProvider>
-          <AppLayout>{children}</AppLayout>
-        </SidebarProvider>
+        <StoreProvider>
+          <SidebarProvider>
+            <AppLayout>{children}</AppLayout>
+          </SidebarProvider>
+        </StoreProvider>
         <Toaster />
       </body>
     </html>

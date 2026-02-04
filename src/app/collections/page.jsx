@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { cartActions } from '@/store/cart-slice';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
@@ -41,6 +43,7 @@ const allProducts = [
     title: 'Restful Sleep Melts (10mg)',
     reviews: 919,
     price: 599,
+    originalPrice: 699,
     tags: ["Deep Sleep", "Sleep Cycle"],
     imageId: 'product-sleep-melts-10',
     isHighlyReordered: true
@@ -63,6 +66,7 @@ const allProducts = [
     title: 'Premium Collagen Peptides',
     reviews: 2500,
     price: 1899,
+    originalPrice: 1999,
     tags: ["Skin", "Anti-Aging"],
     imageId: 'influencer-3',
     isHighlyReordered: true
@@ -73,6 +77,7 @@ const allProducts = [
     title: 'Performance Isolate - Belgian Dark Chocolate',
     reviews: 1420,
     price: 3824,
+    originalPrice: 4200,
     tags: ["Recovery", "Muscle"],
     imageId: 'influencer-2',
     isHighlyReordered: false
@@ -83,6 +88,7 @@ const allProducts = [
     title: 'Glow Marine Collagen',
     reviews: 850,
     price: 1899,
+    originalPrice: 1999,
     tags: ["Hydration", "Elasticity"],
     imageId: 'influencer-4',
     isHighlyReordered: true
@@ -93,6 +99,7 @@ const allProducts = [
     title: 'Kids Superfuel - Milk Chocolate',
     reviews: 340,
     price: 854,
+    originalPrice: 950,
     tags: ["Focus", "Growth"],
     imageId: 'influencer-6',
     isHighlyReordered: false
@@ -105,6 +112,7 @@ export default function CollectionsPage() {
   const [sortBy, setSortBy] = useState("Featured");
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setMounted(true);
@@ -121,6 +129,18 @@ export default function CollectionsPage() {
     toast({
       title: "Added to Wishlist",
       description: `${product.title} has been saved to your rituals.`,
+    });
+  };
+
+  const handleAddToCart = (product) => {
+    const media = getPlaceholderImage(product.imageId);
+    dispatch(cartActions.addItem({
+      ...product,
+      image: media?.imageUrl
+    }));
+    toast({
+      title: "Added to Cart!",
+      description: `${product.title} is ready for checkout.`,
     });
   };
 
@@ -311,7 +331,10 @@ export default function CollectionsPage() {
                             <p className="text-[9px] font-black text-primary uppercase tracking-widest">In Stock</p>
                           </div>
 
-                          <Button className="h-12 px-8 bg-black hover:bg-black/90 text-white rounded-none font-black uppercase tracking-[0.2em] text-[10px] shadow-xl transition-all active:scale-[0.98]">
+                          <Button 
+                            onClick={() => handleAddToCart(product)}
+                            className="h-12 px-8 bg-black hover:bg-black/90 text-white rounded-none font-black uppercase tracking-[0.2em] text-[10px] shadow-xl transition-all active:scale-[0.98]"
+                          >
                             Quick Add
                           </Button>
                         </div>

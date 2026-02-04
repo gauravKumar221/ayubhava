@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { 
   Search, 
@@ -42,6 +43,7 @@ import { LoginModal } from '@/components/auth/login-modal';
 
 export function Header() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const cartQuantity = useSelector((state) => state.cart.totalQuantity);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -196,7 +198,11 @@ export function Header() {
             <CartDrawer>
               <div className="relative cursor-pointer hover:text-primary transition-colors">
                 <ShoppingBag className="h-5 w-5" />
-                <span className="absolute -top-2 -right-2 bg-black text-[9px] text-white h-4 w-4 flex items-center justify-center rounded-full font-bold">1</span>
+                {cartQuantity > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-black text-[9px] text-white h-4 w-4 flex items-center justify-center rounded-full font-bold animate-in zoom-in duration-300">
+                    {cartQuantity}
+                  </span>
+                )}
               </div>
             </CartDrawer>
           </div>
