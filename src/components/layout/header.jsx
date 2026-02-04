@@ -1,0 +1,207 @@
+'use client';
+
+import Link from 'next/link';
+import { 
+  Search, 
+  Heart, 
+  ShoppingBag, 
+  Zap,
+  ChevronDown,
+  LayoutDashboard,
+  Sparkles,
+  Square,
+  Scale,
+  Smile,
+  ShieldCheck,
+  Waves,
+  Apple,
+  Pill,
+  Activity,
+  Info,
+  Award,
+  Calendar,
+  Star,
+  Leaf
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { CartDrawer } from '@/components/cart/cart-drawer';
+
+export function Header() {
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4 lg:px-8">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2 font-black text-foreground text-2xl tracking-tighter">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-foreground font-bold text-lg">W</div>
+            <div className="flex flex-col leading-none">
+              <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60">Wellbeing</span>
+              <span className="text-lg uppercase font-black">Nutrition</span>
+            </div>
+          </Link>
+        </div>
+        
+        <nav className="hidden xl:flex items-center gap-6 text-[13px] font-bold uppercase tracking-tight text-foreground/80">
+          <Link href="#" className="hover:text-primary transition-colors">Shop All</Link>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none py-2">
+                Shop by Benefits <ChevronDown className="h-3 w-3" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
+              <DropdownMenuLabel className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 px-2">Health Goals</DropdownMenuLabel>
+              
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors focus:bg-primary/5 focus:text-primary outline-none">
+                  <Sparkles className="mr-3 h-4 w-4 text-primary" /> Skin Glow & Hair
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent className="w-56 p-2 rounded-2xl shadow-2xl border-none ml-1 animate-in slide-in-from-left-1 duration-200">
+                    <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                      Marine Collagen
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                      Skin Fuel
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                      Melts Skin Glow
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                      Melts Hair Fall
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Square className="mr-3 h-4 w-4 text-primary" /> Deep Sleep & Stress
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Scale className="mr-3 h-4 w-4 text-primary" /> Weight & Metabolism
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Smile className="mr-3 h-4 w-4 text-primary" /> Gut Health & Detox
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <ShieldCheck className="mr-3 h-4 w-4 text-primary" /> Immunity & Defense
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Zap className="mr-3 h-4 w-4 text-primary" /> Energy & Performance
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none py-2">
+                Shop by Categories <ChevronDown className="h-3 w-3" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
+              <DropdownMenuLabel className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 px-2">Product Lines</DropdownMenuLabel>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Waves className="mr-3 h-4 w-4 text-primary" /> Marine Collagen
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Apple className="mr-3 h-4 w-4 text-primary" /> Effervescent Tablets
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Pill className="mr-3 h-4 w-4 text-primary" /> Melts Oral Strips
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Activity className="mr-3 h-4 w-4 text-primary" /> Vegan Protein Isolate
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Leaf className="mr-3 h-4 w-4 text-primary" /> Wholefood Multivitamins
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none py-2">
+                World of Wellbeing <ChevronDown className="h-3 w-3" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Info className="mr-3 h-4 w-4 text-primary" /> Our Philosophy
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <ShieldCheck className="mr-3 h-4 w-4 text-primary" /> Scientific Advisory Board
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Leaf className="mr-3 h-4 w-4 text-primary" /> Sustainability Goals
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Award className="mr-3 h-4 w-4 text-primary" /> Clean Label Project
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
+          <Link href="/contact-us" className="hover:text-primary transition-colors">FREE Consultation</Link>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none py-2">
+                New Launches <ChevronDown className="h-3 w-3" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Calendar className="mr-3 h-4 w-4 text-primary" /> Latest This Month
+              </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider hover:bg-primary/5 transition-colors">
+                <Star className="mr-3 h-4 w-4 text-primary" /> Limited Edition Drops
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="my-2" />
+              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-black text-[11px] uppercase tracking-wider text-primary bg-primary/5">
+                <Zap className="mr-3 h-4 w-4 text-primary" /> Pre-Order Now
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="relative group">
+            <Link href="#" className="hover:text-primary transition-colors">Kids</Link>
+            <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-black text-[8px] text-white px-1.5 py-0.5 rounded font-black animate-pulse shadow-md">NEW</span>
+          </div>
+        </nav>
+
+        <div className="flex items-center gap-5">
+          <div className="flex items-center gap-4 text-foreground/70">
+            <Zap className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
+            <Link href="/wishlist">
+              <Heart className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
+            </Link>
+            <Search className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
+            <CartDrawer>
+              <div className="relative cursor-pointer hover:text-primary transition-colors">
+                <ShoppingBag className="h-5 w-5" />
+                <span className="absolute -top-2 -right-2 bg-black text-[9px] text-white h-4 w-4 flex items-center justify-center rounded-full font-bold">1</span>
+              </div>
+            </CartDrawer>
+          </div>
+          <Button variant="ghost" size="icon" asChild className="hidden sm:flex rounded-full">
+            <Link href="/admin-dashboard">
+              <LayoutDashboard className="h-5 w-5" />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </header>
+  );
+}
