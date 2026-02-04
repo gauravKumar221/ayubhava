@@ -38,6 +38,8 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
   const editorRef = useRef(null);
 
   useEffect(() => {
+    // Only update innerHTML if it's different from current internal state
+    // to prevent cursor jumping to the start of the line.
     if (editorRef.current && editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value || '';
     }
@@ -76,6 +78,7 @@ function ProductForm() {
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');
   
+  const [productName, setProductName] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('0.00');
@@ -105,10 +108,31 @@ function ProductForm() {
             foundCategoryId = cat.id;
             break;
           }
+          // Search subcategories
+          for (const sub of (cat.subcategories || [])) {
+            const sprod = (sub.products || []).find(p => p.id === productId);
+            if (sprod) {
+              foundProduct = sprod;
+              foundCategoryId = cat.id;
+              break;
+            }
+            // Search sub-subcategories
+            for (const ss of (sub.subSubcategories || [])) {
+              const ssprod = (ss.products || []).find(p => p.id === productId);
+              if (ssprod) {
+                foundProduct = ssprod;
+                foundCategoryId = cat.id;
+                break;
+              }
+            }
+            if (foundProduct) break;
+          }
+          if (foundProduct) break;
         }
         
         if (foundProduct) {
-          setTitle(foundProduct.name || '');
+          setProductName(foundProduct.name || '');
+          setTitle(foundProduct.title || foundProduct.name || '');
           setDescription(foundProduct.description || '');
           setPrice((foundProduct.price || 0).toFixed(2));
           setSku(foundProduct.sku || '');
@@ -165,15 +189,16 @@ function ProductForm() {
   };
 
   const handleSave = () => {
-    if (!title || !selectedCategory) {
-      alert("Please provide a title and select a category.");
+    if (!productName || !selectedCategory) {
+      alert("Please provide a product name and select a category.");
       return;
     }
 
     const currentId = productId || Math.random().toString(36).substr(2, 9);
     const productData = {
       id: currentId,
-      name: title,
+      name: productName,
+      title: title || productName,
       sku: sku,
       price: parseFloat(price),
       description: description,
@@ -182,12 +207,34 @@ function ProductForm() {
     };
 
     const updatedCategories = categories.map(c => {
-      const otherProducts = (c.products || []).filter(p => p.id !== currentId);
-      
+      // Helper to update products in a list
+      const updateProductList = (list = []) => {
+        const filtered = list.filter(p => p.id !== currentId);
+        return filtered;
+      };
+
+      // Clean up product from all levels first
+      let currentCategory = { ...c };
+      currentCategory.products = updateProductList(currentCategory.products);
+      currentCategory.subcategories = (currentCategory.subcategories || []).map(s => {
+        let currentSub = { ...s };
+        currentSub.products = updateProductList(currentSub.products);
+        currentSub.subSubcategories = (currentSub.subSubcategories || []).map(ss => {
+          let currentSS = { ...ss };
+          currentSS.products = updateProductList(currentSS.products);
+          return currentSS;
+        });
+        return currentSub;
+      });
+
+      // Add to selected category (top level by default if no sub-path is specified)
+      // Note: In a real app, you'd track the specific sub/sub-sub ID. 
+      // For this prototype, we re-add to the top-level collection of the category.
       if (c.id === selectedCategory) {
-        return { ...c, products: [...otherProducts, productData] };
+        currentCategory.products = [...currentCategory.products, productData];
       }
-      return { ...c, products: otherProducts };
+      
+      return currentCategory;
     });
 
     localStorage.setItem('bitmax_categories', JSON.stringify(updatedCategories));
@@ -230,12 +277,21 @@ function ProductForm() {
           <Card>
             <CardContent className="pt-6 space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="productName">Product Name</Label>
+                <Input 
+                  id="productName" 
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                  placeholder="e.g. Premium Stethoscope" 
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="title">Page Title</Label>
                 <Input 
                   id="title" 
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Premium Stethoscope, Surgical Masks Pack" 
+                  placeholder="e.g. Premium Stethoscope | Clinical Equipment" 
                 />
               </div>
               <div className="grid gap-2">
@@ -370,10 +426,10 @@ function ProductForm() {
             <CardContent>
               <div className="mt-2 p-4 rounded-lg bg-muted/30 border border-dashed flex flex-col gap-1">
                 <span className="text-blue-600 text-sm font-medium hover:underline cursor-pointer">
-                  {title || 'Product Title'} - Healthcare Store
+                  {title || productName || 'Product Title'} - Healthcare Store
                 </span>
                 <span className="text-green-700 text-xs">
-                  https://healthstore.com/products/{title.toLowerCase().replace(/\s+/g, '-') || 'example'}
+                  https://healthstore.com/products/{(productName || 'example').toLowerCase().replace(/\s+/g, '-')}
                 </span>
                 <span className="text-muted-foreground text-xs line-clamp-2">
                   {seoDescription}
