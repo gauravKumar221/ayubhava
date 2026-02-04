@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -23,6 +24,7 @@ import {
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { CartDrawer } from '@/components/cart/cart-drawer';
+import { InfluencerTalk } from '@/components/home/influencer-talk';
 
 const wellnessGoals = [
   {
@@ -294,6 +296,9 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Let Influencers Talk Section */}
+        <InfluencerTalk />
       </main>
 
       {/* Simple Footer */}
