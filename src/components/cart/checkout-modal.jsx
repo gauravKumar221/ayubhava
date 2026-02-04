@@ -80,7 +80,7 @@ const summaryItems = [
   }
 ];
 
-export function CheckoutModal({ open, onOpenChange }) {
+export function CheckoutModal({ open, onOpenChange, onBack }) {
   const [showQR, setShowQR] = useState(false);
   const [isCouponsOpen, setIsCouponsOpen] = useState(false);
   const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
@@ -166,7 +166,10 @@ export function CheckoutModal({ open, onOpenChange }) {
         {/* Sticky Header */}
         <div className="bg-white px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10 shrink-0 border-b border-muted/20">
           <div className="flex items-center gap-3">
-            <button onClick={() => onOpenChange(false)} className="p-1 hover:bg-muted rounded-full transition-colors">
+            <button 
+              onClick={onBack || (() => onOpenChange(false))} 
+              className="p-1 hover:bg-muted rounded-full transition-colors"
+            >
               <ChevronLeft className="h-5 w-5" />
             </button>
             <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-foreground font-black text-[10px]">W</div>

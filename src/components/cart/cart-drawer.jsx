@@ -52,6 +52,11 @@ export function CartDrawer({ children }) {
     setIsCheckoutOpen(true);
   };
 
+  const handleBackToCart = () => {
+    setIsCheckoutOpen(false);
+    setIsSheetOpen(true);
+  };
+
   if (!mounted) return children;
 
   return (
@@ -71,7 +76,7 @@ export function CartDrawer({ children }) {
             </SheetClose>
           </div>
 
-          <div className="flex-1 overflow-y-auto bg-[#fafafa]">
+          <div className="flex-1 overflow-y-auto bg-[#fafafa] [&::-webkit-scrollbar]:hidden">
             {/* Limited Time Offer */}
             <div className="bg-[#fff9f0] border-b border-[#ffeccf] py-2 px-4 flex items-center justify-center gap-2 text-[11px] font-bold">
               <span className="uppercase tracking-wide opacity-70">Limited Time Offer</span>
@@ -204,7 +209,11 @@ export function CartDrawer({ children }) {
         </SheetContent>
       </Sheet>
 
-      <CheckoutModal open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen} />
+      <CheckoutModal 
+        open={isCheckoutOpen} 
+        onOpenChange={setIsCheckoutOpen} 
+        onBack={handleBackToCart}
+      />
     </>
   );
 }
