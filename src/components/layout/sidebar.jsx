@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import {
-  Building,
+  Leaf,
   CreditCard,
   Home,
   Tags,
@@ -10,7 +10,7 @@ import {
   Ticket,
   BookOpen,
   MessageSquare,
-  ShoppingCart,
+  ShoppingBag,
   User,
   Package,
   Shield
@@ -31,64 +31,64 @@ import {
 } from '@/components/ui/tooltip';
 
 export const menuItems = [
-  { href: '/admin-dashboard', icon: <Home className="h-4 w-4" />, label: 'Dashboard' },
+  { href: '/admin-dashboard', icon: <Home className="h-4 w-4" />, label: 'Overview' },
   {
     href: '/admin-dashboard/orders',
-    icon: <ShoppingCart className="h-4 w-4" />,
-    label: 'Orders',
+    icon: <ShoppingBag className="h-4 w-4" />,
+    label: 'Wellness Orders',
   },
   {
     href: '/admin-dashboard/users',
     icon: <Shield className="h-4 w-4" />,
-    label: 'Users',
+    label: 'Community',
   },
   {
     href: '/admin-dashboard/categories',
     icon: <Tags className="h-4 w-4" />,
-    label: 'Categories',
+    label: 'Wellness Lines',
   },
   {
     href: '/admin-dashboard/product-collection',
     icon: <Package className="h-4 w-4" />,
-    label: 'Product Collection',
+    label: 'Nutrition Shop',
   },
   {
     href: '/admin-dashboard/newsletter',
     icon: <Newspaper className="h-4 w-4" />,
-    label: 'Newsletter',
+    label: 'Wellness Mail',
   },
   {
     href: '/admin-dashboard/blog',
     icon: <BookOpen className="h-4 w-4" />,
-    label: 'Blog Manager',
+    label: 'Insights Hub',
   },
   {
     href: '/admin-dashboard/subscribers',
     icon: <Users className="h-4 w-4" />,
-    label: 'Subscribers',
+    label: 'Followers',
   },
   {
     href: '/admin-dashboard/coupons',
     icon: <Ticket className="h-4 w-4" />,
-    label: 'Coupons',
+    label: 'Ritual Promos',
   },
   {
     href: '/admin-dashboard/contact-messages',
     icon: <MessageSquare className="h-4 w-4" />,
-    label: 'Contact Messages',
+    label: 'Inquiries',
   },
   {
     href: '/admin-dashboard/payments',
     icon: <CreditCard className="h-4 w-4" />,
-    label: 'Payments',
+    label: 'Revenue',
   },
-  { href: '/admin-dashboard/profile', icon: <User className="h-4 w-4" />, label: 'Profile' },
+  { href: '/admin-dashboard/profile', icon: <User className="h-4 w-4" />, label: 'My Account' },
 ];
 
 export const promos = [
-  { title: 'Buy 2 Get 1', tag: 'Via Barcode Code' },
-  { title: 'Discount 15%', tag: 'Via Credit Card' },
-  { title: 'Discount 20%', tag: 'Special Offer' },
+  { title: 'Ritual Bundle -15%', tag: 'Monthly Subscriber' },
+  { title: 'Superfood Buy 2 Get 1', tag: 'New Customer' },
+  { title: 'Free Vitality Guide', tag: 'Limited Offer' },
 ];
 
 export function Sidebar() {
@@ -106,10 +106,10 @@ export function Sidebar() {
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 shrink-0">
           <Link
             href="/admin-dashboard"
-            className="flex items-center gap-2 font-semibold text-primary"
+            className="flex items-center gap-2 font-bold text-primary"
           >
-            <Building className="h-6 w-6" />
-            <span className={cn(!isSidebarOpen && 'hidden')}>Bit Max</span>
+            <Leaf className="h-6 w-6" />
+            <span className={cn(!isSidebarOpen && 'hidden')}>AYUBHYAVA</span>
           </Link>
         </div>
         <div className="flex-1 overflow-y-auto py-4">
@@ -121,8 +121,8 @@ export function Sidebar() {
                     <Link
                       href={item.href}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50',
-                        pathname === item.href && 'bg-muted text-primary',
+                        'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-primary/5',
+                        pathname === item.href && 'bg-primary/10 text-primary',
                         !isSidebarOpen && 'justify-center'
                       )}
                     >
@@ -144,18 +144,18 @@ export function Sidebar() {
 
           {isSidebarOpen && (
             <div className="mt-8 px-4 pb-6">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Active Promos
+              <p className="mb-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Current Rituals
               </p>
               <Carousel className="w-full">
                 <CarouselContent>
                   {promos.map((promo, index) => (
                     <CarouselItem key={index}>
-                      <div className="flex h-24 flex-col justify-between rounded-xl bg-primary p-3 text-primary-foreground shadow-sm">
-                        <span className="w-fit rounded-full bg-white/20 px-2 py-0.5 text-[10px] backdrop-blur-sm">
+                      <div className="flex h-24 flex-col justify-between rounded-2xl bg-primary p-4 text-primary-foreground shadow-lg shadow-primary/10">
+                        <span className="w-fit rounded-full bg-white/20 px-2.5 py-0.5 text-[9px] font-bold backdrop-blur-sm uppercase tracking-wide">
                           {promo.tag}
                         </span>
-                        <p className="text-lg font-bold leading-tight">
+                        <p className="text-md font-extrabold leading-tight">
                           {promo.title}
                         </p>
                       </div>
