@@ -85,14 +85,14 @@ export function InfluencerTalk() {
 
   return (
     <section className="py-24 bg-white">
-      <div className="container mx-auto px-4 lg:px-8">
+      <div className="w-full px-4 lg:px-12">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
             Let Influencers Talk
           </h2>
         </div>
 
-        {/* Carousel Slider */}
+        {/* Carousel Slider - Removed Container for Full Width feel */}
         <Carousel
           opts={{
             align: "start",
@@ -106,7 +106,7 @@ export function InfluencerTalk() {
               return (
                 <CarouselItem 
                   key={talk.id} 
-                  className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                  className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/6"
                 >
                   <div className="group flex flex-col h-full">
                     {/* Media Card */}
