@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
+import { wishlistActions } from '@/store/wishlist-slice';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
@@ -40,6 +41,7 @@ export default function PublicProductsPage() {
   const { toast } = useToast();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+  const wishlistItems = useSelector((state) => state.wishlist.items);
 
   useEffect(() => {
     setMounted(true);
@@ -52,17 +54,20 @@ export default function PublicProductsPage() {
     return matchesCategory && matchesSearch;
   });
 
-  const handleAddToWishlist = (product) => {
-    const existing = JSON.parse(localStorage.getItem('wellbeing_wishlist') || '[]');
-    if (existing.some(item => item.id === product.id)) {
-      toast({ title: "Already in Wishlist" });
-      return;
-    }
+  const handleToggleWishlist = (product) => {
     const media = getPlaceholderImage(product.imageId);
-    const updated = [...existing, { ...product, image: media?.imageUrl }];
-    localStorage.setItem('wellbeing_wishlist', JSON.stringify(updated));
-    window.dispatchEvent(new Event('storage'));
-    toast({ title: "Added to Wishlist", description: `${product.title} saved.` });
+    const isAdding = !wishlistItems.some(item => item.id === product.id);
+    
+    dispatch(wishlistActions.toggleItem({
+      ...product,
+      image: media?.imageUrl,
+      imageHint: media?.imageHint
+    }));
+
+    toast({
+      title: isAdding ? "Added to Wishlist" : "Removed from Wishlist",
+      description: isAdding ? `${product.title} saved.` : `${product.title} removed.`,
+    });
   };
 
   const handleAddToCart = (product) => {
@@ -159,6 +164,7 @@ export default function PublicProductsPage() {
                 {filteredProducts.map((product) => {
                   const media = getPlaceholderImage(product.imageId);
                   const isInCart = cartItems.some(item => item.id === product.id);
+                  const isInWishlist = wishlistItems.some(item => item.id === product.id);
 
                   return (
                     <div key={product.id} className="group flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -167,10 +173,13 @@ export default function PublicProductsPage() {
                           <LazyImage src={media?.imageUrl} alt={product.title} fill className="object-contain p-12 transition-transform duration-700 group-hover:scale-110" />
                         </Link>
                         <button 
-                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToWishlist(product); }} 
-                          className="absolute bottom-6 right-6 h-12 w-12 bg-white/80 backdrop-blur shadow-xl flex items-center justify-center text-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded-full z-10"
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleWishlist(product); }} 
+                          className={cn(
+                            "absolute bottom-6 right-6 h-12 w-12 bg-white/80 backdrop-blur shadow-xl flex items-center justify-center transition-all rounded-full z-10",
+                            isInWishlist ? "text-red-500" : "text-foreground hover:text-red-500"
+                          )}
                         >
-                          <Heart className="h-5 w-5" />
+                          <Heart className={cn("h-5 w-5", isInWishlist && "fill-current")} />
                         </button>
                       </div>
                       <div className="flex-1 flex flex-col">

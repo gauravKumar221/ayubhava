@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
+import { wishlistActions } from '@/store/wishlist-slice';
 import { Button } from '@/components/ui/button';
 import { Heart, Star, CheckCircle2 } from 'lucide-react';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
@@ -50,40 +51,26 @@ export function ShopByHealthNeeds() {
   const { toast } = useToast();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+  const wishlistItems = useSelector((state) => state.wishlist.items);
 
   useEffect(() => {
-    // Initial loading simulation
     const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleAddToWishlist = (product) => {
-    const existing = JSON.parse(localStorage.getItem('wellbeing_wishlist') || '[]');
-    if (existing.some(item => item.id === product.id)) {
-      toast({
-        title: "Already in Wishlist",
-        description: "This item is already saved in your wishlist.",
-      });
-      return;
-    }
-
+  const handleToggleWishlist = (product) => {
     const media = getPlaceholderImage(product.imageId);
-    const newWishlistItem = {
-      id: product.id,
-      title: product.title,
-      category: product.category,
-      price: product.price,
+    const isAdding = !wishlistItems.some(item => item.id === product.id);
+    
+    dispatch(wishlistActions.toggleItem({
+      ...product,
       image: media?.imageUrl,
       imageHint: media?.imageHint
-    };
+    }));
 
-    const updated = [...existing, newWishlistItem];
-    localStorage.setItem('wellbeing_wishlist', JSON.stringify(updated));
-    window.dispatchEvent(new Event('storage'));
-    
     toast({
-      title: "Added to Wishlist",
-      description: "The product has been saved to your list.",
+      title: isAdding ? "Added to Wishlist" : "Removed from Wishlist",
+      description: isAdding ? `${product.title} saved.` : `${product.title} removed.`,
     });
   };
 
@@ -112,7 +99,6 @@ export function ShopByHealthNeeds() {
           </h2>
         </div>
 
-        {/* Category Filters */}
         <div className="flex flex-wrap justify-center gap-2 mb-16 overflow-x-auto pb-4 scrollbar-hide">
           {categories.map((cat) => (
             <button
@@ -130,7 +116,6 @@ export function ShopByHealthNeeds() {
           ))}
         </div>
 
-        {/* Product Grid / Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[400px]">
           {isLoading ? (
             Array.from({ length: 6 }).map((_, i) => (
@@ -140,10 +125,10 @@ export function ShopByHealthNeeds() {
             displayProducts.map((product) => {
               const media = getPlaceholderImage(product.imageId);
               const isInCart = cartItems.some(item => item.id === product.id);
+              const isInWishlist = wishlistItems.some(item => item.id === product.id);
               
               return (
                 <div key={product.id} className="flex flex-col group h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  {/* Image Container Link Area */}
                   <div className="relative mb-6">
                     <Link href={`/products/${product.id}`} className="block">
                       <div className="relative aspect-square bg-[#f9f9f9] rounded-2xl overflow-hidden shadow-sm border border-black/5">
@@ -162,20 +147,21 @@ export function ShopByHealthNeeds() {
                       </div>
                     </Link>
                     
-                    {/* Wishlist Button - Outside the main link to avoid nested interaction issues */}
                     <button 
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        handleAddToWishlist(product);
+                        handleToggleWishlist(product);
                       }}
-                      className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center text-foreground hover:text-red-500 transition-colors z-20"
+                      className={cn(
+                        "absolute bottom-4 right-4 h-10 w-10 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center transition-colors z-20",
+                        isInWishlist ? "text-red-500" : "text-foreground hover:text-red-500"
+                      )}
                     >
-                      <Heart className="h-5 w-5" />
+                      <Heart className={cn("h-5 w-5", isInWishlist && "fill-current")} />
                     </button>
                   </div>
 
-                  {/* Product Info - Wrap title and details in a Link too */}
                   <div className="flex-1 flex flex-col space-y-4 px-1">
                     <Link href={`/products/${product.id}`} className="space-y-2 block">
                       <div className="flex items-center gap-2">
@@ -239,12 +225,6 @@ export function ShopByHealthNeeds() {
                 </div>
               );
             })
-          )}
-          {!isLoading && displayProducts.length === 0 && (
-            <div className="col-span-full flex flex-col items-center justify-center py-20 text-center opacity-50">
-              <p className="text-lg font-bold">No products found in this category.</p>
-              <button onClick={() => setActiveCategory("All")} className="text-primary font-bold mt-2">Show all products</button>
-            </div>
           )}
         </div>
       </div>

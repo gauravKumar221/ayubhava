@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { 
@@ -39,24 +39,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { CartDrawer } from '@/components/cart/cart-drawer';
 import { LoginModal } from '@/components/auth/login-modal';
+import { cn } from '@/lib/utils';
 
 export function Header() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [wishlistCount, setWishlistCount] = useState(0);
   const cartQuantity = useSelector((state) => state.cart.totalQuantity);
-
-  useEffect(() => {
-    const updateWishlistCount = () => {
-      if (typeof window !== 'undefined') {
-        const saved = JSON.parse(localStorage.getItem('wellbeing_wishlist') || '[]');
-        setWishlistCount(saved.length);
-      }
-    };
-
-    updateWishlistCount();
-    window.addEventListener('storage', updateWishlistCount);
-    return () => window.removeEventListener('storage', updateWishlistCount);
-  }, []);
+  const wishlistQuantity = useSelector((state) => state.wishlist.totalQuantity);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -163,11 +151,11 @@ export function Header() {
               className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" 
               onClick={() => setIsLoginOpen(true)}
             />
-            <Link href="/wishlist" className="relative">
-              <Heart className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" />
-              {wishlistCount > 0 && (
+            <Link href="/wishlist" className="relative group">
+              <Heart className={cn("h-5 w-5 cursor-pointer transition-colors", wishlistQuantity > 0 ? "text-red-500 fill-current" : "hover:text-primary")} />
+              {wishlistQuantity > 0 && (
                 <span className="absolute -top-2 -right-2 bg-primary text-[9px] text-primary-foreground h-4 w-4 flex items-center justify-center rounded-full font-bold animate-in zoom-in duration-300">
-                  {wishlistCount}
+                  {wishlistQuantity}
                 </span>
               )}
             </Link>

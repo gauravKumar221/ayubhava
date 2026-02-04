@@ -4,6 +4,7 @@ import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
+import { wishlistActions } from '@/store/wishlist-slice';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { ChevronLeft, Star, Heart, ShoppingBag, CheckCircle2, Tag } from 'lucide-react';
@@ -32,19 +33,18 @@ export default function ProductDetailsPage({ params }) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const cartItems = useSelector((state) => state.cart.items);
+  const wishlistItems = useSelector((state) => state.wishlist.items);
   
-  // Find product from shared data
   const product = sharedProducts.find(p => p.id === id) || sharedProducts[0];
   const media = getPlaceholderImage(product.imageId);
   const isInCart = cartItems.some(item => item.id === product.id);
+  const isInWishlist = wishlistItems.some(item => item.id === product.id);
   
-  // Carousel State
   const [api, setApi] = useState(null);
   const [current, setCurrent] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    // Simulate initial load for UX and scroll to top
     window.scrollTo(0, 0);
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
@@ -56,9 +56,24 @@ export default function ProductDetailsPage({ params }) {
     }
   };
 
+  const handleToggleWishlist = () => {
+    const media = getPlaceholderImage(product.imageId);
+    const isAdding = !isInWishlist;
+    
+    dispatch(wishlistActions.toggleItem({
+      ...product,
+      image: media?.imageUrl,
+      imageHint: media?.imageHint
+    }));
+
+    toast({
+      title: isAdding ? "Added to Wishlist" : "Removed from Wishlist",
+      description: isAdding ? `${product.title} saved.` : `${product.title} removed.`,
+    });
+  };
+
   const handleAddToCart = () => {
     const media = getPlaceholderImage(product.imageId);
-    // Dispatch multiple times for quantity logic
     for(let i = 0; i < quantity; i++) {
       dispatch(cartActions.addItem({
         ...product,
@@ -131,7 +146,6 @@ export default function ProductDetailsPage({ params }) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          {/* Left: Image Gallery Slider */}
           <div className="space-y-6">
             <div className="relative group">
               <Carousel setApi={setApi} className="w-full">
@@ -178,7 +192,6 @@ export default function ProductDetailsPage({ params }) {
             </div>
           </div>
 
-          {/* Right: Buy Section */}
           <div className="flex flex-col gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary">
@@ -257,8 +270,15 @@ export default function ProductDetailsPage({ params }) {
                     "Add To Cart"
                   )}
                 </Button>
-                <Button variant="outline" className="h-14 w-14 rounded-none border-2 border-black">
-                  <Heart className="h-5 w-5" />
+                <Button 
+                  variant="outline" 
+                  onClick={handleToggleWishlist}
+                  className={cn(
+                    "h-14 w-14 rounded-none border-2 transition-colors",
+                    isInWishlist ? "border-red-500 text-red-500" : "border-black"
+                  )}
+                >
+                  <Heart className={cn("h-5 w-5", isInWishlist && "fill-current")} />
                 </Button>
               </div>
             </div>

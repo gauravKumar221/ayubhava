@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
+import { wishlistActions } from '@/store/wishlist-slice';
 import { ChevronLeft, Trash2 } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -12,51 +13,18 @@ import { LazyImage } from '@/components/shared/lazy-image';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 
-const initialWishlist = [
-  {
-    id: 'sleep-1',
-    title: 'Deep Sleep Ritual - Restful Melts',
-    category: 'Sleep & Stress',
-    price: 599,
-    image: 'https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?q=80&w=800&auto=format&fit=crop',
-    imageHint: 'health product'
-  },
-  {
-    id: 'best-1',
-    title: 'Glow Ritual - Marine Collagen',
-    category: 'Best Sellers',
-    price: 1899,
-    image: 'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?q=80&w=800&auto=format&fit=crop',
-    imageHint: 'skincare portrait'
-  }
-];
-
 export default function WishlistPage() {
-  const [items, setItems] = useState([]);
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
   const dispatch = useDispatch();
+  const wishlistItems = useSelector((state) => state.wishlist.items);
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem('wellbeing_wishlist');
-    if (saved) {
-      setItems(JSON.parse(saved));
-    } else {
-      setItems(initialWishlist);
-      localStorage.setItem('wellbeing_wishlist', JSON.stringify(initialWishlist));
-    }
   }, []);
 
-  const saveToStorage = (newItems) => {
-    setItems(newItems);
-    localStorage.setItem('wellbeing_wishlist', JSON.stringify(newItems));
-    window.dispatchEvent(new Event('storage'));
-  };
-
   const removeItem = (id) => {
-    const updated = items.filter(item => item.id !== id);
-    saveToStorage(updated);
+    dispatch(wishlistActions.removeItem(id));
     toast({
       title: "Removed from Wishlist",
       description: "The item has been removed from your saved list.",
@@ -64,7 +32,6 @@ export default function WishlistPage() {
   };
 
   const addToBag = (item) => {
-    // Add to Redux Cart
     dispatch(cartActions.addItem({
       ...item,
       title: item.title,
@@ -72,9 +39,7 @@ export default function WishlistPage() {
       image: item.image
     }));
 
-    // Remove from Wishlist
-    const updated = items.filter(i => i.id !== item.id);
-    saveToStorage(updated);
+    dispatch(wishlistActions.removeItem(item.id));
 
     toast({
       title: "Added to Bag!",
@@ -91,7 +56,7 @@ export default function WishlistPage() {
       <main className="flex-1 container mx-auto max-w-4xl px-4 py-12">
         <div className="flex flex-col gap-8">
           <div className="flex items-center justify-between border-b pb-6">
-            <h1 className="text-3xl font-black uppercase tracking-tighter">My Wishlist ({items.length})</h1>
+            <h1 className="text-3xl font-black uppercase tracking-tighter">My Wishlist ({wishlistItems.length})</h1>
             <Button asChild variant="ghost" className="font-black uppercase text-xs tracking-widest">
               <Link href="/">
                 <ChevronLeft className="mr-2 h-4 w-4" /> Back to Shop
@@ -100,11 +65,10 @@ export default function WishlistPage() {
           </div>
 
           <div className="flex flex-col">
-            {items.length > 0 ? (
-              items.map((item, index) => (
+            {wishlistItems.length > 0 ? (
+              wishlistItems.map((item, index) => (
                 <div key={item.id} className="relative animate-in fade-in slide-in-from-right-4 duration-300">
                   <div className="flex p-4 sm:p-6 gap-6 group hover:bg-muted/5 transition-colors">
-                    {/* Product Image */}
                     <Link href={`/products/${item.id}`} className="relative aspect-[3/4] w-32 sm:w-40 shrink-0 overflow-hidden bg-muted rounded-xl">
                       <LazyImage 
                         src={item.image} 
@@ -115,7 +79,6 @@ export default function WishlistPage() {
                       />
                     </Link>
 
-                    {/* Content Area */}
                     <div className="flex flex-1 flex-col justify-between py-1">
                       <div className="space-y-1">
                         <div className="flex justify-between items-start gap-4">
@@ -141,7 +104,6 @@ export default function WishlistPage() {
                         </div>
                       </div>
 
-                      {/* Price and Button Row */}
                       <div className="flex items-end justify-between mt-4">
                         <span className="text-lg font-black text-foreground">
                           ₹{typeof item.price === 'number' ? item.price.toLocaleString() : item.price}
@@ -155,7 +117,7 @@ export default function WishlistPage() {
                       </div>
                     </div>
                   </div>
-                  {index < items.length - 1 && (
+                  {index < wishlistItems.length - 1 && (
                     <Separator className="bg-muted/50" />
                   )}
                 </div>
@@ -188,7 +150,7 @@ export default function WishlistPage() {
                     variant="outline" 
                     className="rounded-none border-2 border-black px-10 h-14 font-black text-xs uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-sm"
                   >
-                    <Link href="/">Add Now</Link>
+                    <Link href="/products">Add Now</Link>
                   </Button>
                 </div>
               </div>
