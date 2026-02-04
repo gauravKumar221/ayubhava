@@ -10,7 +10,7 @@
     --card-foreground: 20 14% 4%;
     --popover: 0 0% 100%;
     --popover-foreground: 20 14% 4%;
-    --primary: 142 71% 45%; /* Wellness Green */
+    --primary: 73 51% 45%; /* New Branded Green #93ab38 */
     --primary-foreground: 0 0% 100%;
     --secondary: 60 30% 96%;
     --secondary-foreground: 20 14% 4%;
@@ -22,8 +22,8 @@
     --destructive-foreground: 0 0% 98%;
     --border: 20 10% 90%;
     --input: 20 10% 90%;
-    --ring: 142 71% 45%;
-    --chart-1: 142 71% 45%;
+    --ring: 73 51% 45%;
+    --chart-1: 73 51% 45%;
     --chart-2: 38 92% 50%;
     --chart-3: 20 50% 45%;
     --chart-4: 180 40% 50%;
@@ -32,12 +32,12 @@
 
     --sidebar-background: 60 20% 98%;
     --sidebar-foreground: 20 14% 4%;
-    --sidebar-primary: 142 71% 45%;
+    --sidebar-primary: 73 51% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 142 71% 95%;
-    --sidebar-accent-foreground: 142 71% 25%;
+    --sidebar-accent: 73 51% 95%;
+    --sidebar-accent-foreground: 73 51% 25%;
     --sidebar-border: 20 10% 92%;
-    --sidebar-ring: 142 71% 45%;
+    --sidebar-ring: 73 51% 45%;
   }
 
   .dark {
@@ -47,7 +47,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 20 14% 4%;
     --popover-foreground: 0 0% 98%;
-    --primary: 142 71% 45%;
+    --primary: 73 51% 45%;
     --primary-foreground: 0 0% 100%;
     --secondary: 20 14% 12%;
     --secondary-foreground: 0 0% 98%;
@@ -59,7 +59,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 20 14% 15%;
     --input: 20 14% 15%;
-    --ring: 142 71% 45%;
+    --ring: 73 51% 45%;
   }
 }
 
