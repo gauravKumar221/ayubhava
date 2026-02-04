@@ -30,7 +30,7 @@ export function Footer() {
               <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white font-bold text-lg">W</div>
               <div className="flex flex-col leading-none">
                 <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60">Wellbeing</span>
-                <span className="text-lg uppercase font-black">Nutrition</span>
+                <span className="text-lg uppercase font-black">AYUBHAVA</span>
               </div>
             </Link>
             
@@ -116,7 +116,7 @@ export function Footer() {
           
           <div className="flex flex-col items-center md:items-end gap-2 text-center md:text-right">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">
-              © {mounted ? new Date().getFullYear() : '2024'} AYUBHYAVA Wellbeing Nutrition. All rights reserved.
+              © {mounted ? new Date().getFullYear() : '2024'} AYUBHYAVA Wellbeing AYUBHAVA. All rights reserved.
             </p>
             <div className="flex gap-4 text-[8px] font-black uppercase tracking-[0.2em] text-white/10">
               <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>

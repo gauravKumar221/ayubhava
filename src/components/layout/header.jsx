@@ -47,7 +47,7 @@ export function Header() {
             <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-foreground font-bold text-lg">W</div>
             <div className="flex flex-col leading-none">
               <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60">Wellbeing</span>
-              <span className="text-lg uppercase font-black">Nutrition</span>
+              <span className="text-lg uppercase font-black">AYUBHAVA</span>
             </div>
           </Link>
         </div>
