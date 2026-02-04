@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -26,14 +25,15 @@ import { users } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 
-export default function UserProfileDetailPage() {
-  const params = useParams();
-  const userId = params.id;
+export default function UserProfileDetailPage({ params }) {
+  const unwrappedParams = use(params);
+  const userId = unwrappedParams.id;
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     if (userId) {
       const foundUser = users.find(u => u.id === userId);
+      // Fallback to first user for demo purposes if not found
       setUser(foundUser || users[0]);
     }
   }, [userId]);
