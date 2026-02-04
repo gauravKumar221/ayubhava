@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -8,6 +7,7 @@ import { Heart, Star } from 'lucide-react';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 const categories = [
   "All", "Best Sellers", "Immunity", "Sleep & Stress", "Gut", "Weight", "Detox", "Beauty", "Essentials", "Energy & Me"
@@ -47,7 +47,7 @@ const allProducts = [
     imageId: 'product-sleep-melts-5',
     isHighlyReordered: false
   },
-  // Immunity (Using placeholders)
+  // Immunity
   {
     id: 'imm-1',
     category: "Immunity",
@@ -69,7 +69,7 @@ const allProducts = [
     imageId: 'goal-superfoods',
     isHighlyReordered: true
   },
-  // Best Sellers (Subset)
+  // Best Sellers
   {
     id: 'best-1',
     category: "Best Sellers",
@@ -84,9 +84,37 @@ const allProducts = [
 
 export function ShopByHealthNeeds() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const { toast } = useToast();
 
-  // Filter products based on active category
-  // If "All" is selected, show everything. Otherwise filter.
+  const handleAddToWishlist = (product) => {
+    const existing = JSON.parse(localStorage.getItem('wellbeing_wishlist') || '[]');
+    if (existing.some(item => item.id === product.id)) {
+      toast({
+        title: "Already in Wishlist",
+        description: "This item is already saved in your wishlist.",
+      });
+      return;
+    }
+
+    const media = getPlaceholderImage(product.imageId);
+    const newWishlistItem = {
+      id: product.id,
+      title: product.title,
+      category: product.category,
+      price: product.price,
+      image: media?.imageUrl,
+      imageHint: media?.imageHint
+    };
+
+    const updated = [...existing, newWishlistItem];
+    localStorage.setItem('wellbeing_wishlist', JSON.stringify(updated));
+    
+    toast({
+      title: "Added to Wishlist",
+      description: "The product has been saved to your list.",
+    });
+  };
+
   const displayProducts = activeCategory === "All" 
     ? allProducts 
     : allProducts.filter(p => p.category === activeCategory);
@@ -100,7 +128,7 @@ export function ShopByHealthNeeds() {
           </h2>
         </div>
 
-        {/* Category Filters / Tabs */}
+        {/* Category Filters */}
         <div className="flex flex-wrap justify-center gap-2 mb-16 overflow-x-auto pb-4 scrollbar-hide">
           {categories.map((cat) => (
             <button
@@ -118,13 +146,13 @@ export function ShopByHealthNeeds() {
           ))}
         </div>
 
-        {/* Product Grid - Dynamic results based on Tabs */}
+        {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[400px]">
           {displayProducts.map((product) => {
             const media = getPlaceholderImage(product.imageId);
             return (
               <div key={product.id} className="flex flex-col group h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {/* Product Image Container */}
+                {/* Image Container */}
                 <div className="relative aspect-square bg-[#f9f9f9] rounded-2xl overflow-hidden mb-6">
                   <LazyImage 
                     src={media?.imageUrl} 
@@ -134,7 +162,6 @@ export function ShopByHealthNeeds() {
                     dataAiHint={media?.imageHint}
                   />
                   
-                  {/* Badges */}
                   {product.isHighlyReordered && (
                     <div className="absolute top-0 right-0 bg-black text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-bl-xl">
                       Highly reordered
@@ -142,7 +169,10 @@ export function ShopByHealthNeeds() {
                   )}
                   
                   {/* Wishlist Button */}
-                  <button className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-white shadow-md flex items-center justify-center text-foreground hover:text-red-500 transition-colors">
+                  <button 
+                    onClick={() => handleAddToWishlist(product)}
+                    className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-white shadow-md flex items-center justify-center text-foreground hover:text-red-500 transition-colors z-10"
+                  >
                     <Heart className="h-5 w-5" />
                   </button>
                 </div>
