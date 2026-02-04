@@ -3,7 +3,7 @@
 
 import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Star, Heart, Share2, ShoppingBag, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, Star, Heart, Share2, ShoppingBag, CheckCircle2, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,7 +30,7 @@ const allProducts = [
     title: 'Restful Sleep Melts (10mg)',
     reviews: 919,
     price: 599,
-    tags: ["Deep Sleep", "Sleep Cycle"],
+    tags: ["Deep Sleep", "Sleep Cycle", "Melatonin Free", "Vegan"],
     imageId: 'product-sleep-melts-10',
     description: "Everyone should have something like this in their ritual. These melts will make you appreciate everyone who looks at you. Many people like its modern and clean style. It's a one-of-a-kind piece created in our newly remodeled facility.",
     pattern: "Fine Powder",
@@ -45,7 +45,7 @@ const allProducts = [
     price: 1329,
     originalPrice: 1399,
     discount: 'Save 5%',
-    tags: ["Sleep", "Cognition & Muscle"],
+    tags: ["Sleep", "Cognition & Muscle", "Recovery"],
     imageId: 'product-magnesium-complex',
     description: "Elevate your magnesium levels with our triple complex. Designed for muscle recovery and cognitive support, this formula ensures you wake up refreshed and ready for the day.",
     pattern: "Capsules",
@@ -58,7 +58,7 @@ const allProducts = [
     title: 'Premium Collagen Peptides',
     reviews: 2500,
     price: 1899,
-    tags: ["Skin", "Anti-Aging"],
+    tags: ["Skin", "Anti-Aging", "Glow", "Marine Sourced"],
     imageId: 'influencer-3',
     description: "Our #1 best seller. Sourced from deep-sea marine life, these peptides are bioavailable and designed to restore your skin's natural glow within 60 days.",
     pattern: "Marine Peptides",
@@ -172,6 +172,7 @@ export default function ProductDetailsPage({ params }) {
               <h1 className="text-3xl lg:text-5xl font-black tracking-tighter text-foreground leading-tight">
                 {product.title}
               </h1>
+              
               <div className="flex items-center gap-4 pt-2">
                 <div className="flex items-center gap-1 bg-black text-white px-2 py-0.5 rounded text-xs font-black">
                   <Star className="h-3 w-3 fill-white" /> 4.5
@@ -179,6 +180,25 @@ export default function ProductDetailsPage({ params }) {
                 <span className="text-sm font-bold text-muted-foreground underline cursor-pointer">
                   {product.reviews} Reviews
                 </span>
+              </div>
+
+              {/* Tags Section */}
+              {product.tags && product.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-4">
+                  {product.tags.map((tag) => (
+                    <span key={tag} className="bg-[#eef4f2] text-[#4a6b5d] px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border border-[#dcece6] flex items-center gap-1">
+                      <Tag className="h-2.5 w-2.5" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Short Summary Description */}
+              <div className="pt-4">
+                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 italic">
+                  {product.description}
+                </p>
               </div>
             </div>
 
