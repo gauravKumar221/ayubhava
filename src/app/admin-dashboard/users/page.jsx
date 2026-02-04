@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,6 +23,22 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { 
   Search, 
   MoreHorizontal, 
@@ -32,19 +49,63 @@ import {
   Trash2,
   CheckCircle2,
   XCircle,
-  Clock
+  Clock,
+  Eye,
+  Plus
 } from 'lucide-react';
-import { users } from '@/lib/data';
+import { users as initialUsers } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 
 export default function UsersPage() {
+  const [users, setUsers] = useState(initialUsers);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleDeleteUser = (id) => {
+    setUsers(users.filter(u => u.id !== id));
+  };
+
+  const handleUpdateUser = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const updatedData = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      status: formData.get('status'),
+    };
+
+    setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...updatedData } : u));
+    setIsEditDialogOpen(false);
+    setEditingUser(null);
+  };
+
+  const handleAddUser = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const newUser = {
+      id: `u-${Math.random().toString(36).substr(2, 9)}`,
+      name: formData.get('name'),
+      email: formData.get('email'),
+      status: formData.get('status'),
+      role: 'Staff',
+      joinedDate: new Date().toISOString().split('T')[0],
+      avatarId: 'user-avatar-1',
+      loginMethod: 'Email',
+      accountId: `ACC-${Math.floor(1000 + Math.random() * 9000)}`,
+      lastLogin: 'Never'
+    };
+
+    setUsers([...users, newUser]);
+    setIsAddDialogOpen(false);
+  };
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -64,7 +125,11 @@ export default function UsersPage() {
       <PageHeader 
         title="User Management" 
         description="Manage system access and account statuses for clinical staff and patients."
-      />
+      >
+        <Button onClick={() => setIsAddDialogOpen(true)} className="bg-primary text-primary-foreground">
+          <Plus className="mr-2 h-4 w-4" /> Add User
+        </Button>
+      </PageHeader>
 
       <div className="relative w-full md:max-w-sm">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -118,23 +183,39 @@ export default function UsersPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[180px]">
-                          <DropdownMenuLabel className="font-bold">User Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="cursor-pointer">
-                            <Edit className="mr-2 h-4 w-4" /> Edit Profile
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="bg-accent text-accent-foreground hover:bg-accent/90 cursor-pointer mt-1 font-medium">
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete Account
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="outline" size="sm" className="h-8 text-xs font-semibold" asChild>
+                          <Link href={`/admin-dashboard/users/${user.id}`}>
+                            <Eye className="mr-2 h-3.5 w-3.5" /> View Profile
+                          </Link>
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-[180px]">
+                            <DropdownMenuLabel className="font-bold">User Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              className="cursor-pointer"
+                              onClick={() => {
+                                setEditingUser(user);
+                                setIsEditDialogOpen(true);
+                              }}
+                            >
+                              <Edit className="mr-2 h-4 w-4" /> Edit Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="bg-accent text-accent-foreground hover:bg-accent/90 cursor-pointer mt-1 font-medium"
+                              onClick={() => handleDeleteUser(user.id)}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete Account
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -153,6 +234,85 @@ export default function UsersPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Edit User Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <form onSubmit={handleUpdateUser}>
+            <DialogHeader>
+              <DialogTitle>Edit User Details</DialogTitle>
+              <DialogDescription>
+                Update the account information for clinical staff or patients.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input id="name" name="name" defaultValue={editingUser?.name} required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type="email" defaultValue={editingUser?.email} required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="status">Status</Label>
+                <Select name="status" defaultValue={editingUser?.status || 'Active'}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Save Changes</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add User Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <form onSubmit={handleAddUser}>
+            <DialogHeader>
+              <DialogTitle>Add New User</DialogTitle>
+              <DialogDescription>
+                Create a new system account for a clinical member.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input id="name" name="name" placeholder="John Doe" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type="email" placeholder="john@bitmax.com" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="status">Initial Status</Label>
+                <Select name="status" defaultValue="Active">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Create User</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
