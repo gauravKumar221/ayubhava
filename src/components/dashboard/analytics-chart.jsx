@@ -1,4 +1,6 @@
 'use client';
+
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -12,14 +14,26 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { 
+  Calendar as CalendarIcon, 
+  ChevronDown,
+  Clock,
+  CalendarDays,
+  CalendarRange,
+  CalendarCheck
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   LineChart,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
 } from 'recharts';
 
 const chartData = [
@@ -45,6 +59,8 @@ const chartConfig = {
 };
 
 export function AnalyticsChart() {
+  const [timeRange, setTimeRange] = useState('Last 30 Days');
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -52,10 +68,34 @@ export function AnalyticsChart() {
           <CardTitle>Visitor Analytics</CardTitle>
           <CardDescription>Daily visitor trends</CardDescription>
         </div>
-        <Button variant="outline" size="sm">
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          Last 30 Days
-        </Button>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-9 gap-2 font-semibold">
+              <CalendarIcon className="h-4 w-4 text-primary" />
+              <span>{timeRange}</span>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[180px]">
+            <DropdownMenuItem onClick={() => setTimeRange('Today')}>
+              <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
+              Today
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTimeRange('Last 7 Days')}>
+              <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
+              Last 7 Days
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTimeRange('Last 30 Days')}>
+              <CalendarRange className="mr-2 h-4 w-4 text-muted-foreground" />
+              Last 30 Days
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTimeRange('This Year')}>
+              <CalendarCheck className="mr-2 h-4 w-4 text-muted-foreground" />
+              This Year
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px] w-full">
