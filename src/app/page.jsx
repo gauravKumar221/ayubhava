@@ -150,7 +150,6 @@ export default function HomePage() {
             <CarouselContent className="h-[650px] lg:h-[800px] ml-0">
               {heroSlides.map((slide) => {
                 const heroBg = getPlaceholderImage(slide.bgId);
-                const productSet = getPlaceholderImage(slide.prodId);
                 
                 return (
                   <CarouselItem key={slide.id} className="relative h-full pl-0 basis-full">
@@ -165,8 +164,8 @@ export default function HomePage() {
                       />
                     </div>
                     
-                    <div className="container mx-auto h-full px-4 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center justify-center lg:justify-between pt-12 lg:pt-0">
-                      <div className="flex flex-col gap-4 text-center lg:text-left max-w-2xl">
+                    <div className="container mx-auto h-full px-4 lg:px-12 relative z-10 flex flex-col items-center justify-center pt-12 lg:pt-0">
+                      <div className="flex flex-col gap-4 text-center max-w-3xl">
                         <h1 className="text-5xl md:text-8xl font-black text-[#2d2d2d] leading-[0.9] tracking-tighter whitespace-pre-line">
                           {slide.title}
                         </h1>
@@ -174,7 +173,7 @@ export default function HomePage() {
                           <p className="text-2xl md:text-4xl font-black text-primary/80 tracking-tighter uppercase">
                             {slide.subtitle}
                           </p>
-                          <p className="text-lg md:text-xl font-bold text-[#2d2d2d]/60 uppercase tracking-tight max-w-md mx-auto lg:mx-0">
+                          <p className="text-lg md:text-xl font-bold text-[#2d2d2d]/60 uppercase tracking-tight max-w-xl mx-auto">
                             {slide.description}
                           </p>
                         </div>
@@ -182,31 +181,6 @@ export default function HomePage() {
                           <Button size="lg" asChild className="h-14 px-12 text-sm font-black rounded-full bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-all uppercase tracking-widest shadow-xl cursor-pointer">
                             <Link href="/products">Shop Now</Link>
                           </Button>
-                        </div>
-                      </div>
-
-                      <div className="relative flex-1 w-full lg:w-auto h-[350px] lg:h-full flex items-center justify-center lg:justify-end">
-                        {/* Product Pouch Cluster */}
-                        <div className="relative aspect-square w-full max-w-[550px]">
-                          <LazyImage 
-                            src={productSet?.imageUrl} 
-                            alt={slide.id} 
-                            fill 
-                            className="object-contain drop-shadow-2xl"
-                            priority={true}
-                            dataAiHint={productSet?.imageHint}
-                          />
-                          
-                          {/* Certification Badge */}
-                          <div className="absolute top-1/2 -left-8 lg:-left-12 -translate-y-1/2 flex flex-col gap-4 items-center">
-                            <div className="bg-white/90 backdrop-blur rounded-full p-4 border border-foreground/5 shadow-lg flex flex-col items-center justify-center text-center min-w-[100px] animate-bounce duration-[3000ms]">
-                              <span className="text-[8px] font-black uppercase text-foreground/40 leading-none">AYUBHAVA</span>
-                              <span className="text-[10px] font-black uppercase leading-tight">{slide.accent}</span>
-                              <div className="h-px w-full bg-foreground/10 my-1" />
-                              <span className="text-[8px] font-black uppercase text-foreground/40 leading-none">Ritual</span>
-                              <span className="text-[10px] font-black uppercase leading-tight">Certified</span>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
