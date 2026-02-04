@@ -65,11 +65,13 @@ function AppLayout({ children }) {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" className="relative h-9 w-9 rounded-full bg-background">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
-                3
-              </span>
+            <Button variant="outline" size="icon" className="relative h-9 w-9 rounded-full bg-background" asChild>
+              <Link href="/admin-dashboard/notifications">
+                <Bell className="h-4 w-4" />
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                  3
+                </span>
+              </Link>
             </Button>
 
             <DropdownMenu>
@@ -91,7 +93,9 @@ function AppLayout({ children }) {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/admin-dashboard/profile">Profile</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Logout</DropdownMenuItem>
