@@ -135,7 +135,7 @@ export function InfluencerTalk() {
               return (
                 <CarouselItem 
                   key={talk.id} 
-                  className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/6"
+                  className="pl-4 basis-1/2 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/6"
                 >
                   <div className="group flex flex-col h-full">
                     {/* Media Card */}
@@ -186,7 +186,7 @@ export function InfluencerTalk() {
                       <Button 
                         onClick={() => handleAddToCart(talk)}
                         className={cn(
-                          "w-full h-12 rounded-xl text-xs font-black uppercase tracking-widest mt-auto transition-all",
+                          "w-full h-12 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest mt-auto transition-all",
                           isInCart 
                             ? "bg-primary text-primary-foreground hover:bg-primary/90" 
                             : "bg-[#1a1a1a] hover:bg-black text-white"
@@ -194,7 +194,7 @@ export function InfluencerTalk() {
                       >
                         {isInCart ? (
                           <span className="flex items-center justify-center gap-2">
-                            <CheckCircle2 className="h-4 w-4" /> Already in Cart
+                            <CheckCircle2 className="h-4 w-4" /> In Bag
                           </span>
                         ) : (
                           "Add To Cart"

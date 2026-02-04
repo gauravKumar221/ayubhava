@@ -160,7 +160,7 @@ export default function PublicProductsPage() {
                 </DropdownMenu>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
+              <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-x-4 md:gap-x-8 gap-y-10 md:gap-y-16">
                 {filteredProducts.map((product) => {
                   const media = getPlaceholderImage(product.imageId);
                   const isInCart = cartItems.some(item => item.id === product.id);
@@ -168,36 +168,36 @@ export default function PublicProductsPage() {
 
                   return (
                     <div key={product.id} className="group flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                      <div className="relative aspect-square bg-[#f9f9f9] overflow-hidden mb-8 border border-black/5 transition-all shadow-sm hover:shadow-2xl rounded-2xl">
+                      <div className="relative aspect-square bg-[#f9f9f9] overflow-hidden mb-4 md:mb-8 border border-black/5 transition-all shadow-sm hover:shadow-2xl rounded-2xl">
                         <Link href={`/products/${product.id}`} className="block h-full w-full">
-                          <LazyImage src={media?.imageUrl} alt={product.title} fill className="object-contain p-12 transition-transform duration-700 group-hover:scale-110" />
+                          <LazyImage src={media?.imageUrl} alt={product.title} fill className="object-contain p-6 md:p-12 transition-transform duration-700 group-hover:scale-110" />
                         </Link>
                         <button 
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleWishlist(product); }} 
                           className={cn(
-                            "absolute bottom-6 right-6 h-12 w-12 bg-white/80 backdrop-blur shadow-xl flex items-center justify-center transition-all rounded-full z-10",
+                            "absolute bottom-3 right-3 md:bottom-6 md:right-6 h-8 w-8 md:h-12 md:w-12 bg-white/80 backdrop-blur shadow-xl flex items-center justify-center transition-all rounded-full z-10",
                             isInWishlist ? "text-red-500" : "text-foreground hover:text-red-500"
                           )}
                         >
-                          <Heart className={cn("h-5 w-5", isInWishlist && "fill-current")} />
+                          <Heart className={cn("h-4 w-4 md:h-5 md:w-5", isInWishlist && "fill-current")} />
                         </button>
                       </div>
                       <div className="flex-1 flex flex-col">
-                        <Link href={`/products/${product.id}`} className="block space-y-2">
+                        <Link href={`/products/${product.id}`} className="block space-y-1 md:space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{product.category}</span>
-                            <div className="flex items-center gap-1 bg-black text-white px-2 py-0.5 rounded text-[9px] font-black">
-                              <Star className="h-2.5 w-2.5 fill-white" /> {product.reviews}
+                            <span className="text-[8px] md:text-[10px] font-black text-primary uppercase tracking-[0.2em]">{product.category}</span>
+                            <div className="flex items-center gap-1 bg-black text-white px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-black">
+                              <Star className="h-2 w-2 md:h-2.5 md:w-2.5 fill-white" /> {product.reviews}
                             </div>
                           </div>
-                          <h3 className="text-xl font-black hover:text-primary transition-colors line-clamp-2">{product.title}</h3>
+                          <h3 className="text-sm md:text-xl font-black hover:text-primary transition-colors line-clamp-2 leading-tight">{product.title}</h3>
                         </Link>
-                        <div className="mt-auto pt-6 flex items-center justify-between">
-                          <span className="text-2xl font-black">₹{product.price.toLocaleString()}</span>
+                        <div className="mt-auto pt-4 md:pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <span className="text-lg md:text-2xl font-black">₹{product.price.toLocaleString()}</span>
                           <Button 
                             onClick={() => handleAddToCart(product)} 
                             className={cn(
-                              "rounded-none font-black uppercase text-[10px] px-6 transition-all",
+                              "rounded-none font-black uppercase text-[8px] md:text-[10px] px-4 md:px-6 h-10 md:h-12 transition-all w-full sm:w-auto",
                               isInCart 
                                 ? "bg-primary text-primary-foreground hover:bg-primary/90" 
                                 : "bg-black text-white hover:bg-black/90"
@@ -205,7 +205,7 @@ export default function PublicProductsPage() {
                           >
                             {isInCart ? (
                               <span className="flex items-center gap-1.5">
-                                <CheckCircle2 className="h-3 w-3" /> Already in Cart
+                                <CheckCircle2 className="h-3 w-3" /> In Cart
                               </span>
                             ) : (
                               "Add To Cart"
