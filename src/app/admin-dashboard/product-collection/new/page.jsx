@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { 
   ChevronLeft, 
   Upload, 
@@ -38,8 +37,6 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
   const editorRef = useRef(null);
 
   useEffect(() => {
-    // Only update innerHTML if it's different from current internal state
-    // to prevent cursor jumping to the start of the line.
     if (editorRef.current && editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value || '';
     }
@@ -108,7 +105,6 @@ function ProductForm() {
             foundCategoryId = cat.id;
             break;
           }
-          // Search subcategories
           for (const sub of (cat.subcategories || [])) {
             const sprod = (sub.products || []).find(p => p.id === productId);
             if (sprod) {
@@ -116,7 +112,6 @@ function ProductForm() {
               foundCategoryId = cat.id;
               break;
             }
-            // Search sub-subcategories
             for (const ss of (sub.subSubcategories || [])) {
               const ssprod = (ss.products || []).find(p => p.id === productId);
               if (ssprod) {
@@ -207,13 +202,11 @@ function ProductForm() {
     };
 
     const updatedCategories = categories.map(c => {
-      // Helper to update products in a list
       const updateProductList = (list = []) => {
         const filtered = list.filter(p => p.id !== currentId);
         return filtered;
       };
 
-      // Clean up product from all levels first
       let currentCategory = { ...c };
       currentCategory.products = updateProductList(currentCategory.products);
       currentCategory.subcategories = (currentCategory.subcategories || []).map(s => {
@@ -227,9 +220,6 @@ function ProductForm() {
         return currentSub;
       });
 
-      // Add to selected category (top level by default if no sub-path is specified)
-      // Note: In a real app, you'd track the specific sub/sub-sub ID. 
-      // For this prototype, we re-add to the top-level collection of the category.
       if (c.id === selectedCategory) {
         currentCategory.products = [...currentCategory.products, productData];
       }
@@ -367,6 +357,9 @@ function ProductForm() {
                         <SelectItem value="tag">Tag</SelectItem>
                         <SelectItem value="title">Product title</SelectItem>
                         <SelectItem value="price">Price</SelectItem>
+                        <SelectItem value="weight">Weight</SelectItem>
+                        <SelectItem value="color">Color</SelectItem>
+                        <SelectItem value="height">Height</SelectItem>
                       </SelectContent>
                     </Select>
                     <Select 
