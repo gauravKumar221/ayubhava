@@ -53,7 +53,7 @@ export function Header() {
         </div>
         
         <nav className="hidden xl:flex items-center gap-6 text-[13px] font-bold uppercase tracking-tight text-foreground/80">
-          <Link href="#" className="hover:text-primary transition-colors">Shop All</Link>
+          <Link href="/collections" className="hover:text-primary transition-colors">Shop All</Link>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
