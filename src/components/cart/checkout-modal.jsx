@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import {
   Sheet,
@@ -171,6 +172,7 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[480px] p-0 overflow-hidden bg-[#f4f7f9] border-none gap-0 sm:rounded-[2rem] h-[85vh] flex flex-col shadow-2xl">
+        <DialogTitle className="sr-only">Checkout</DialogTitle>
         {/* Sticky Header */}
         <div className="bg-white px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10 shrink-0 border-b border-muted/20">
           <div className="flex items-center gap-3">

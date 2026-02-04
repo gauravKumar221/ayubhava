@@ -19,6 +19,7 @@ import {
   DialogContent,
   DialogPortal,
   DialogOverlay,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import {
   Carousel,
@@ -92,7 +93,7 @@ export function InfluencerTalk() {
           </h2>
         </div>
 
-        {/* Carousel Slider - Removed Container for Full Width feel */}
+        {/* Carousel Slider */}
         <Carousel
           opts={{
             align: "start",
@@ -179,6 +180,7 @@ export function InfluencerTalk() {
           <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px] p-0 bg-transparent border-none shadow-none z-[101] focus:outline-none focus-visible:outline-none">
             {selectedTalk && (
               <div className="relative aspect-[9/16] w-full max-h-[90vh] rounded-[2rem] overflow-hidden bg-black animate-in zoom-in-95 duration-300">
+                <DialogTitle className="sr-only">Influencer Talk: {selectedTalk.title}</DialogTitle>
                 {/* Progress Bar */}
                 <div className="absolute top-4 left-4 right-4 z-20 flex gap-1 h-1">
                   <div className="flex-1 bg-white/30 rounded-full overflow-hidden">
