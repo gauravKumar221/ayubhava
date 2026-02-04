@@ -18,7 +18,7 @@ import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { Sidebar, menuItems } from '@/components/layout/sidebar';
 import { SidebarProvider, useSidebar } from '@/hooks/use-sidebar';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import Link from 'next/link';
 import { StoreProvider } from '@/store/provider';
 
@@ -131,15 +131,15 @@ function SidebarToggleButton() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col p-0 w-[280px]">
-          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 shrink-0">
+          <SheetHeader className="h-14 flex flex-row items-center border-b px-4 lg:h-[60px] lg:px-6 shrink-0 space-y-0">
             <Link
               href="/admin-dashboard"
               className="flex items-center gap-2 font-semibold text-primary"
             >
               <Building className="h-6 w-6" />
-              <span>Bit Max</span>
+              <SheetTitle className="text-base font-semibold text-primary">Bit Max</SheetTitle>
             </Link>
-          </div>
+          </SheetHeader>
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-1 py-4">
             {menuItems.map((item) => (
               <SheetClose asChild key={item.href}>

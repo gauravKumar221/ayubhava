@@ -77,7 +77,9 @@ export function CartDrawer({ children }) {
         <SheetContent side="right" className="w-full sm:max-w-[450px] p-0 flex flex-col gap-0 border-l-0 shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b bg-white sticky top-0 z-20">
-            <h2 className="text-lg font-black uppercase tracking-tight">Your Cart ({totalQuantity} items)</h2>
+            <SheetHeader className="text-left space-y-0">
+              <SheetTitle className="text-lg font-black uppercase tracking-tight">Your Cart ({totalQuantity} items)</SheetTitle>
+            </SheetHeader>
             <SheetClose asChild>
               <button className="rounded-full p-1 hover:bg-muted transition-colors">
                 <X className="h-5 w-5" />

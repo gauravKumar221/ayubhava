@@ -9,6 +9,8 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
 } from '@/components/ui/sheet';
 import {
   Popover,
@@ -379,15 +381,15 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
         <Sheet open={isCouponsOpen} onOpenChange={setIsCouponsOpen}>
           <SheetContent side="bottom" className="max-w-[480px] mx-auto p-0 rounded-t-[2rem] border-none overflow-hidden h-[80vh] flex flex-col">
             <div className="bg-white flex flex-col h-full">
-              <div className="px-6 py-5 flex items-center justify-between border-b bg-white z-10 shrink-0">
+              <SheetHeader className="px-6 py-5 flex flex-row items-center justify-between border-b bg-white z-10 shrink-0 space-y-0">
                 <div className="flex items-center gap-3">
                   <Tag className="h-5 w-5 text-muted-foreground" />
-                  <h2 className="text-sm font-black">Coupons & Offers</h2>
+                  <SheetTitle className="text-sm font-black">Coupons & Offers</SheetTitle>
                 </div>
                 <button onClick={() => setIsCouponsOpen(false)} className="p-1.5 hover:bg-muted rounded-full transition-colors">
                   <X className="h-5 w-5" />
                 </button>
-              </div>
+              </SheetHeader>
               <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 space-y-6 [&::-webkit-scrollbar]:hidden">
                 <div className="bg-white rounded-2xl p-4 shadow-sm border border-white">
                   <div className="relative">
@@ -422,8 +424,8 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
           <SheetContent side="bottom" className="max-w-[480px] mx-auto p-0 rounded-t-[2rem] border-none overflow-hidden h-[80vh] flex flex-col">
             <div className="bg-white flex flex-col h-full">
               {/* Address Header */}
-              <div className="px-6 py-5 flex items-center justify-between border-b bg-white z-10 shrink-0">
-                <h2 className="text-sm font-black">{isAddingNew ? (editingAddress ? 'Edit Address' : 'Add New Address') : 'Select Delivery Address'}</h2>
+              <SheetHeader className="px-6 py-5 flex flex-row items-center justify-between border-b bg-white z-10 shrink-0 space-y-0">
+                <SheetTitle className="text-sm font-black">{isAddingNew ? (editingAddress ? 'Edit Address' : 'Add New Address') : 'Select Delivery Address'}</SheetTitle>
                 {!isAddingNew ? (
                   <button 
                     onClick={handleAddNew}
@@ -436,7 +438,7 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                     <X className="h-5 w-5" />
                   </button>
                 )}
-              </div>
+              </SheetHeader>
 
               <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 [&::-webkit-scrollbar]:hidden">
                 {isAddingNew ? (
