@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -174,7 +173,7 @@ export function ShopByHealthNeeds() {
               className={cn(
                 "px-6 py-2.5 rounded-lg border-2 font-bold text-sm transition-all whitespace-nowrap",
                 activeCategory === cat 
-                  ? "bg-black text-white border-black shadow-lg scale-105" 
+                  ? "bg-primary text-primary-foreground border-primary shadow-lg scale-105" 
                   : "bg-white text-foreground border-black/5 hover:border-black/20"
               )}
             >
@@ -245,7 +244,7 @@ export function ShopByHealthNeeds() {
 
                       <div className="flex flex-wrap gap-2 pt-1">
                         {product.tags.map(tag => (
-                          <span key={tag} className="bg-[#eef4f2] text-[#4a6b5d] px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide">
+                          <span key={tag} className="bg-[#eef4f2] text-[#4a6b5d] px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wide">
                             {tag}
                           </span>
                         ))}
