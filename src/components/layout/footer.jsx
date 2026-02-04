@@ -24,7 +24,6 @@ export function Footer() {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8">
           
-          {/* Brand & Newsletter */}
           <div className="lg:col-span-2 space-y-8">
             <Link href="/" className="flex items-center gap-2 font-black text-2xl tracking-tighter w-fit">
               <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white font-bold text-lg">W</div>
@@ -51,54 +50,46 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Shop by Category */}
           <div className="space-y-6">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">Shop by Category</h3>
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">Shop Rituals</h3>
             <nav className="flex flex-col gap-4 text-[11px] font-bold uppercase tracking-wider text-white/60">
-              <Link href="#" className="hover:text-white transition-colors">Marine Collagen</Link>
-              <Link href="#" className="hover:text-white transition-colors">Effervescent Tablets</Link>
-              <Link href="#" className="hover:text-white transition-colors">Melts Oral Strips</Link>
-              <Link href="#" className="hover:text-white transition-colors">Vegan Protein Isolate</Link>
-              <Link href="#" className="hover:text-white transition-colors">Wholefood Multivitamins</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Marine Collagen</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Effervescent Tablets</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Melts Oral Strips</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Vegan Protein Isolate</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Wholefood Multivitamins</Link>
             </nav>
           </div>
 
-          {/* Shop by Benefits */}
           <div className="space-y-6">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">Shop by Benefits</h3>
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">Benefits</h3>
             <nav className="flex flex-col gap-4 text-[11px] font-bold uppercase tracking-wider text-white/60">
-              <Link href="#" className="hover:text-white transition-colors">Skin Glow & Hair</Link>
-              <Link href="#" className="hover:text-white transition-colors">Deep Sleep & Stress</Link>
-              <Link href="#" className="hover:text-white transition-colors">Weight & Metabolism</Link>
-              <Link href="#" className="hover:text-white transition-colors">Gut Health & Detox</Link>
-              <Link href="#" className="hover:text-white transition-colors">Immunity & Defense</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Skin Glow & Hair</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Deep Sleep & Stress</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Weight & Metabolism</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Gut Health & Detox</Link>
+              <Link href="/products" className="hover:text-white transition-colors">Immunity & Defense</Link>
             </nav>
           </div>
 
-          {/* About Us */}
           <div className="space-y-6">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">About Us</h3>
             <nav className="flex flex-col gap-4 text-[11px] font-bold uppercase tracking-wider text-white/60">
               <Link href="/our-story" className="hover:text-white transition-colors">Our Story</Link>
-              <Link href="#" className="hover:text-white transition-colors">Science Board</Link>
-              <Link href="#" className="hover:text-white transition-colors">Sustainability</Link>
               <Link href="/certificates" className="hover:text-white transition-colors">Certificates</Link>
-              <Link href="#" className="hover:text-white transition-colors">Store Locator</Link>
+              <Link href="/blog" className="hover:text-white transition-colors">Wellness Blog</Link>
             </nav>
           </div>
 
-          {/* Quick Links */}
           <div className="space-y-6">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">Quick Links</h3>
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">Support</h3>
             <nav className="flex flex-col gap-4 text-[11px] font-bold uppercase tracking-wider text-white/60">
               <Link href="/contact-us" className="hover:text-white transition-colors">Contact Us</Link>
               <Link href="/wishlist" className="hover:text-white transition-colors">My Wishlist</Link>
-              <Link href="/blog" className="hover:text-white transition-colors">Wellness Blog</Link>
               <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/terms-and-conditions" className="hover:text-white transition-colors">Terms & Conditions</Link>
               <Link href="/orders-shipping" className="hover:text-white transition-colors">Orders & Shipping</Link>
               <Link href="/refunds-cancellation" className="hover:text-white transition-colors">Refunds & Cancellation</Link>
-              <Link href="/referral-program" className="hover:text-white transition-colors">Referral Policies</Link>
             </nav>
           </div>
 
@@ -118,11 +109,6 @@ export function Footer() {
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">
               © {mounted ? new Date().getFullYear() : '2024'} AYUBHAVA Wellbeing. All rights reserved.
             </p>
-            <div className="flex gap-4 text-[8px] font-black uppercase tracking-[0.2em] text-white/10">
-              <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="/terms-and-conditions" className="hover:text-white transition-colors">Terms of Service</Link>
-              <Link href="/refunds-cancellation" className="hover:text-white transition-colors">Refund Policy</Link>
-            </div>
           </div>
         </div>
       </div>

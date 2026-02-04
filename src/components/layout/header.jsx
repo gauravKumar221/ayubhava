@@ -30,7 +30,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
   DropdownMenuLabel,
   DropdownMenuSub,
   DropdownMenuSubContent,
@@ -59,7 +58,7 @@ export function Header() {
         </div>
         
         <nav className="hidden xl:flex items-center gap-6 text-[13px] font-bold uppercase tracking-tight text-foreground/80">
-          <Link href="/collections" className="hover:text-primary transition-colors">Shop All</Link>
+          <Link href="/products" className="hover:text-primary transition-colors">Shop All</Link>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -76,36 +75,25 @@ export function Header() {
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent className="w-56 p-2 rounded-2xl shadow-2xl border-none ml-1 animate-in slide-in-from-left-1 duration-200">
-                    <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors">
-                      Marine Collagen
+                    <DropdownMenuItem asChild className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors">
+                      <Link href="/products">Marine Collagen</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors">
-                      Skin Fuel
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors">
-                      Melts Skin Glow
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors">
-                      Melts Hair Fall
+                    <DropdownMenuItem asChild className="rounded-lg py-2.5 cursor-pointer font-bold text-[10px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors">
+                      <Link href="/products">Skin Fuel</Link>
                     </DropdownMenuItem>
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
               </DropdownMenuSub>
 
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Square className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Deep Sleep & Stress
+              <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
+                <Link href="/products" className="flex items-center">
+                  <Square className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Deep Sleep & Stress
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Scale className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Weight & Metabolism
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Smile className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Gut Health & Detox
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <ShieldCheck className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Immunity & Defense
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Zap className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Energy & Performance
+              <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
+                <Link href="/products" className="flex items-center">
+                  <Scale className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Weight & Metabolism
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -118,20 +106,15 @@ export function Header() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
               <DropdownMenuLabel className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 px-2">Product Lines</DropdownMenuLabel>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Waves className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Marine Collagen
+              <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
+                <Link href="/products" className="flex items-center">
+                  <Waves className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Marine Collagen
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Apple className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Effervescent Tablets
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Pill className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Melts Oral Strips
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Activity className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Vegan Protein Isolate
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Leaf className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Wholefood Multivitamins
+              <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
+                <Link href="/products" className="flex items-center">
+                  <Pill className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Melts Oral Strips
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -148,41 +131,16 @@ export function Header() {
                   <Info className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Our Story
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <ShieldCheck className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Scientific Advisory Board
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Leaf className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Sustainability Goals
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Award className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Clean Label Project
+              <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
+                <Link href="/certificates" className="flex items-center">
+                  <Award className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Certificates
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
           <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
           <Link href="/contact-us" className="hover:text-primary transition-colors">FREE Consultation</Link>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors outline-none py-2">
-                New Launches <ChevronDown className="h-3 w-3" />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200">
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Calendar className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Latest This Month
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-primary focus:text-white transition-colors group">
-                <Star className="mr-3 h-4 w-4 text-primary group-focus:text-white" /> Limited Edition Drops
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <div className="relative group">
-            <Link href="#" className="hover:text-primary transition-colors">Kids</Link>
-            <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-black text-[8px] text-white px-1.5 py-0.5 rounded font-black animate-pulse shadow-md">NEW</span>
-          </div>
         </nav>
 
         <div className="flex items-center gap-5">
