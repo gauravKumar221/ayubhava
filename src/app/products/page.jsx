@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -13,6 +13,7 @@ import {
   Star,
   ChevronRight,
   Tag,
+  CheckCircle2
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -38,6 +39,7 @@ export default function PublicProductsPage() {
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
   const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
 
   useEffect(() => {
     setMounted(true);
@@ -155,6 +157,8 @@ export default function PublicProductsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
                 {filteredProducts.map((product) => {
                   const media = getPlaceholderImage(product.imageId);
+                  const isInCart = cartItems.some(item => item.id === product.id);
+
                   return (
                     <div key={product.id} className="group flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
                       <div className="relative aspect-square bg-[#f9f9f9] overflow-hidden mb-8 border border-black/5 transition-all shadow-sm hover:shadow-2xl rounded-2xl">
@@ -180,7 +184,23 @@ export default function PublicProductsPage() {
                         </Link>
                         <div className="mt-auto pt-6 flex items-center justify-between">
                           <span className="text-2xl font-black">₹{product.price.toLocaleString()}</span>
-                          <Button onClick={() => handleAddToCart(product)} className="bg-black hover:bg-black/90 text-white rounded-none font-black uppercase text-[10px] px-6">Add To Cart</Button>
+                          <Button 
+                            onClick={() => handleAddToCart(product)} 
+                            className={cn(
+                              "rounded-none font-black uppercase text-[10px] px-6 transition-all",
+                              isInCart 
+                                ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                                : "bg-black text-white hover:bg-black/90"
+                            )}
+                          >
+                            {isInCart ? (
+                              <span className="flex items-center gap-1.5">
+                                <CheckCircle2 className="h-3 w-3" /> Already in Cart
+                              </span>
+                            ) : (
+                              "Add To Cart"
+                            )}
+                          </Button>
                         </div>
                       </div>
                     </div>

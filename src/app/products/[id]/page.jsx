@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -31,10 +31,12 @@ export default function ProductDetailsPage({ params }) {
   const { toast } = useToast();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
+  const cartItems = useSelector((state) => state.cart.items);
   
   // Find product from shared data
   const product = sharedProducts.find(p => p.id === id) || sharedProducts[0];
   const media = getPlaceholderImage(product.imageId);
+  const isInCart = cartItems.some(item => item.id === product.id);
   
   // Carousel State
   const [api, setApi] = useState(null);
@@ -240,9 +242,20 @@ export default function ProductDetailsPage({ params }) {
               <div className="flex gap-4">
                 <Button 
                   onClick={handleAddToCart}
-                  className="flex-1 h-14 bg-black hover:bg-black/90 text-white rounded-none font-black uppercase tracking-[0.2em] text-sm shadow-xl"
+                  className={cn(
+                    "flex-1 h-14 rounded-none font-black uppercase tracking-[0.2em] text-sm shadow-xl transition-all",
+                    isInCart 
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                      : "bg-black text-white hover:bg-black/90"
+                  )}
                 >
-                  Add To Cart
+                  {isInCart ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <CheckCircle2 className="h-4 w-4" /> Already in Cart
+                    </span>
+                  ) : (
+                    "Add To Cart"
+                  )}
                 </Button>
                 <Button variant="outline" className="h-14 w-14 rounded-none border-2 border-black">
                   <Heart className="h-5 w-5" />

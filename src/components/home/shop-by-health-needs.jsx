@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '@/store/cart-slice';
 import { Button } from '@/components/ui/button';
-import { Heart, Star } from 'lucide-react';
+import { Heart, Star, CheckCircle2 } from 'lucide-react';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { cn } from '@/lib/utils';
@@ -49,6 +49,7 @@ export function ShopByHealthNeeds() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
 
   useEffect(() => {
     // Initial loading simulation
@@ -137,6 +138,8 @@ export function ShopByHealthNeeds() {
           ) : (
             displayProducts.map((product) => {
               const media = getPlaceholderImage(product.imageId);
+              const isInCart = cartItems.some(item => item.id === product.id);
+              
               return (
                 <div key={product.id} className="flex flex-col group h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
                   {/* Image Container Link Area */}
@@ -215,9 +218,20 @@ export function ShopByHealthNeeds() {
 
                       <Button 
                         onClick={() => handleAddToCart(product)}
-                        className="w-full h-12 bg-black hover:bg-black/90 text-white rounded-none font-black uppercase tracking-[0.2em] transition-all"
+                        className={cn(
+                          "w-full h-12 rounded-none font-black uppercase tracking-[0.2em] transition-all",
+                          isInCart 
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                            : "bg-black text-white hover:bg-black/90"
+                        )}
                       >
-                        Add To Cart
+                        {isInCart ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <CheckCircle2 className="h-4 w-4" /> Already in Cart
+                          </span>
+                        ) : (
+                          "Add To Cart"
+                        )}
                       </Button>
                     </div>
                   </div>
