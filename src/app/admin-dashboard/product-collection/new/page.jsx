@@ -355,20 +355,6 @@ function ProductForm() {
               <CardTitle className="text-sm font-semibold">Conditions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-muted-foreground">Products must match:</span>
-                <RadioGroup defaultValue="all" className="flex items-center gap-4">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="all" id="all-cond" />
-                    <Label htmlFor="all-cond" className="text-sm">all conditions</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="any" id="any-cond" />
-                    <Label htmlFor="any-cond" className="text-sm">any condition</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
               <div className="space-y-3">
                 {conditions.map((condition) => (
                   <div key={condition.id} className="flex flex-col md:flex-row items-start md:items-center gap-3">
