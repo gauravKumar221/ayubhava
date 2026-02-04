@@ -13,9 +13,11 @@ const categories = [
   "Best Sellers", "Immunity", "Sleep & Stress", "Gut", "Weight", "Detox", "Beauty", "Essentials", "Energy & Me"
 ];
 
-const products = [
+const allProducts = [
+  // Sleep & Stress
   {
     id: 'sleep-1',
+    category: "Sleep & Stress",
     title: 'Restful Sleep Melts (10mg)',
     reviews: 919,
     price: 599,
@@ -25,6 +27,7 @@ const products = [
   },
   {
     id: 'sleep-2',
+    category: "Sleep & Stress",
     title: 'Triple Magnesium Complex',
     reviews: 781,
     price: 1329,
@@ -36,17 +39,56 @@ const products = [
   },
   {
     id: 'sleep-3',
+    category: "Sleep & Stress",
     title: 'Restful Sleep (5mg)',
     reviews: 549,
     price: 599,
     tags: ["Deep Sleep", "Sleep Cycle"],
     imageId: 'product-sleep-melts-5',
     isHighlyReordered: false
+  },
+  // Immunity (Using placeholders)
+  {
+    id: 'imm-1',
+    category: "Immunity",
+    title: 'Daily Immunity Defense',
+    reviews: 420,
+    price: 899,
+    tags: ["Shield", "Vitamin C"],
+    imageId: 'goal-supplements',
+    isHighlyReordered: true
+  },
+  // Gut
+  {
+    id: 'gut-1',
+    category: "Gut",
+    title: '4B CFU Probiotic Mix',
+    reviews: 1205,
+    price: 1499,
+    tags: ["Digestion", "Gut Health"],
+    imageId: 'goal-superfoods',
+    isHighlyReordered: true
+  },
+  // Best Sellers (Subset)
+  {
+    id: 'best-1',
+    category: "Best Sellers",
+    title: 'Premium Collagen Peptides',
+    reviews: 2500,
+    price: 1899,
+    tags: ["Skin", "Anti-Aging"],
+    imageId: 'influencer-3',
+    isHighlyReordered: true
   }
 ];
 
 export function ShopByHealthNeeds() {
   const [activeCategory, setActiveCategory] = useState("Sleep & Stress");
+
+  // Filter products based on active category
+  // If no products match, we show "Best Sellers" as fallback for demo purposes
+  const filteredProducts = allProducts.filter(p => p.category === activeCategory);
+  const displayProducts = filteredProducts.length > 0 ? filteredProducts : allProducts.filter(p => p.category === "Sleep & Stress");
 
   return (
     <section className="py-24 bg-white">
@@ -57,7 +99,7 @@ export function ShopByHealthNeeds() {
           </h2>
         </div>
 
-        {/* Category Filters */}
+        {/* Category Filters / Tabs */}
         <div className="flex flex-wrap justify-center gap-2 mb-16 overflow-x-auto pb-4 scrollbar-hide">
           {categories.map((cat) => (
             <button
@@ -66,7 +108,7 @@ export function ShopByHealthNeeds() {
               className={cn(
                 "px-6 py-2.5 rounded-lg border-2 font-bold text-sm transition-all whitespace-nowrap",
                 activeCategory === cat 
-                  ? "bg-black text-white border-black" 
+                  ? "bg-black text-white border-black shadow-lg scale-105" 
                   : "bg-white text-foreground border-black/5 hover:border-black/20"
               )}
             >
@@ -75,12 +117,12 @@ export function ShopByHealthNeeds() {
           ))}
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product) => {
+        {/* Product Grid - Dynamic results based on Tabs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[400px]">
+          {displayProducts.map((product) => {
             const media = getPlaceholderImage(product.imageId);
             return (
-              <div key={product.id} className="flex flex-col group h-full">
+              <div key={product.id} className="flex flex-col group h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {/* Product Image Container */}
                 <div className="relative aspect-square bg-[#f9f9f9] rounded-2xl overflow-hidden mb-6">
                   <LazyImage 
