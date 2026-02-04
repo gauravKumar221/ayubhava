@@ -8,8 +8,7 @@ import {
   Instagram, 
   Facebook, 
   Twitter, 
-  Youtube, 
-  ArrowRight 
+  Youtube 
 } from 'lucide-react';
 
 export function Footer() {

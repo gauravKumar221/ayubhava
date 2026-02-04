@@ -14,6 +14,7 @@ import { LazyImage } from '@/components/shared/lazy-image';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Skeleton } from "@/components/ui/skeleton";
+import { Footer } from '@/components/layout/footer';
 import {
   Carousel,
   CarouselContent,
@@ -181,6 +182,7 @@ export default function ProductDetailsPage({ params }) {
             </div>
           </div>
         </main>
+        <Footer />
       </div>
     );
   }
@@ -520,16 +522,7 @@ export default function ProductDetailsPage({ params }) {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white py-12 border-t mt-24">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 font-black text-foreground text-xl mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-foreground font-bold text-xs">W</div>
-            <span className="uppercase tracking-tighter">Wellbeing Nutrition</span>
-          </div>
-          <p className="text-xs font-bold text-foreground/40 uppercase tracking-[0.3em]">© 2024 AYUBHYAVA Wellbeing. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
