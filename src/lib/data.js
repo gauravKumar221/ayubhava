@@ -89,6 +89,41 @@ export const appointments = [
   },
 ];
 
+export const orders = [
+  {
+    id: 'ORD-7721',
+    customer: 'Sarah Johnson',
+    date: '2024-07-28T14:30:00Z',
+    total: 245.50,
+    status: 'Processing',
+    items: 3
+  },
+  {
+    id: 'ORD-7722',
+    customer: 'Michael Smith',
+    date: '2024-07-28T15:45:00Z',
+    total: 120.00,
+    status: 'Completed',
+    items: 1
+  },
+  {
+    id: 'ORD-7723',
+    customer: 'Emily Davis',
+    date: '2024-07-27T10:15:00Z',
+    total: 850.75,
+    status: 'Pending',
+    items: 5
+  },
+  {
+    id: 'ORD-7724',
+    customer: 'David Wilson',
+    date: '2024-07-26T09:00:00Z',
+    total: 45.00,
+    status: 'Cancelled',
+    items: 2
+  }
+];
+
 const appointmentHistory = [
   {
     id: 'hist-1',

@@ -7,7 +7,7 @@ import {
 
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { AnalyticsChart } from '@/components/dashboard/analytics-chart';
-import { AppointmentsList } from '@/components/dashboard/appointments-list';
+import { RecentOrders } from '@/components/dashboard/recent-orders';
 import { PageHeader } from '@/components/shared/page-header';
 import { PatientTable } from '@/components/patients/patient-table';
 import { patients } from '@/lib/data';
@@ -46,7 +46,7 @@ export default function DashboardPage() {
         <div className="xl:col-span-2">
           <AnalyticsChart />
         </div>
-        <AppointmentsList />
+        <RecentOrders />
       </div>
       <PatientTable data={patients} />
     </div>
