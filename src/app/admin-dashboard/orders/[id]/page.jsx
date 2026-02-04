@@ -102,9 +102,13 @@ export default function OrderDetailsPage({ params }) {
     }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="flex flex-col gap-8 max-w-6xl mx-auto">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between no-print">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" asChild>
             <Link href="/admin-dashboard/orders">
@@ -123,7 +127,7 @@ export default function OrderDetailsPage({ params }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handlePrint}>
             <Printer className="mr-2 h-4 w-4" /> Print Invoice
           </Button>
           <Button size="sm">
@@ -132,12 +136,29 @@ export default function OrderDetailsPage({ params }) {
         </div>
       </div>
 
+      {/* Print only Header (Hidden on screen) */}
+      <div className="hidden print:block mb-8">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-primary">Bit Max Medical Supplies</h1>
+            <p className="text-sm text-muted-foreground">123 Healthcare Ave, Suite 400</p>
+            <p className="text-sm text-muted-foreground">Medical District, HC 54321</p>
+          </div>
+          <div className="text-right">
+            <h2 className="text-xl font-bold">INVOICE</h2>
+            <p className="text-sm font-bold">{order.id}</p>
+            <p className="text-xs text-muted-foreground">{format(new Date(order.date), 'MMMM dd, yyyy')}</p>
+          </div>
+        </div>
+        <Separator className="my-6" />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="border-none shadow-sm overflow-hidden">
-            <CardHeader className="bg-muted/30">
+          <Card className="border-none shadow-sm overflow-hidden print:shadow-none print:border">
+            <CardHeader className="bg-muted/30 print:bg-transparent">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Package className="h-5 w-5 text-primary" /> Order Items
+                <Package className="h-5 w-5 text-primary no-print" /> Order Items
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -145,7 +166,7 @@ export default function OrderDetailsPage({ params }) {
                 {order.items.map((item) => (
                   <div key={item.id} className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-primary">
+                      <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-primary no-print">
                         <Package className="h-6 w-6" />
                       </div>
                       <div>
@@ -160,7 +181,7 @@ export default function OrderDetailsPage({ params }) {
                   </div>
                 ))}
               </div>
-              <div className="p-6 bg-muted/10 space-y-2">
+              <div className="p-6 bg-muted/10 print:bg-transparent space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>${order.total.toFixed(2)}</span>
@@ -178,7 +199,7 @@ export default function OrderDetailsPage({ params }) {
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-sm">
+          <Card className="border-none shadow-sm no-print">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Truck className="h-5 w-5 text-primary" /> Delivery Details
@@ -192,7 +213,7 @@ export default function OrderDetailsPage({ params }) {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Tracking Number</p>
-                  <p className="text-sm font-mono text-primary font-bold">TRK-{(Math.random() * 1000000).toFixed(0)}</p>
+                  <p className="text-sm font-mono text-primary font-bold">TRK-772144</p>
                 </div>
               </div>
             </CardContent>
@@ -200,15 +221,15 @@ export default function OrderDetailsPage({ params }) {
         </div>
 
         <div className="space-y-6">
-          <Card className="border-none shadow-sm">
+          <Card className="border-none shadow-sm print:shadow-none print:border">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <User className="h-5 w-5 text-primary" /> Customer Info
+                <User className="h-5 w-5 text-primary no-print" /> Customer Info
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold no-print">
                   {order.customer.charAt(0)}
                 </div>
                 <div>
@@ -218,7 +239,7 @@ export default function OrderDetailsPage({ params }) {
               </div>
               <Separator />
               <div className="space-y-2">
-                <p className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Default Address</p>
+                <p className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Billing & Shipping Address</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   123 Healthcare Ave, Suite 400<br />
                   Medical District, HC 54321
@@ -227,10 +248,10 @@ export default function OrderDetailsPage({ params }) {
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-sm">
+          <Card className="border-none shadow-sm print:shadow-none print:border">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-primary" /> Payment Info
+                <CreditCard className="h-5 w-5 text-primary no-print" /> Payment Info
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -244,14 +265,20 @@ export default function OrderDetailsPage({ params }) {
                 <span className="text-sm text-muted-foreground">Method</span>
                 <span className="text-sm font-medium">Visa •••• 4242</span>
               </div>
-              <Separator />
-              <div className="bg-muted/30 p-3 rounded-lg flex items-center gap-2 text-xs text-muted-foreground">
+              <Separator className="no-print" />
+              <div className="bg-muted/30 p-3 rounded-lg flex items-center gap-2 text-xs text-muted-foreground no-print">
                 <AlertCircle className="h-4 w-4 text-primary" />
-                This payment was processed securely via Stripe.
+                This payment was processed securely.
               </div>
             </CardContent>
           </Card>
         </div>
+      </div>
+      
+      {/* Print Footer */}
+      <div className="hidden print:block mt-12 text-center text-xs text-muted-foreground border-t pt-8">
+        <p>Thank you for choosing Bit Max Medical Supplies.</p>
+        <p>For support, contact support@bitmax.com or call +1 (555) 000-1234</p>
       </div>
     </div>
   );

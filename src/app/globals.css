@@ -93,3 +93,38 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  .no-print, 
+  header, 
+  aside, 
+  nav, 
+  button, 
+  footer {
+    display: none !important;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .grid {
+    display: block !important;
+  }
+
+  .card {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
