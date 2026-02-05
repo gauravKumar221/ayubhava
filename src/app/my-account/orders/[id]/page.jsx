@@ -9,6 +9,24 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { 
   ChevronLeft, 
   Package, 
   Truck, 
@@ -21,7 +39,8 @@ import {
   ArrowRight,
   ShoppingBag,
   XCircle,
-  RotateCcw
+  RotateCcw,
+  Undo2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { LazyImage } from '@/components/shared/lazy-image';
@@ -31,6 +50,8 @@ import { useToast } from '@/hooks/use-toast';
 export default function OrderDetailPage({ params }) {
   const { id } = use(params);
   const [mounted, setMounted] = useState(false);
+  const [isReturnRequested, setIsReturnRequested] = useState(false);
+  const [isReturnDialogOpen, setIsReturnDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -43,7 +64,7 @@ export default function OrderDetailPage({ params }) {
   const order = {
     id: id || 'RIT-7721',
     date: '2024-07-28T14:30:00Z',
-    status: 'Processing',
+    status: isReturnRequested ? 'Return Requested' : 'Processing',
     paymentMethod: 'UPI • Google Pay',
     address: {
       name: 'Gaurav Kumar',
@@ -77,6 +98,16 @@ export default function OrderDetailPage({ params }) {
     });
   };
 
+  const handleSubmitReturn = (e) => {
+    e.preventDefault();
+    setIsReturnRequested(true);
+    setIsReturnDialogOpen(false);
+    toast({
+      title: "Return Ritual Initiated",
+      description: "Our experts have received your request. We will contact you for reverse pickup within 24 hours.",
+    });
+  };
+
   // Logic: Can cancel if "Meticulous Packing" is not yet completed
   const isCancellable = !order.tracking[1].completed;
 
@@ -97,7 +128,10 @@ export default function OrderDetailPage({ params }) {
               <div className="space-y-1">
                 <div className="flex items-center gap-3">
                   <h1 className="text-2xl lg:text-4xl font-black uppercase tracking-widest">{order.id}</h1>
-                  <Badge className="bg-[#e6f7f4] text-primary border-none font-black text-[10px] uppercase tracking-widest px-3 py-1">
+                  <Badge className={cn(
+                    "border-none font-black text-[10px] uppercase tracking-widest px-3 py-1",
+                    isReturnRequested ? "bg-orange-100 text-orange-600" : "bg-[#e6f7f4] text-primary"
+                  )}>
                     {order.status}
                   </Badge>
                 </div>
@@ -269,12 +303,73 @@ export default function OrderDetailPage({ params }) {
                     Cancel Ritual <XCircle className="ml-2 h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button 
-                    onClick={() => toast({ title: "Return Requested", description: "Our experts will contact you for pickup." })}
-                    className="w-full h-16 bg-white border-2 border-black text-black hover:bg-black hover:text-white rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-xl transition-all group"
-                  >
-                    Return Ritual <RotateCcw className="ml-2 h-4 w-4" />
-                  </Button>
+                  <Dialog open={isReturnDialogOpen} onOpenChange={setIsReturnDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        disabled={isReturnRequested}
+                        className={cn(
+                          "w-full h-16 rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-xl transition-all group border-2",
+                          isReturnRequested 
+                            ? "bg-muted text-muted-foreground border-muted cursor-not-allowed" 
+                            : "bg-white border-black text-black hover:bg-black hover:text-white"
+                        )}
+                      >
+                        {isReturnRequested ? (
+                          <>Return Initiated <CheckCircle2 className="ml-2 h-4 w-4" /></>
+                        ) : (
+                          <>Return Ritual <RotateCcw className="ml-2 h-4 w-4" /></>
+                        )}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px] rounded-[2rem] border-none p-0 overflow-hidden">
+                      <form onSubmit={handleSubmitReturn}>
+                        <DialogHeader className="p-8 bg-black text-white">
+                          <DialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-3">
+                            <Undo2 className="h-6 w-6 text-primary" /> Ritual Return Request
+                          </DialogTitle>
+                          <DialogDescription className="text-white/60 uppercase text-[10px] font-bold tracking-widest mt-2">
+                            Please provide details for our vitality team to process your return.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="p-8 space-y-6 bg-white">
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1 text-muted-foreground">Reason for Return</Label>
+                            <Select required>
+                              <SelectTrigger className="h-12 rounded-xl bg-muted/30 border-none font-bold">
+                                <SelectValue placeholder="Select a reason" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="damaged">Damaged on arrival</SelectItem>
+                                <SelectItem value="incorrect">Incorrect ritual received</SelectItem>
+                                <SelectItem value="quality">Quality concerns</SelectItem>
+                                <SelectItem value="allergic">Adverse reaction</SelectItem>
+                                <SelectItem value="other">Other issues</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1 text-muted-foreground">Detailed Description</Label>
+                            <Textarea 
+                              required
+                              placeholder="Please share your experience with the ritual..." 
+                              className="min-h-[120px] rounded-2xl bg-muted/30 border-none focus-visible:ring-primary/20"
+                            />
+                          </div>
+                          <div className="bg-primary/5 p-4 rounded-2xl flex items-start gap-3">
+                            <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                            <p className="text-[10px] font-medium leading-relaxed text-muted-foreground uppercase tracking-tight">
+                              Our Happiness Ritual policy ensures a seamless pickup. Please keep the original packaging ready.
+                            </p>
+                          </div>
+                        </div>
+                        <DialogFooter className="p-8 bg-white border-t border-muted/50">
+                          <Button type="submit" className="w-full h-14 bg-black text-white hover:bg-primary rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-2xl transition-all">
+                            Transmit Request
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 )}
                 <Button className="w-full h-16 bg-black text-white hover:bg-primary rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-xl transition-all group">
                   Repeat This Ritual <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
