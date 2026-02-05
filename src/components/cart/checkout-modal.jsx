@@ -101,7 +101,6 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
     }
   }, [open, triggerCoupons]);
 
-  // Form State
   const [formData, setFormData] = useState({
     name: '',
     type: 'Home',
@@ -175,7 +174,6 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[480px] p-0 overflow-hidden bg-[#f4f7f9] border-none gap-0 sm:rounded-[2rem] h-[85vh] flex flex-col shadow-2xl">
         <DialogTitle className="sr-only">Checkout</DialogTitle>
-        {/* Sticky Header */}
         <div className="bg-white px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10 shrink-0 border-b border-muted/20">
           <div className="flex items-center gap-3">
             <button 
@@ -205,49 +203,49 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                   </div>
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[440px] p-0 rounded-[1.5rem] overflow-hidden shadow-2xl border-none animate-in zoom-in-95 duration-200" align="end" sideOffset={8}>
+              <PopoverContent className="w-[440px] p-0 rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-none animate-in zoom-in-95 duration-200" align="end" sideOffset={8}>
                 <div className="flex flex-col bg-white">
-                  <div className="p-4 overflow-y-auto max-h-[400px] [&::-webkit-scrollbar]:hidden space-y-4">
+                  <div className="p-6 overflow-y-auto max-h-[450px] [&::-webkit-scrollbar]:hidden space-y-6">
                     {summaryItems.map((item) => (
                       <div key={item.id} className="flex gap-4">
-                        <div className="relative h-16 w-16 rounded-xl overflow-hidden border border-muted/50 shrink-0">
+                        <div className="relative h-20 w-20 rounded-2xl overflow-hidden border border-muted/30 shrink-0 bg-[#f9f9f9]">
                           <LazyImage src={item.image} alt={item.name} fill className="object-cover" />
                         </div>
-                        <div className="flex-1 min-w-0 flex flex-col justify-between">
-                          <h4 className="text-[11px] font-bold text-foreground leading-tight line-clamp-2">{item.name}</h4>
-                          <span className="text-[10px] font-medium text-muted-foreground">Qty: {item.qty}</span>
+                        <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                          <div className="space-y-1">
+                            <h4 className="text-[12px] font-bold text-foreground leading-tight line-clamp-2 pr-4">{item.name}</h4>
+                            <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-tight">Qty: {item.qty}</span>
+                          </div>
                         </div>
-                        <div className="text-right shrink-0 flex flex-col justify-between">
-                          <span className="text-[10px] text-muted-foreground line-through">₹{item.originalPrice}</span>
-                          <span className="text-sm font-black">₹{item.price === 0 ? '0' : item.price}</span>
+                        <div className="text-right shrink-0 flex flex-col justify-between py-1 min-w-[60px]">
+                          <span className="text-[11px] text-muted-foreground line-through">₹{item.originalPrice}</span>
+                          <span className="text-[15px] font-black">₹{item.price === 0 ? '0' : item.price}</span>
                         </div>
                       </div>
                     ))}
                     
-                    <Separator className="bg-muted/50 my-2" />
-
-                    <div className="bg-[#f8f9fa] rounded-2xl p-4 space-y-2">
-                      <div className="flex justify-between items-center text-[11px] font-bold text-muted-foreground">
+                    <div className="bg-[#f8f9fa] rounded-[1.5rem] p-5 space-y-3 mt-4">
+                      <div className="flex justify-between items-center text-[12px] font-bold text-[#666]">
                         <span>MRP Total</span>
-                        <span className="text-foreground">₹7,372</span>
+                        <span className="text-[#333]">₹7,372</span>
                       </div>
-                      <div className="flex justify-between items-center text-[11px] font-bold text-muted-foreground">
+                      <div className="flex justify-between items-center text-[12px] font-bold text-[#666]">
                         <span>Discount on MRP</span>
-                        <span className="text-primary">-₹726</span>
+                        <span className="text-[#4a6b5d] font-black">-₹726</span>
                       </div>
-                      <div className="flex justify-between items-center text-[11px] font-bold text-muted-foreground">
+                      <div className="flex justify-between items-center text-[12px] font-bold text-[#666]">
                         <span>Subtotal</span>
-                        <span className="text-foreground">₹6,646</span>
+                        <span className="text-[#333]">₹6,646</span>
                       </div>
-                      <div className="flex justify-between items-center text-[11px] font-bold text-muted-foreground">
+                      <div className="flex justify-between items-center text-[12px] font-bold text-[#666]">
                         <span>Shipping</span>
-                        <span className="text-primary">Free</span>
+                        <span className="text-[#93ab38] font-black uppercase">Free</span>
                       </div>
                     </div>
                   </div>
-                  <div className="px-6 py-4 bg-white border-t flex justify-between items-center">
-                    <span className="text-sm font-black uppercase tracking-wider">To Pay</span>
-                    <span className="text-lg font-black">₹6,646</span>
+                  <div className="px-8 py-5 bg-white border-t flex justify-between items-center">
+                    <span className="text-[13px] font-black uppercase tracking-[0.1em]">TO PAY</span>
+                    <span className="text-[22px] font-black">₹6,646</span>
                   </div>
                 </div>
               </PopoverContent>
@@ -255,14 +253,11 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
           </div>
         </div>
 
-        {/* Prepaid Offer Banner */}
         <div className="bg-black text-white text-center py-2 text-[11px] font-bold uppercase tracking-wider shrink-0">
           Upto Rs.100 off on Prepaid Orders
         </div>
 
-        {/* Scrollable Content */}
         <div className="p-4 space-y-4 overflow-y-auto pb-10 flex-1 [&::-webkit-scrollbar]:hidden">
-          {/* Delivery Details */}
           <div className="space-y-2">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Details</h3>
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-white space-y-4">
@@ -301,7 +296,6 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
             </div>
           </div>
 
-          {/* Offers & Rewards */}
           <div className="space-y-2">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Offers & Rewards</h3>
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-white">
@@ -326,7 +320,6 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
             </div>
           </div>
 
-          {/* Payment Options */}
           <div className="space-y-2 pb-8">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Options</h3>
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-white relative overflow-hidden">
@@ -377,7 +370,6 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
           </div>
         </div>
 
-        {/* Coupons Bottom Sheet */}
         <Sheet open={isCouponsOpen} onOpenChange={setIsCouponsOpen}>
           <SheetContent side="bottom" className="max-w-[480px] mx-auto p-0 rounded-t-[2rem] border-none overflow-hidden h-[80vh] flex flex-col">
             <div className="bg-white flex flex-col h-full">
@@ -419,11 +411,9 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
           </SheetContent>
         </Sheet>
 
-        {/* Address Bottom Sheet */}
         <Sheet open={isAddressSheetOpen} onOpenChange={setIsAddressSheetOpen}>
           <SheetContent side="bottom" className="max-w-[480px] mx-auto p-0 rounded-t-[2rem] border-none overflow-hidden h-[80vh] flex flex-col">
             <div className="bg-white flex flex-col h-full">
-              {/* Address Header */}
               <SheetHeader className="px-6 py-5 flex flex-row items-center justify-between border-b bg-white z-10 shrink-0 space-y-0">
                 <SheetTitle className="text-sm font-black">{isAddingNew ? (editingAddress ? 'Edit Address' : 'Add New Address') : 'Select Delivery Address'}</SheetTitle>
                 {!isAddingNew ? (
@@ -442,7 +432,6 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
 
               <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 [&::-webkit-scrollbar]:hidden">
                 {isAddingNew ? (
-                  /* Add/Edit Form */
                   <form onSubmit={handleSaveAddress} className="space-y-4 animate-in slide-in-from-right duration-300">
                     <div className="bg-white rounded-2xl p-5 shadow-sm border border-white space-y-4">
                       <div className="grid gap-2">
@@ -533,7 +522,6 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                     </div>
                   </form>
                 ) : (
-                  /* Address List */
                   <div className="space-y-4 pb-10">
                     {addresses.map((addr) => (
                       <div 
