@@ -21,6 +21,10 @@ function ProductCardSkeleton() {
       <div className="space-y-3 px-1">
         <Skeleton className="h-5 w-24 rounded" />
         <Skeleton className="h-6 w-3/4" />
+        <div className="flex gap-2">
+          <Skeleton className="h-4 w-12 rounded" />
+          <Skeleton className="h-4 w-12 rounded" />
+        </div>
         <div className="pt-4 space-y-4">
           <Skeleton className="h-8 w-24" />
           <Skeleton className="h-12 w-full rounded-none" />
@@ -144,6 +148,16 @@ export function BestSellers() {
                       <h3 className="text-sm md:text-lg font-black text-foreground leading-tight tracking-tight hover:text-primary transition-colors line-clamp-2">
                         {product.title}
                       </h3>
+
+                      {product.tags && product.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {product.tags.map(tag => (
+                            <span key={tag} className="bg-[#eef4f2] text-[#4a6b5d] px-2 py-0.5 md:px-2.5 md:py-1 rounded text-[8px] md:text-[10px] font-bold uppercase tracking-wide border border-[#dcece6]">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </Link>
 
                     <div className="mt-auto pt-2 md:pt-4 space-y-3 md:space-y-4">
