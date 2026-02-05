@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { 
   ShoppingBag, 
   ChevronRight, 
+  ChevronLeft,
   Calendar, 
   CheckCircle2, 
   Clock, 
@@ -68,14 +69,21 @@ export default function MyOrdersPage() {
       <main className="flex-1 container mx-auto px-4 py-12 lg:py-20 max-w-4xl">
         <div className="space-y-12">
           {/* Page Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-2">
-              <Badge className="bg-primary/10 text-primary border-none font-black text-[10px] uppercase tracking-[0.2em] px-3 py-1">
-                Ritual Tracker
-              </Badge>
-              <h1 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter leading-none">
-                Order <br /><span className="text-primary">History.</span>
-              </h1>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="flex items-center gap-6">
+              <Button asChild variant="outline" size="icon" className="rounded-full h-12 w-12 border-2 border-black/5 hover:bg-black hover:text-white transition-all shrink-0">
+                <Link href="/my-account/profile">
+                  <ChevronLeft className="h-5 w-5" />
+                </Link>
+              </Button>
+              <div className="space-y-2">
+                <Badge className="bg-primary/10 text-primary border-none font-black text-[10px] uppercase tracking-[0.2em] px-3 py-1">
+                  Ritual Tracker
+                </Badge>
+                <h1 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter leading-none">
+                  Order <br /><span className="text-primary">History.</span>
+                </h1>
+              </div>
             </div>
             <Button asChild variant="outline" className="rounded-none border-2 border-black font-black uppercase text-xs tracking-widest h-12 px-8 hover:bg-black hover:text-white transition-all">
               <Link href="/products">Shop New Rituals</Link>
