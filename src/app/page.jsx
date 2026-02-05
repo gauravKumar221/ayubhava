@@ -19,6 +19,7 @@ import { ShopByHealthNeeds } from '@/components/home/shop-by-health-needs';
 import { HeroSection } from '@/components/home/hero-section';
 import { Testimonials } from '@/components/home/testimonials';
 import { BestSellers } from '@/components/home/best-sellers';
+import { NewArrivals } from '@/components/home/new-arrivals';
 import { DeliveryProcess } from '@/components/home/delivery-process';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -196,6 +197,9 @@ export default function HomePage() {
 
         {/* Best Sellers Section */}
         <BestSellers />
+
+        {/* New Arrivals Section */}
+        <NewArrivals />
 
         {/* Community Testimonials Section */}
         <Testimonials />
