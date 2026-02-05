@@ -18,7 +18,8 @@ import {
   Download,
   AlertCircle,
   HelpCircle,
-  ArrowRight
+  ArrowRight,
+  ShoppingBag
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { LazyImage } from '@/components/shared/lazy-image';
