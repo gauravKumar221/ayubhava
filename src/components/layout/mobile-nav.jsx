@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Store, ShoppingBag } from 'lucide-react';
+import { Home, Store, ShoppingBag, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSelector } from 'react-redux';
 import { CartDrawer } from '@/components/cart/cart-drawer';
@@ -10,6 +10,7 @@ import { CartDrawer } from '@/components/cart/cart-drawer';
 export function MobileNav() {
   const pathname = usePathname();
   const cartQuantity = useSelector((state) => state.cart.totalQuantity);
+  const wishlistQuantity = useSelector((state) => state.wishlist.totalQuantity);
 
   const navItems = [
     {
@@ -23,6 +24,13 @@ export function MobileNav() {
       icon: Store,
       href: '/products',
       active: pathname.startsWith('/products'),
+    },
+    {
+      label: 'Wishlist',
+      icon: Heart,
+      href: '/wishlist',
+      active: pathname === '/wishlist',
+      isWishlist: true,
     },
     {
       label: 'Cart',
@@ -56,6 +64,11 @@ export function MobileNav() {
                 {item.isCart && cartQuantity > 0 && (
                   <span className="absolute -top-2 -right-2 bg-primary text-[8px] text-white h-4 w-4 flex items-center justify-center rounded-full font-black animate-in zoom-in duration-300">
                     {cartQuantity}
+                  </span>
+                )}
+                {item.isWishlist && wishlistQuantity > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-[8px] text-white h-4 w-4 flex items-center justify-center rounded-full font-black animate-in zoom-in duration-300">
+                    {wishlistQuantity}
                   </span>
                 )}
               </div>
