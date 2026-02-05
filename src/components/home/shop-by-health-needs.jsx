@@ -140,7 +140,7 @@ export function ShopByHealthNeeds() {
                           dataAiHint={media?.imageHint}
                         />
                         {product.isHighlyReordered && (
-                          <div className="absolute top-0 right-0 bg-black text-white px-2 py-1 md:px-3 md:py-1 text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-bl-xl z-10">
+                          <div className="absolute top-0 right-0 bg-primary text-white px-2 py-1 md:px-3 md:py-1 text-[8px] md:text-[10px] font-black uppercase tracking-wider rounded-bl-xl z-10 shadow-sm">
                             Highly reordered
                           </div>
                         )}
