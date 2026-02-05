@@ -153,9 +153,6 @@ export default function OrderDetailPage({ params }) {
               </div>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" className="rounded-none border-2 border-black font-black uppercase text-[10px] tracking-widest h-12 px-6">
-                <Download className="mr-2 h-4 w-4" /> Invoice
-              </Button>
               <Button className="rounded-none bg-black text-white hover:bg-primary h-12 px-8 font-black uppercase text-[10px] tracking-widest shadow-xl transition-all">
                 Help <HelpCircle className="ml-2 h-4 w-4" />
               </Button>
