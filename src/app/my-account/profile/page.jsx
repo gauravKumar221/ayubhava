@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,14 +23,24 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 export default function UserProfilePage() {
   const [mounted, setMounted] = useState(false);
+  const { toast } = useToast();
   const avatar = getPlaceholderImage('user-avatar-1');
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSaveChanges = () => {
+    toast({
+      title: "Sanctuary Updated",
+      description: "Your profile information and rituals have been successfully saved.",
+    });
+  };
 
   if (!mounted) return null;
 
@@ -71,7 +82,9 @@ export default function UserProfilePage() {
                   >
                     {item.href ? (
                       <Link href={item.href}>
-                        {item.icon} <span className="ml-3">{item.label}</span>
+                        <span className="flex items-center">
+                          {item.icon} <span className="ml-3">{item.label}</span>
+                        </span>
                       </Link>
                     ) : (
                       <div className="flex items-center">
@@ -153,7 +166,10 @@ export default function UserProfilePage() {
                   </div>
 
                   <div className="pt-4">
-                    <Button className="w-full h-16 bg-black text-white hover:bg-primary rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-xl transition-all">
+                    <Button 
+                      onClick={handleSaveChanges}
+                      className="w-full h-16 bg-black text-white hover:bg-primary rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-xl transition-all"
+                    >
                       Save Sanctuary Changes
                     </Button>
                   </div>
@@ -168,6 +184,3 @@ export default function UserProfilePage() {
     </div>
   );
 }
-
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
