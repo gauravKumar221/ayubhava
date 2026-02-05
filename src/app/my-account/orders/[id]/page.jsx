@@ -43,7 +43,9 @@ import {
   Undo2,
   Clock,
   ShieldCheck,
-  AlertTriangle
+  AlertTriangle,
+  Mail,
+  Phone
 } from 'lucide-react';
 import { format, differenceInDays, subDays } from 'date-fns';
 import { LazyImage } from '@/components/shared/lazy-image';
@@ -153,9 +155,73 @@ export default function OrderDetailPage({ params }) {
               </div>
             </div>
             <div className="flex gap-3">
-              <Button className="rounded-none bg-black text-white hover:bg-primary h-12 px-8 font-black uppercase text-[10px] tracking-widest shadow-xl transition-all">
-                Help <HelpCircle className="ml-2 h-4 w-4" />
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="rounded-none bg-black text-white hover:bg-primary h-12 px-8 font-black uppercase text-[10px] tracking-widest shadow-xl transition-all">
+                    Help <HelpCircle className="ml-2 h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px] rounded-[2rem] border-none p-0 overflow-hidden shadow-2xl">
+                  <DialogHeader className="p-8 bg-black text-white">
+                    <DialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-3">
+                      <HelpCircle className="h-6 w-6 text-primary" /> Ritual Support
+                    </DialogTitle>
+                    <DialogDescription className="text-white/60 uppercase text-[10px] font-bold tracking-widest mt-2">
+                      Our vitality experts are here to guide your journey.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="p-8 space-y-8 bg-white">
+                    <div className="space-y-4">
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Direct Assistance</h4>
+                      <div className="grid gap-3">
+                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border border-muted/50 group hover:border-primary/30 transition-colors">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                            <Mail className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Email Us</p>
+                            <p className="text-sm font-black">rituals@ayubhyava.com</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border border-muted/50 group hover:border-primary/30 transition-colors">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                            <Phone className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Call Expert</p>
+                            <p className="text-sm font-black">+1 (555) 000-1234</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Quick Guidance</h4>
+                      <div className="space-y-4">
+                        <div className="flex gap-3">
+                          <Truck className="h-4 w-4 text-primary shrink-0" />
+                          <div className="space-y-1">
+                            <p className="text-xs font-black uppercase">Tracking rituals</p>
+                            <p className="text-[10px] font-medium text-muted-foreground leading-relaxed uppercase tracking-tight">Standard delivery takes 3-5 business days from dispatch. You'll receive real-time updates at every stage.</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3">
+                          <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
+                          <div className="space-y-1">
+                            <p className="text-xs font-black uppercase">Returns Policy</p>
+                            <p className="text-[10px] font-medium text-muted-foreground leading-relaxed uppercase tracking-tight">Our Happiness Ritual policy allows returns within 14 days of delivery for unopened products.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter className="p-8 bg-white border-t border-muted/50">
+                    <Button variant="outline" className="w-full h-14 rounded-none border-2 border-black font-black uppercase tracking-[0.2em] text-xs">
+                      View Full FAQs
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 
