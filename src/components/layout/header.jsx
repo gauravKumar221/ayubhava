@@ -24,7 +24,10 @@ import {
   Youtube,
   Twitter,
   Linkedin,
-  MapPin
+  User,
+  LogOut,
+  Settings,
+  ClipboardList
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -32,6 +35,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -55,11 +59,15 @@ import { Button } from '@/components/ui/button';
 import { CartDrawer } from '@/components/cart/cart-drawer';
 import { LoginModal } from '@/components/auth/login-modal';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getPlaceholderImage } from '@/lib/placeholder-images';
 
 export function Header() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Mock logged in state
   const cartQuantity = useSelector((state) => state.cart.totalQuantity);
   const wishlistQuantity = useSelector((state) => state.wishlist.totalQuantity);
+  const userAvatar = getPlaceholderImage('user-avatar-1');
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -313,10 +321,56 @@ export function Header() {
 
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-4 text-foreground/70">
-            <Zap 
-              className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" 
-              onClick={() => setIsLoginOpen(true)}
-            />
+            {isLoggedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="h-9 w-9 border-2 border-primary/20 cursor-pointer hover:scale-105 transition-transform">
+                    <AvatarImage src={userAvatar?.imageUrl} alt="User" />
+                    <AvatarFallback className="bg-primary/10 text-primary font-black text-xs uppercase">G</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-64 p-3 rounded-2xl shadow-2xl border-none mt-2 animate-in slide-in-from-top-2 duration-200" align="end">
+                  <DropdownMenuLabel className="flex flex-col space-y-1 py-2 px-2">
+                    <span className="text-sm font-black uppercase tracking-tight">Gaurav Kumar</span>
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Ritual Member</span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="my-2 bg-muted/50" />
+                  <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-black focus:text-white transition-colors">
+                    <Link href="/my-account/profile" className="flex items-center w-full">
+                      <User className="mr-3 h-4 w-4 text-primary" /> My Sanctuary
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-black focus:text-white transition-colors">
+                    <Link href="/my-account/orders" className="flex items-center w-full">
+                      <ClipboardList className="mr-3 h-4 w-4 text-primary" /> Order History
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-black focus:text-white transition-colors">
+                    <Link href="/wishlist" className="flex items-center w-full">
+                      <Heart className="mr-3 h-4 w-4 text-primary" /> Saved Rituals
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider focus:bg-black focus:text-white transition-colors">
+                    <Link href="/profile" className="flex items-center w-full">
+                      <Settings className="mr-3 h-4 w-4 text-primary" /> Preferences
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-2 bg-muted/50" />
+                  <DropdownMenuItem 
+                    onClick={() => setIsLoggedIn(false)}
+                    className="rounded-xl py-3 cursor-pointer font-bold text-[11px] uppercase tracking-wider text-red-500 focus:bg-red-500 focus:text-white transition-colors"
+                  >
+                    <LogOut className="mr-3 h-4 w-4" /> Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Zap 
+                className="h-5 w-5 cursor-pointer hover:text-primary transition-colors" 
+                onClick={() => setIsLoginOpen(true)}
+              />
+            )}
+            
             <Link href="/wishlist" className="relative group block p-1">
               <Heart className={cn(
                 "h-5 w-5 cursor-pointer transition-colors", 
