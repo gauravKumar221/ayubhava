@@ -81,12 +81,12 @@ export function LoginModal({ open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[850px] p-0 overflow-hidden border-none gap-0 rounded-[2rem] sm:rounded-[2.5rem] bg-white shadow-2xl">
+      <DialogContent className="max-w-[92vw] md:max-w-[850px] p-0 overflow-hidden border-none gap-0 rounded-[2rem] sm:rounded-[2.5rem] bg-white shadow-2xl">
         <DialogTitle className="sr-only">Login to Wellbeing</DialogTitle>
         
-        <div className="flex flex-col md:flex-row h-full min-h-[500px]">
-          {/* Left Side: Branding & Benefits */}
-          <div className="flex-1 bg-gradient-to-br from-[#e0e0e0] via-[#f5f5f5] to-[#ffffff] p-8 lg:p-12 flex flex-col justify-center items-center text-center relative overflow-hidden">
+        <div className="flex flex-col md:flex-row h-full min-h-[450px] md:min-h-[500px]">
+          {/* Left Side: Branding & Benefits - HIDDEN ON MOBILE */}
+          <div className="hidden md:flex flex-1 bg-gradient-to-br from-[#e0e0e0] via-[#f5f5f5] to-[#ffffff] p-8 lg:p-12 flex-col justify-center items-center text-center relative overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute -top-24 -left-24 w-64 h-64 bg-white/40 rounded-full blur-3xl opacity-50" />
             <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-black/5 rounded-full blur-3xl opacity-50" />
@@ -130,7 +130,7 @@ export function LoginModal({ open, onOpenChange }) {
           </div>
 
           {/* Right Side: Login Form / OTP */}
-          <div className="w-full md:w-[380px] bg-white p-8 lg:p-12 flex flex-col justify-center relative border-l border-muted/10 min-h-[500px]">
+          <div className="w-full md:w-[380px] bg-white p-8 lg:p-12 flex flex-col justify-center relative border-l border-muted/10 min-h-[450px] md:min-h-[500px]">
             {step === 'number' ? (
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="text-center space-y-2">
