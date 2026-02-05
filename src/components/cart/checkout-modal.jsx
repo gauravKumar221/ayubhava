@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Dialog,
   DialogContent,
@@ -34,7 +35,8 @@ import {
   Pencil,
   Plus,
   Trash2,
-  ChevronUp
+  ChevronUp,
+  Box
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -56,34 +58,13 @@ const initialAddresses = [
   }
 ];
 
-const summaryItems = [
-  {
-    id: 'sum-1',
-    name: 'Vegan Protein Canadian Mixed Berry Gift Sachet',
-    qty: 1,
-    originalPrice: 127,
-    price: 0,
-    image: 'https://images.unsplash.com/photo-1593094276927-230f7c8201b0?q=80&w=200&auto=format&fit=crop'
-  },
-  {
-    id: 'sum-2',
-    name: 'Vegan Protein 22g | 500g | 3B CFU Probiotics | Belgian Dark Chocolate - Pack of 1',
-    qty: 1,
-    originalPrice: 1799,
-    price: 1709,
-    image: 'https://images.unsplash.com/photo-1593094276927-230f7c8201b0?q=80&w=200&auto=format&fit=crop'
-  },
-  {
-    id: 'sum-3',
-    name: 'Hydrasalt® Electrolyte Drink | Free Variety Pack of 3',
-    qty: 1,
-    originalPrice: 160,
-    price: 0,
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=200&auto=format&fit=crop'
-  }
-];
-
 export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = false }) {
+  const cartItems = useSelector((state) => state.cart.items);
+  const totalAmount = useSelector((state) => state.cart.totalAmount);
+  const totalQuantity = useSelector((state) => state.cart.totalQuantity);
+  const totalSavings = useSelector((state) => state.cart.totalSavings);
+  const mrpTotal = totalAmount + totalSavings;
+
   const [showQR, setShowQR] = useState(false);
   const [isCouponsOpen, setIsCouponsOpen] = useState(false);
   const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
@@ -186,17 +167,21 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
           </div>
           
           <div className="flex items-center gap-2">
-            <div className="bg-[#e6f7f4] px-2 py-1 rounded-full flex items-center gap-1.5 border border-primary/10">
-              <span className="text-[10px] font-black text-primary">₹726 saved so far</span>
-            </div>
+            {totalSavings > 0 && (
+              <div className="bg-[#e6f7f4] px-2 py-1 rounded-full flex items-center gap-1.5 border border-primary/10">
+                <span className="text-[10px] font-black text-primary">₹{totalSavings.toLocaleString()} saved so far</span>
+              </div>
+            )}
             
             <Popover open={isSummaryOpen} onOpenChange={setIsSummaryOpen}>
               <PopoverTrigger asChild>
                 <div className="flex flex-col items-end leading-none cursor-pointer group">
-                  <span className="text-[10px] text-muted-foreground font-bold group-hover:text-primary transition-colors">• 7 items</span>
+                  <span className="text-[10px] text-muted-foreground font-bold group-hover:text-primary transition-colors">• {totalQuantity} items</span>
                   <div className="flex items-center gap-1">
-                    <span className="text-[10px] text-muted-foreground line-through">₹7,372</span>
-                    <span className="text-sm font-black">₹6,646</span>
+                    {totalSavings > 0 && (
+                      <span className="text-[10px] text-muted-foreground line-through">₹{mrpTotal.toLocaleString()}</span>
+                    )}
+                    <span className="text-sm font-black">₹{totalAmount.toLocaleString()}</span>
                     <div className={cn("transition-transform duration-200", isSummaryOpen && "rotate-180")}>
                       <ChevronDown className="h-3 w-3 opacity-40 group-hover:opacity-100" />
                     </div>
@@ -206,20 +191,26 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
               <PopoverContent className="w-[440px] p-0 rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-none animate-in zoom-in-95 duration-200" align="end" sideOffset={8}>
                 <div className="flex flex-col bg-white">
                   <div className="p-6 overflow-y-auto max-h-[450px] [&::-webkit-scrollbar]:hidden space-y-6">
-                    {summaryItems.map((item) => (
+                    {cartItems.map((item) => (
                       <div key={item.id} className="flex gap-4">
                         <div className="relative h-20 w-20 rounded-2xl overflow-hidden border border-muted/30 shrink-0 bg-[#f9f9f9]">
-                          <LazyImage src={item.image} alt={item.name} fill className="object-cover" />
+                          {item.image ? (
+                            <LazyImage src={item.image} alt={item.name} fill className="object-cover" />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-muted-foreground/30">
+                              <Box className="h-8 w-8" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
                           <div className="space-y-1">
                             <h4 className="text-[12px] font-bold text-foreground leading-tight line-clamp-2 pr-4">{item.name}</h4>
-                            <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-tight">Qty: {item.qty}</span>
+                            <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-tight">Qty: {item.quantity}</span>
                           </div>
                         </div>
                         <div className="text-right shrink-0 flex flex-col justify-between py-1 min-w-[60px]">
-                          <span className="text-[11px] text-muted-foreground line-through">₹{item.originalPrice}</span>
-                          <span className="text-[15px] font-black">₹{item.price === 0 ? '0' : item.price}</span>
+                          <span className="text-[11px] text-muted-foreground line-through">₹{(item.originalPrice * item.quantity).toLocaleString()}</span>
+                          <span className="text-[15px] font-black">₹{item.price === 0 ? '0' : (item.price * item.quantity).toLocaleString()}</span>
                         </div>
                       </div>
                     ))}
@@ -227,15 +218,17 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                     <div className="bg-[#f8f9fa] rounded-[1.5rem] p-5 space-y-3 mt-4">
                       <div className="flex justify-between items-center text-[12px] font-bold text-[#666]">
                         <span>MRP Total</span>
-                        <span className="text-[#333]">₹7,372</span>
+                        <span className="text-[#333]">₹{mrpTotal.toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between items-center text-[12px] font-bold text-[#666]">
-                        <span>Discount on MRP</span>
-                        <span className="text-[#4a6b5d] font-black">-₹726</span>
-                      </div>
+                      {totalSavings > 0 && (
+                        <div className="flex justify-between items-center text-[12px] font-bold text-[#666]">
+                          <span>Discount on MRP</span>
+                          <span className="text-[#4a6b5d] font-black">-₹{totalSavings.toLocaleString()}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between items-center text-[12px] font-bold text-[#666]">
                         <span>Subtotal</span>
-                        <span className="text-[#333]">₹6,646</span>
+                        <span className="text-[#333]">₹{totalAmount.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center text-[12px] font-bold text-[#666]">
                         <span>Shipping</span>
@@ -245,7 +238,7 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                   </div>
                   <div className="px-8 py-5 bg-white border-t flex justify-between items-center">
                     <span className="text-[13px] font-black uppercase tracking-[0.1em]">TO PAY</span>
-                    <span className="text-[22px] font-black">₹6,646</span>
+                    <span className="text-[22px] font-black">₹{totalAmount.toLocaleString()}</span>
                   </div>
                 </div>
               </PopoverContent>
@@ -331,7 +324,7 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                   <span className="text-sm font-black">UPI</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-sm font-black">₹6546</span>
+                  <span className="text-sm font-black">₹{totalAmount.toLocaleString()}</span>
                 </div>
               </div>
 
