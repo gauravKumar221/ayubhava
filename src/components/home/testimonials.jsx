@@ -57,6 +57,33 @@ const testimonials = [
     ritual: 'Daily Detox Ritual',
     text: "Finally, a protein isolate that doesn't cause bloating. The 4B CFU probiotics integration is genius for anyone with a sensitive gut.",
     avatarId: 'user-avatar-2'
+  },
+  {
+    id: 't6',
+    name: 'Siddharth Mehta',
+    location: 'Pune, India',
+    rating: 5,
+    ritual: 'Energy Ritual',
+    text: "The vegan protein isolate is smooth and digests perfectly. I've noticed a significant boost in my energy levels throughout the day since switching.",
+    avatarId: 'user-avatar-4'
+  },
+  {
+    id: 't7',
+    name: 'Rohan Verma',
+    location: 'Chennai, India',
+    rating: 5,
+    ritual: 'Focus Ritual',
+    text: "AYUBHAVA has truly set a new standard for purity. I feel more alert and less fatigued throughout my shifts.",
+    avatarId: 'user-avatar-1'
+  },
+  {
+    id: 't8',
+    name: 'Dr. Sameer Khan',
+    location: 'Mumbai, India',
+    rating: 5,
+    ritual: 'Medical Wellness',
+    text: "Superior bioavailability is what sets these rituals apart. I've seen remarkable progress in my patients' vitality levels.",
+    avatarId: 'doctor-4'
   }
 ];
 
@@ -87,7 +114,7 @@ export function Testimonials() {
             {testimonials.map((t) => {
               const avatar = getPlaceholderImage(t.avatarId);
               return (
-                <CarouselItem key={t.id} className="pl-4 lg:pl-8 basis-full md:basis-1/2 lg:basis-1/3">
+                <CarouselItem key={t.id} className="pl-4 lg:pl-8 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                   <Card className="border-none shadow-sm rounded-[2rem] overflow-hidden bg-white h-full group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
                     <CardContent className="p-8 lg:p-10 space-y-6 flex flex-col h-full">
                       <div className="flex items-center justify-between">
@@ -101,18 +128,27 @@ export function Testimonials() {
                         </div>
                       </div>
 
-                      <p className="text-lg font-medium text-foreground italic leading-relaxed flex-1">
+                      <p className="text-base font-medium text-foreground italic leading-relaxed flex-1">
                         "{t.text}"
                       </p>
 
                       <div className="flex items-center gap-4 pt-6 border-t border-muted/50 mt-auto">
-                        <Avatar className="h-12 w-12 border-2 border-primary/10">
-                          {avatar && <AvatarImage src={avatar.imageUrl} alt={t.name} />}
-                          <AvatarFallback className="bg-primary/5 text-primary font-black">{t.name.charAt(0)}</AvatarFallback>
+                        <Avatar className="h-12 w-12 border-2 border-primary/10 shrink-0">
+                          {avatar && (
+                            <AvatarImage 
+                              src={avatar.imageUrl} 
+                              alt={t.name} 
+                              className="object-cover" 
+                              data-ai-hint={avatar.imageHint}
+                            />
+                          )}
+                          <AvatarFallback className="bg-primary/5 text-primary font-black">
+                            {t.name.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
-                        <div className="flex flex-col">
-                          <h4 className="font-black text-sm uppercase tracking-tight">{t.name}</h4>
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.location}</p>
+                        <div className="flex flex-col min-w-0">
+                          <h4 className="font-black text-sm uppercase tracking-tight truncate">{t.name}</h4>
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">{t.location}</p>
                         </div>
                       </div>
                     </CardContent>
