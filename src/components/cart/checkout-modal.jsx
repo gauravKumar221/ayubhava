@@ -188,9 +188,9 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                   </div>
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[440px] p-0 rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-none animate-in zoom-in-95 duration-200" align="end" sideOffset={8}>
-                <div className="flex flex-col bg-white">
-                  <div className="p-6 overflow-y-auto max-h-[450px] [&::-webkit-scrollbar]:hidden space-y-6">
+              <PopoverContent className="w-[calc(100vw-32px)] sm:w-[440px] p-0 rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-none animate-in zoom-in-95 duration-200" align="end" sideOffset={8}>
+                <div className="flex flex-col bg-white overflow-hidden">
+                  <div className="p-6 overflow-y-auto max-h-[60vh] sm:max-h-[450px] space-y-6 scrollbar-hide">
                     {cartItems.map((item) => (
                       <div key={item.id} className="flex gap-4">
                         <div className="relative h-20 w-20 rounded-2xl overflow-hidden border border-muted/30 shrink-0 bg-[#f9f9f9]">
@@ -236,7 +236,7 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                       </div>
                     </div>
                   </div>
-                  <div className="px-8 py-5 bg-white border-t flex justify-between items-center">
+                  <div className="px-8 py-5 bg-white border-t flex justify-between items-center shrink-0">
                     <span className="text-[13px] font-black uppercase tracking-[0.1em]">TO PAY</span>
                     <span className="text-[22px] font-black">₹{totalAmount.toLocaleString()}</span>
                   </div>
@@ -250,7 +250,7 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
           Upto Rs.100 off on Prepaid Orders
         </div>
 
-        <div className="p-4 space-y-4 overflow-y-auto pb-10 flex-1 [&::-webkit-scrollbar]:hidden">
+        <div className="p-4 space-y-4 overflow-y-auto pb-10 flex-1 scrollbar-hide">
           <div className="space-y-2">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Details</h3>
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-white space-y-4">
@@ -375,7 +375,7 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                   <X className="h-5 w-5" />
                 </button>
               </SheetHeader>
-              <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 space-y-6 [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 space-y-6 scrollbar-hide">
                 <div className="bg-white rounded-2xl p-4 shadow-sm border border-white">
                   <div className="relative">
                     <Input placeholder="Enter coupon code" className="h-12 rounded-xl bg-[#f8f9fa] border-muted/50 text-xs font-bold" />
@@ -423,7 +423,7 @@ export function CheckoutModal({ open, onOpenChange, onBack, triggerCoupons = fal
                 )}
               </SheetHeader>
 
-              <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 overflow-y-auto bg-[#f4f7f9] p-4 scrollbar-hide">
                 {isAddingNew ? (
                   <form onSubmit={handleSaveAddress} className="space-y-4 animate-in slide-in-from-right duration-300">
                     <div className="bg-white rounded-2xl p-5 shadow-sm border border-white space-y-4">
