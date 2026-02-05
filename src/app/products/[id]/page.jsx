@@ -157,7 +157,7 @@ export default function ProductDetailsPage({ params }) {
                           src={media?.imageUrl} 
                           alt={`${product.title} view ${i}`} 
                           fill 
-                          className="object-contain p-12"
+                          className="object-cover"
                           dataAiHint={media?.imageHint}
                         />
                       </div>

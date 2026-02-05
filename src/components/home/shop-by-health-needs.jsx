@@ -136,7 +136,7 @@ export function ShopByHealthNeeds() {
                           src={media?.imageUrl} 
                           alt={product.title} 
                           fill 
-                          className="object-contain p-6 md:p-8 group-hover:scale-105 transition-transform duration-500"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
                           dataAiHint={media?.imageHint}
                         />
                         {product.isHighlyReordered && (

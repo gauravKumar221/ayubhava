@@ -170,7 +170,7 @@ export default function PublicProductsPage() {
                     <div key={product.id} className="group flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
                       <div className="relative aspect-square bg-[#f9f9f9] overflow-hidden mb-4 md:mb-8 border border-black/5 transition-all shadow-sm hover:shadow-2xl rounded-2xl">
                         <Link href={`/products/${product.id}`} className="block h-full w-full">
-                          <LazyImage src={media?.imageUrl} alt={product.title} fill className="object-contain p-6 md:p-12 transition-transform duration-700 group-hover:scale-110" />
+                          <LazyImage src={media?.imageUrl} alt={product.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                         </Link>
                         <button 
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleWishlist(product); }} 

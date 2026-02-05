@@ -85,7 +85,7 @@ export default function WishlistPage() {
                             src={item.image} 
                             alt={item.title} 
                             fill 
-                            className="object-contain p-6"
+                            className="object-cover"
                             dataAiHint={item.imageHint}
                           />
                         )}
