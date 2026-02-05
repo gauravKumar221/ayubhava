@@ -19,15 +19,19 @@ import {
   AlertCircle,
   HelpCircle,
   ArrowRight,
-  ShoppingBag
+  ShoppingBag,
+  XCircle,
+  RotateCcw
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 export default function OrderDetailPage({ params }) {
   const { id } = use(params);
   const [mounted, setMounted] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     setMounted(true);
@@ -65,6 +69,16 @@ export default function OrderDetailPage({ params }) {
       total: 4447
     }
   };
+
+  const handleCancelOrder = () => {
+    toast({
+      title: "Cancellation Requested",
+      description: "Your request to cancel the ritual has been received. We will process your refund shortly.",
+    });
+  };
+
+  // Logic: Can cancel if "Meticulous Packing" is not yet completed
+  const isCancellable = !order.tracking[1].completed;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#fafafa] font-body">
@@ -247,7 +261,22 @@ export default function OrderDetailPage({ params }) {
 
               {/* Action Buttons */}
               <div className="pt-4 space-y-4">
-                <Button className="w-full h-16 bg-white border-2 border-black text-black hover:bg-black hover:text-white rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-xl transition-all group">
+                {isCancellable ? (
+                  <Button 
+                    onClick={handleCancelOrder}
+                    className="w-full h-16 bg-white border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-xl transition-all group"
+                  >
+                    Cancel Ritual <XCircle className="ml-2 h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={() => toast({ title: "Return Requested", description: "Our experts will contact you for pickup." })}
+                    className="w-full h-16 bg-white border-2 border-black text-black hover:bg-black hover:text-white rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-xl transition-all group"
+                  >
+                    Return Ritual <RotateCcw className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
+                <Button className="w-full h-16 bg-black text-white hover:bg-primary rounded-none font-black uppercase tracking-[0.2em] text-xs shadow-xl transition-all group">
                   Repeat This Ritual <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
