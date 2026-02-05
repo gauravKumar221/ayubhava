@@ -15,8 +15,6 @@ import {
   Mail, 
   Phone, 
   MapPin, 
-  ShieldCheck, 
-  Bell, 
   ChevronRight,
   Sparkles,
   Camera
@@ -68,8 +66,6 @@ export default function UserProfilePage() {
                   { label: 'Profile Information', icon: <User className="h-4 w-4" />, active: true },
                   { label: 'Order History', icon: <ChevronRight className="h-4 w-4" />, href: '/my-account/orders' },
                   { label: 'Saved Rituals', icon: <ChevronRight className="h-4 w-4" />, href: '/wishlist' },
-                  { label: 'Notifications', icon: <Bell className="h-4 w-4" /> },
-                  { label: 'Security', icon: <ShieldCheck className="h-4 w-4" /> },
                 ].map((item) => (
                   <Button 
                     key={item.label}
