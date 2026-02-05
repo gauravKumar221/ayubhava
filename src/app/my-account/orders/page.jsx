@@ -19,13 +19,13 @@ import {
   Box,
   Tag
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { LazyImage } from '@/components/shared/lazy-image';
 
 const mockOrders = [
   {
     id: 'RIT-7721',
-    date: '2024-07-28T14:30:00Z',
+    date: subDays(new Date(), 2).toISOString(),
     total: 2450,
     status: 'Processing',
     items: [
@@ -35,7 +35,7 @@ const mockOrders = [
   },
   {
     id: 'RIT-6542',
-    date: '2024-06-15T10:15:00Z',
+    date: subDays(new Date(), 5).toISOString(),
     total: 1899,
     status: 'Delivered',
     items: [

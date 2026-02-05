@@ -45,7 +45,7 @@ import {
   ShieldCheck,
   AlertTriangle
 } from 'lucide-react';
-import { format, differenceInDays } from 'date-fns';
+import { format, differenceInDays, subDays } from 'date-fns';
 import { LazyImage } from '@/components/shared/lazy-image';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -68,11 +68,11 @@ export default function OrderDetailPage({ params }) {
 
   if (!mounted) return null;
 
-  // Mock data for detail
+  // Mock data for detail - Using relative dates for easy testing
   const order = {
     id: id || 'RIT-7721',
-    date: '2024-07-20T14:30:00Z', // 8 days ago
-    deliveryDate: '2024-07-24T10:00:00Z', // 4 days ago
+    date: subDays(new Date(), 5).toISOString(),
+    deliveryDate: subDays(new Date(), 2).toISOString(),
     status: orderStatus,
     paymentMethod: 'UPI • Google Pay',
     address: {
@@ -378,6 +378,7 @@ export default function OrderDetailPage({ params }) {
                     <span className="text-3xl font-black text-primary">₹{order.summary.total.toLocaleString()}</span>
                   </div>
                 </CardContent>
+                {/* Visual Accent */}
                 <div className="absolute bottom-0 right-0 p-4 opacity-10">
                   <ShoppingBag className="h-24 w-24 rotate-12" />
                 </div>
