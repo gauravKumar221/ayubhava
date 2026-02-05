@@ -17,6 +17,7 @@ import { LazyImage } from '@/components/shared/lazy-image';
 import { InfluencerTalk } from '@/components/home/influencer-talk';
 import { ShopByHealthNeeds } from '@/components/home/shop-by-health-needs';
 import { HeroSection } from '@/components/home/hero-section';
+import { Testimonials } from '@/components/home/testimonials';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 
@@ -190,6 +191,9 @@ export default function HomePage() {
 
         {/* Let Influencers Talk Section */}
         <InfluencerTalk />
+
+        {/* Community Testimonials Section */}
+        <Testimonials />
       </main>
 
       <Footer />
