@@ -22,6 +22,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle 
 import Link from 'next/link';
 import { StoreProvider } from '@/store/provider';
 import { MobileNav } from '@/components/layout/mobile-nav';
+import { AbandonmentPopup } from '@/components/cart/abandonment-popup';
 
 function AppLayout({ children }) {
   const pathname = usePathname();
@@ -37,6 +38,7 @@ function AppLayout({ children }) {
           {children}
         </main>
         <MobileNav />
+        <AbandonmentPopup />
       </div>
     );
   }
