@@ -209,7 +209,7 @@ export function ShopByHealthNeeds() {
                           "w-full h-10 md:h-12 rounded-none font-black uppercase text-[9px] md:text-[10px] tracking-[0.15em] md:tracking-[0.2em] transition-all",
                           isInCart 
                             ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                            : "bg-black text-white hover:bg-black/90"
+                            : "bg-black text-white hover:bg-primary"
                         )}
                       >
                         {isInCart ? (

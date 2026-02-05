@@ -259,7 +259,7 @@ export default function ProductDetailsPage({ params }) {
                     "flex-1 h-14 rounded-none font-black uppercase tracking-[0.2em] text-sm shadow-xl transition-all",
                     isInCart 
                       ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                      : "bg-black text-white hover:bg-black/90"
+                      : "bg-black text-white hover:bg-primary"
                   )}
                 >
                   {isInCart ? (

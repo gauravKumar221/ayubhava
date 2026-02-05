@@ -189,7 +189,7 @@ export function InfluencerTalk() {
                           "w-full h-12 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest mt-auto transition-all",
                           isInCart 
                             ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                            : "bg-[#1a1a1a] hover:bg-black text-white"
+                            : "bg-[#1a1a1a] hover:bg-primary text-white"
                         )}
                       >
                         {isInCart ? (
@@ -293,7 +293,7 @@ export function InfluencerTalk() {
                         "w-full h-12 rounded-xl text-xs font-black uppercase tracking-[0.1em] shadow-lg transition-all",
                         cartItems.some(item => item.id === selectedTalk.id)
                           ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                          : "bg-black hover:bg-black/90 text-white"
+                          : "bg-black hover:bg-primary text-white"
                       )}
                     >
                       {cartItems.some(item => item.id === selectedTalk.id) ? (

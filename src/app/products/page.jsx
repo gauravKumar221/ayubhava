@@ -200,7 +200,7 @@ export default function PublicProductsPage() {
                               "rounded-none font-black uppercase text-[8px] md:text-[10px] px-4 md:px-6 h-10 md:h-12 transition-all w-full sm:w-auto",
                               isInCart 
                                 ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                                : "bg-black text-white hover:bg-black/90"
+                                : "bg-black text-white hover:bg-primary"
                             )}
                           >
                             {isInCart ? (

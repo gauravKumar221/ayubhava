@@ -74,7 +74,6 @@ export function BestSellers() {
     });
   };
 
-  // Filter products that are marked as Best Sellers or highly reordered
   const bestSellingProducts = products.filter(p => p.category === "Best Sellers" || p.isHighlyReordered).slice(0, 4);
 
   return (
@@ -174,7 +173,7 @@ export function BestSellers() {
                           "w-full h-10 md:h-12 rounded-none font-black uppercase text-[9px] md:text-[10px] tracking-[0.15em] md:tracking-[0.2em] transition-all",
                           isInCart 
                             ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                            : "bg-black text-white hover:bg-black/90"
+                            : "bg-black text-white hover:bg-primary"
                         )}
                       >
                         {isInCart ? (
