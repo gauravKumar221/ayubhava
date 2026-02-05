@@ -63,9 +63,6 @@ export function CartDrawer({ children }) {
     setIsSheetOpen(true);
   };
 
-  // Progress logic for freebies (mock thresholds)
-  const progressPercent = Math.min((totalAmount / 6000) * 100, 100);
-
   if (!mounted) return children;
 
   return (
@@ -95,39 +92,6 @@ export function CartDrawer({ children }) {
                 <div className="bg-black text-white px-1 rounded-sm">08m</div>
                 <span>:</span>
                 <div className="bg-black text-white px-1 rounded-sm">52s</div>
-              </div>
-            </div>
-
-            {/* Progress Bar for Freebies */}
-            <div className="p-6 bg-white border-b space-y-4">
-              <p className="text-center text-[13px] font-black tracking-tight">
-                {totalAmount < 6000 ? (
-                  <>Add more to get <span className="text-primary">Free Korean Marine Collagen</span></>
-                ) : (
-                  <span className="text-primary">Congratulations! You earned a free gift!</span>
-                )}
-              </p>
-              <div className="relative pt-6">
-                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary transition-all duration-500" style={{ width: `${progressPercent}%` }} />
-                </div>
-                <div className="absolute top-0 left-0 w-full flex justify-between px-0">
-                  <div className="flex flex-col items-center gap-1 -translate-x-1/2">
-                    <span className="text-[9px] font-bold">₹2,499.00</span>
-                    <div className="h-3 w-px bg-border" />
-                    <span className="text-[8px] font-black uppercase text-muted-foreground">Vegan Collagen</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-[9px] font-bold">₹3,999.00</span>
-                    <div className="h-3 w-px bg-border" />
-                    <span className="text-[8px] font-black uppercase text-muted-foreground">Hydrasalt</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1 translate-x-1/2">
-                    <span className="text-[9px] font-bold">₹5,999.00</span>
-                    <div className="h-3 w-px bg-border" />
-                    <span className="text-[8px] font-black uppercase text-muted-foreground">Vegan Protein</span>
-                  </div>
-                </div>
               </div>
             </div>
 
