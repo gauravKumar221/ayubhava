@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Store, ShoppingBag, User } from 'lucide-react';
+import { Home, Store, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSelector } from 'react-redux';
 import { CartDrawer } from '@/components/cart/cart-drawer';
@@ -29,12 +29,6 @@ export function MobileNav() {
       icon: ShoppingBag,
       isCart: true,
       active: false,
-    },
-    {
-      label: 'Profile',
-      icon: User,
-      href: '/profile',
-      active: pathname === '/profile' || pathname.startsWith('/profile'),
     },
   ];
 
