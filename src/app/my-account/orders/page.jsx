@@ -149,11 +149,11 @@ export default function MyOrdersPage() {
 
                     <Separator className="bg-muted/50" />
 
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                       <Button asChild variant="link" className="p-0 h-auto font-black text-[10px] uppercase tracking-[0.2em] text-primary hover:text-black">
                         <Link href={`/my-account/orders/${order.id}`}>Track Detailed Journey</Link>
                       </Button>
-                      <Button variant="ghost" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest border border-black/5 hover:bg-black hover:text-white transition-all">
+                      <Button variant="ghost" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest border border-black/5 hover:bg-black hover:text-white transition-all w-full sm:w-auto">
                         <Tag className="mr-2 h-3.5 w-3.5" /> Buy Again
                       </Button>
                     </div>
