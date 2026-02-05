@@ -142,7 +142,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 mt-16">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 mt-16">
               {wellnessGoals.map((goal) => {
                 const goalImg = getPlaceholderImage(goal.imageId);
                 return (
